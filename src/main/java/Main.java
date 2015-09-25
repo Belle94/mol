@@ -7,7 +7,8 @@ import javafx.stage.Stage;
  * Main class
  */
 public class Main extends Application {
-    /** the standard method called by main in javafx applications
+
+    /** The standard method called by main in JavaFX applications
      * @param stage of application
      */
     @Override
