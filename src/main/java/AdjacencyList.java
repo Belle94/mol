@@ -13,6 +13,6 @@ public class AdjacencyList {
     }
 
     void addEdge(int i, int j) {
-        
+
     }
 }

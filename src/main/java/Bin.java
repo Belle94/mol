@@ -3,7 +3,6 @@ import java.util.List;
  * Class implement a Bin.
  */
 public class Bin {
-    private double qntWasted;
     private double qntCurrent;
     private double qntMax;
     private List<Good> goods;
@@ -14,11 +13,7 @@ public class Bin {
     }
 
     public double getQntWasted() {
-        return qntWasted;
-    }
-
-    public void setQntWasted(double qntWasted) {
-        this.qntWasted = qntWasted;
+        return qntMax - qntCurrent;
     }
 
     public double getQntCurrent() {
