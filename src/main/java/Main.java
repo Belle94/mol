@@ -14,6 +14,7 @@ public class Main extends Application {
     public void start(Stage stage) throws Exception {
         BorderPane borderPane = new BorderPane();
         Scene scene = new Scene(borderPane);
+        stage.setScene(scene);
         stage.show();
     }
     /**
