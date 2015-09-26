@@ -9,9 +9,9 @@ public class Good {
     private double id;
     private double volume;
     private double qnt;
-    private double description;
+    private String description;
 
-    public Good(double id, double volume, double qnt, double description) {
+    public Good(double id, double volume, double qnt, String description) {
         this.id = id;
         this.volume = volume;
         this.qnt = qnt;
@@ -42,11 +42,11 @@ public class Good {
         this.qnt = qnt;
     }
 
-    public double getDescription() {
+    public String getDescription() {
         return description;
     }
 
-    public void setDescription(double description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
