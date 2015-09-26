@@ -1,3 +1,5 @@
+import java.util.Comparator;
+
 /**
  * Class that describe a product will be transported.
  * One Good have one unique id, a volume, quantity of the object
@@ -46,5 +48,19 @@ public class Good {
 
     public void setDescription(double description) {
         this.description = description;
+    }
+
+    /**
+     * create and implement a new comparator for goods object.
+     * @return comparator of 2 Good
+     */
+    public static Comparator<Good> comparator(){
+        return (o1, o2) -> {
+            if (o1.getVolume() < o2.getVolume())
+                return -1;
+            if (o1.getVolume() > o2.getVolume())
+                return 1;
+            return 0;
+        };
     }
 }
