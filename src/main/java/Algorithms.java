@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class Algorithms{
     /**
@@ -24,7 +25,7 @@ public class Algorithms{
             for (Bin bin:bins){
                 for (int j=0; j<good.getQnt();j++) {
                     //se c'è già una merce di quel tipo dentro provo aggiungere una unità
-                    if (bin.getGoods().get(j).getId() == good.getId()) {
+                    if (!bin.getGoods().isEmpty() && Objects.equals(bin.getGoods().get(j).getId(), good.getId())) {
                         //ci riesco
                         if (bin.getVolumeWasted() >= bin.getGoods().get(j).getVolume())
                             bin.getGoods().get(j).setQnt(

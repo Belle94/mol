@@ -6,23 +6,23 @@ import java.util.Comparator;
  * and finally the description of the obj
  */
 public class Good {
-    private double id;
+    private Integer id;
     private double volume;
-    private double qnt;
+    private Integer qnt;
     private String description;
 
-    public Good(double id, double volume, double qnt, String description) {
+    public Good(Integer id, double volume, Integer qnt, String description) {
         this.id = id;
         this.volume = volume;
         this.qnt = qnt;
         this.description = description;
     }
 
-    public double getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(double id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -34,11 +34,11 @@ public class Good {
         this.volume = volume;
     }
 
-    public double getQnt() {
+    public Integer getQnt() {
         return qnt;
     }
 
-    public void setQnt(double qnt) {
+    public void setQnt(Integer qnt) {
         this.qnt = qnt;
     }
 
