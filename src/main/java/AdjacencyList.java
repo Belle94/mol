@@ -24,14 +24,21 @@ public class AdjacencyList {
     }
 
     public void addNeighbors(Integer source, List<Pair<Integer, Double>> ns) {
-        g.put(source, ns);
+        if (ns != null) {
+            if (g.containsKey(source))
+                g.remove(source);
+            g.put(source, ns);
+        }
     }
 
     public List<Pair<Integer, Double>> getNeighborsDistances(Integer v) {
-        return g.get(v);
+        return g.containsKey(v) ? g.get(v) : null;
     }
 
     public List<Integer> getNeighbor(Integer v) {
+        if (!g.containsKey(v))
+            return null;
+
         List<Integer> n = new ArrayList<>();
 
         for (Pair<Integer, Double> p : g.get(v))
@@ -42,7 +49,7 @@ public class AdjacencyList {
 
     public HashMap<Integer, List<Pair<Integer, Double>>> clark_wright
             (Integer vehicles) {
-
+        return null;
     }
 
     public HashMap<Integer, Double> djikstra(Integer source) {
