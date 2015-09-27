@@ -24,4 +24,14 @@ public class Client {
         this.charge = charge >= 0 ? charge :
                 this.charge == null ? 0 : charge;
     }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
 }
