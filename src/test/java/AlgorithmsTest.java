@@ -24,37 +24,14 @@ public class AlgorithmsTest{
 
         binsExpected.get(0).addGood(new Good(5, 7.0, 1, "Kitkat"));
         binsExpected.get(0).addGood(new Good(3, 4.0, 1, "Fruit juice"));
-
         binsExpected.get(1).addGood(new Good(5, 7.0, 1, "Kitkat"));
         binsExpected.get(1).addGood(new Good(3, 4.0, 1, "Fruit juice"));
-
         binsExpected.get(2).addGood(new Good(4, 6.0, 1, "kinder pinguì"));
         binsExpected.get(2).addGood(new Good(3, 4.0, 1, "Fruit juice"));
         binsExpected.get(2).addGood(new Good(1, 2.0, 1, "Snack"));
-
         binsExpected.get(3).addGood(new Good(2, 3.0, 4, "Candies"));
+        binsExpected.get(4).addGood(new Good(1, 2.0, 1, "Snack"));
 
-        binsExpected.get(4).addGood(new Good(1, 2.0 ,1, "Snack"));
-
-        System.out.println("\n# Data Input:");
-        printGoods(testGoodList);
-        System.out.println("\n# Expected Output:");
-        printBins(binsExpected);
-        System.out.println("\n# Algorithms Result:");
-        printBins(Algorithms.firstFitDecreasing(testGoodList,12));
-
-    }
-
-    public static void printGoods(List<Good> list){
-        for (int i=0; i<list.size(); i++)
-            System.out.println(i+".\t id:"+list.get(i).getId()+"\tVolume:"+list.get(i).getVolume()
-                    +"\t qnt:"+list.get(i).getQnt()+"\t Desc:"+list.get(i).getDescription());
-    }
-
-    public static void printBins(List<Bin> list){
-        for (int i=0; i<list.size(); i++){
-            System.out.println(i+". #BIN# \t CurrentVolume:"+list.get(i).getVolumeCurrent()+"\t WastedVolume:"+ list.get(i).getVolumeWasted());
-            printGoods(list.get(i).getGoods());
-        }
+        assertEquals(Algorithms.firstFitDecreasing(testGoodList,12),binsExpected);
     }
 }

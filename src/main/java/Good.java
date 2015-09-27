@@ -63,4 +63,29 @@ public class Good {
             return 0;
         };
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Good)) return false;
+
+        Good good = (Good) o;
+        if (Double.compare(good.volume, volume) != 0) return false;
+        if (!id.equals(good.id)) return false;
+        if (!qnt.equals(good.qnt)) return false;
+        return !(description != null ? !description.equals(good.description) : good.description != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        result = id.hashCode();
+        temp = Double.doubleToLongBits(volume);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + qnt.hashCode();
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        return result;
+    }
 }

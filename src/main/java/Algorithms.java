@@ -9,7 +9,7 @@ public class Algorithms{
      * in the bin just to get the best possible packaging.
      * @param goods the goods will be fit into the bins
      * @param volumeMax the Maximal volume that can be transported
-     * @return List of Bin or null if the list empty or the volumeMax isn't enough.
+     * @return List of Bin, null if empty or the volumeMax isn't enough.
      */
     public static List<Bin> firstFitDecreasing(List<Good> goods, double volumeMax) {
         if (goods.isEmpty()){
@@ -28,6 +28,13 @@ public class Algorithms{
         }
         return bins;
     }
+    /**
+     * the method below insert a good in the bins list.
+     * @param good the good that will be added to the list
+     * @param bins the list that is required for adding of a new good, at least one empty bin
+     * (but with maximal Volume assigned) inside of a list is required.
+     * @return List of Bin, null if empty or the volumeMax isn't enough.
+     */
     public static List<Bin> insertGood(Good good, List<Bin> bins){
         if (bins.isEmpty()){
             return null;
