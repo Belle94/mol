@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 /**
  * Class implement a Bin.
  */
@@ -49,8 +51,14 @@ public class Bin {
      */
     public boolean addGood(Good good){
         if ( getVolumeWasted() >= (good.getVolume()*good.getQnt()) ){
-            volumeCurrent += good.getVolume()*good.getQnt();
-            goods.add(good);
+            Good g = containsId(good.getId());
+            if (g != null){
+                g.setQnt(g.getQnt()+good.getQnt());
+                volumeCurrent += g.getVolume()*good.getQnt();
+            }else {
+                volumeCurrent += good.getVolume()*good.getQnt();
+                goods.add(good);
+            }
             return true;
         }
         return false;
@@ -61,12 +69,24 @@ public class Bin {
      * @return boolean value, true if the function remove the good correctly, else false.
      */
     public boolean removeGood(Good good){
-        if (goods.contains(good)){
+        Good g = containsId(good.getId());
+        if (g!=null){
             volumeCurrent -= good.getQnt()*good.getVolume();
-            goods.remove(good);
+            if (g.getQnt()-good.getQnt() <=0)
+                goods.remove(good);
+            else
+                g.setQnt(g.getQnt()-good.getQnt());
             return true;
         }
         return false;
+    }
+
+    public Good containsId(Integer id){
+        for (Good good: goods){
+            if (Objects.equals(id, good.getId()))
+                return good;
+        }
+        return null;
     }
 
 }
