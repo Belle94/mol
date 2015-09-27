@@ -1,18 +1,32 @@
+import javafx.util.Pair;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class AdjacencyList {
-    int n;
-    List<Integer>[] adj;
+    private HashMap<Integer, List<Pair<Integer, Double>>> g;
 
-    AdjacencyList(int n) {
-        this.n = n;
-        adj = (List<Integer>[]) new List[n];
-        for (int i = 0; i < n; i++)
-            adj[i] = new ArrayList<Integer>();
+    public AdjacencyList() {
+        g = new HashMap<>();
     }
 
-    void addEdge(int i, int j) {
+    public void addEdge(Integer source, Integer destination, Double distance) {
+        List<Pair<Integer, Double>> n = g.get(source);
+        n.add(new Pair<Integer, Double>(destination, distance));
+        g.put(source, n);
+    }
 
+    public List<Pair<Integer, Double>> getNeighborsDistances(Integer v) {
+        return g.get(v);
+    }
+
+    public List<Integer> getNeighbor(Integer v) {
+        List<Integer> n = new ArrayList<>();
+
+        for (Pair<Integer, Double> p : g.get(v))
+            n.add(p.getKey());
+
+        return n;
     }
 }
