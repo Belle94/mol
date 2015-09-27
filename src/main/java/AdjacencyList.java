@@ -11,8 +11,14 @@ public class AdjacencyList {
         g = new HashMap<>();
     }
 
+    public AdjacencyList(HashMap<Integer, List<Pair<Integer, Double>>> g) {
+        this.g = g;
+    }
+
     public void addEdge(Integer source, Integer destination, Double distance) {
-        List<Pair<Integer, Double>> n = g.get(source);
+        List<Pair<Integer, Double>> n = g.containsKey(source) ?
+                g.get(source) : new ArrayList<>();
+
         n.add(new Pair<Integer, Double>(destination, distance));
         g.put(source, n);
     }
@@ -34,5 +40,12 @@ public class AdjacencyList {
         return n;
     }
 
-    public void
+    public HashMap<Integer, List<Pair<Integer, Double>>> clark_wright
+            (Integer vehicles) {
+
+    }
+
+    public HashMap<Integer, Double> djikstra(Integer source) {
+
+    }
 }
