@@ -17,6 +17,10 @@ public class AdjacencyList {
         g.put(source, n);
     }
 
+    public void addNeighbors(Integer source, List<Pair<Integer, Double>> ns) {
+        g.put(source, ns);
+    }
+
     public List<Pair<Integer, Double>> getNeighborsDistances(Integer v) {
         return g.get(v);
     }
@@ -29,4 +33,6 @@ public class AdjacencyList {
 
         return n;
     }
+
+    public void
 }
