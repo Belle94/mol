@@ -52,7 +52,7 @@ public class AdjacencyList {
         return null;
     }
 
-    public HashMap<Integer, Double> djikstra(Integer source) {
-
+    public HashMap<Integer, Double> dijkstra(Integer source) {
+        return null;
     }
 }
