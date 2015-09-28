@@ -47,6 +47,21 @@ public class AdjacencyList {
         return n;
     }
 
+    public void reverseEdgeWeight() {
+        Double wMax = 0.0;
+        for (Integer c : g.keySet()) {
+            for (Pair<Integer, Double> p : g.get(c)) {
+                if (p.getValue() > wMax)
+                    wMax = p.getValue();
+            }
+        }
+
+        for (Integer c : g.keySet()) {
+            for (Pair<Integer, Double> p : g.get(c)) {
+                p = new Pair<>(p.getKey(), wMax - p.getValue());
+            }
+        }
+    }
     public HashMap<Integer, List<Pair<Integer, Double>>> clark_wright
             (Integer vehicles) {
         return null;
