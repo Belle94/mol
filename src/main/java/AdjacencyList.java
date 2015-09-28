@@ -55,4 +55,25 @@ public class AdjacencyList {
     public HashMap<Integer, Double> dijkstra(Integer source) {
         return null;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AdjacencyList)) return false;
+
+        AdjacencyList that = (AdjacencyList) o;
+
+        return !(g != null ? !g.equals(that.g) : that.g != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return g != null ? g.hashCode() : 0;
+    }
+
+    public static AdjacencyList clone(AdjacencyList old){
+        HashMap<Integer, List<Pair<Integer, Double>>> nuovo = (HashMap<Integer, List<Pair<Integer, Double>>>) old.g.clone();
+        return new AdjacencyList(nuovo);
+    }
 }
