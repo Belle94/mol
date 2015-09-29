@@ -1,9 +1,16 @@
+import com.j256.ormlite.field.DatabaseField;
+
+import javax.xml.crypto.Data;
+
 /**
  * Class that implement Vehicle. Each vehicle transport the goods
  */
 public class Vehicle{
+    @DatabaseField(id =true)
     private String numberPlate;
+    @DatabaseField(canBeNull = false)
     private double chargeCurrent;
+    @DatabaseField(canBeNull = false)
     private double chargeMax;
     private Bin bin;
 
