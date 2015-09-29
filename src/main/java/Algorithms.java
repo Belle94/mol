@@ -1,3 +1,6 @@
+import javafx.util.Pair;
+import org.omg.CORBA.INTERNAL;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -58,4 +61,5 @@ public class Algorithms{
         }
         return bins;
     }
+
 }
