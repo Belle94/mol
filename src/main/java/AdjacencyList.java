@@ -4,6 +4,14 @@ import javax.xml.transform.Source;
 import java.util.*;
 
 public class AdjacencyList {
+    public HashMap<Integer, List<Pair<Integer, Double>>> getG() {
+        return g;
+    }
+
+    public void setG(HashMap<Integer, List<Pair<Integer, Double>>> g) {
+        this.g = g;
+    }
+
     private HashMap<Integer, List<Pair<Integer, Double>>> g;
 
     public AdjacencyList() {
@@ -17,6 +25,10 @@ public class AdjacencyList {
     public int getNumNodes(){
         int n = g.size();
         return n;
+    }
+
+    public HashMap<Integer,List<Pair<Integer,Double>>> getGraph(){
+        return g;
     }
 
     public void addEdge(Integer source, Integer destination, Double distance) {
@@ -140,6 +152,22 @@ public class AdjacencyList {
             }
         }
         return pg;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof AdjacencyList)) return false;
+
+        AdjacencyList that = (AdjacencyList) o;
+
+        return g.equals(that.getG());
+
+    }
+
+    @Override
+    public int hashCode() {
+        return g.hashCode();
     }
 }
 
