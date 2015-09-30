@@ -127,7 +127,8 @@ public class AdjacencyList {
      * @return the graph with the shortest path form the node source to each other nodes.
      */
     public HashMap<Integer, List<Pair<Integer, Double>>> Dijkstra(Integer source){
-        HashMap<Integer, List<Pair<Integer, Double>>> pg = new HashMap<>();
+        //HashMap<Integer, List<Pair<Integer, Double>>> pg = new HashMap<>();
+        AdjacencyList pg = new AdjacencyList();
         int n = this.getNumNodes();
         Integer u;
         Double [] dist = new Double[n];
@@ -160,23 +161,22 @@ public class AdjacencyList {
             }
         }
 
+        //creation of graph
         for(int i = 0; i<n; i++){
-            boolean ctrl = false;
+            /*boolean ctrl = false;
             for (int j = i; j < n; j++) {
                 if (i + 1 == prev[j]) {
                     ctrl = true;
                 }
-            }
+            }*/
             if((prev[i] != -1)){
-                List<Pair<Integer, Double>> l = new ArrayList<>();
-                l.add(new Pair<>(i+1, dist[i]));
-                pg.put(prev[i],l);
+                pg.addEdge(prev[i],i+1,dist[i]);
             }
-            if (!ctrl) {
+            /*if (!ctrl) {
                 pg.put(i+1, new ArrayList<>());
-            }
+            }*/
         }
-        return pg;
+        return pg.getGraph();
     }
 
     @Override
