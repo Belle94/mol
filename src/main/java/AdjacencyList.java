@@ -198,7 +198,6 @@ public class AdjacencyList {
             // Pair in the list are in the same order
             if (!this.g.get(i).equals(that.getGraph().get(i)))
                 return false;
-            return false;
             }
         return true;
     }
