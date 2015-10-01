@@ -1,3 +1,8 @@
+import com.j256.ormlite.dao.ForeignCollection;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import java.util.Comparator;
 
 /**
@@ -5,11 +10,26 @@ import java.util.Comparator;
  * One Good have one unique id, a volume, quantity of the object
  * and finally the description of the obj
  */
+@DatabaseTable(tableName = "good")
 public class Good {
+    public final static String VOLUME_FIELD_NAME = "volume";
+    public final static String QNT_FIELD_NAME = "qnt";
+    public final static String DESC_FIELD_NAME = "description";
+
+    @DatabaseField (generatedId = true)
     private Integer id;
+    @DatabaseField(canBeNull = false, columnName = VOLUME_FIELD_NAME)
     private double volume;
+    @DatabaseField(canBeNull = false, columnName = QNT_FIELD_NAME)
     private Integer qnt;
+    @DatabaseField(canBeNull = true, columnName = DESC_FIELD_NAME)
     private String description;
+    @ForeignCollectionField
+    private ForeignCollection<GoodOrder> goodOrders;
+
+    public Good() {
+        // all persisted classes must define a no-arg constructor with at least package visibility
+    }
 
     public Good(Integer id, double volume, Integer qnt, String description) {
         this.id = id;
@@ -49,6 +69,15 @@ public class Good {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public ForeignCollection<GoodOrder> getGoodOrders() {
+        return goodOrders;
+    }
+
+    public void setGoodOrders(ForeignCollection<GoodOrder> goodOrders) {
+        this.goodOrders = goodOrders;
+    }
+
 
     /**
      * create and implement a new comparator for goods object.
