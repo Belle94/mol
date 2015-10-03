@@ -1,8 +1,7 @@
 import javafx.util.Pair;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class AdjacencyList {
     private HashMap<Integer, List<Pair<Integer, Double>>> g;
@@ -62,9 +61,42 @@ public class AdjacencyList {
             }
         }
     }
+
     public HashMap<Integer, List<Pair<Integer, Double>>> clark_wright
-            (Integer vehicles) {
+            (Integer vehicles, Integer zero) {
+        HashMap<Pair<Integer, Integer>, Double> matDistance = new HashMap<>();
+        HashMap<Pair<Integer, Integer>, Double> savings = new HashMap<>();
+        // initializing savings
+        for (Integer i : g.keySet()) {
+            for (Integer j : dijkstra(i).keySet()) {
+                savings.put(new Pair<>(i,j),
+                        matDistance.get((new Pair<>(zero, i))) +
+                                matDistance.get(new Pair<>(zero, j)) -
+                                matDistance.get(new Pair<>(i,j)));
+            }
+        }
+
+        List<Pair<Integer, Integer>> orderedSavingsKey = orderByValue(savings);
+
         return null;
+    }
+
+    public static List<Pair<Integer, Integer>> orderByValue(HashMap<Pair<Integer, Integer>, Double> h) {
+        List<Pair<Integer, Integer>> result = new LinkedList<>();
+        Pair<Integer, Integer> kMax = new Pair<>(0,0);
+        for (int i = 0; i < h.keySet().size(); i++) {
+            Double max = Double.MIN_VALUE;
+            for(Pair<Integer, Integer> p : h.keySet()) {
+                if (max > h.get(p)) {
+                    max = h.get(p);
+                    kMax = p;
+                }
+            }
+            result.add(kMax);
+            h.remove(kMax);
+        }
+
+        return result;
     }
 
     public HashMap<Integer, Double> dijkstra(Integer source) {
