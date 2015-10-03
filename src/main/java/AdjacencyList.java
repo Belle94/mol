@@ -1,13 +1,20 @@
 import javafx.util.Pair;
 
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class AdjacencyList {
     private HashMap<Integer, List<Pair<Integer, Double>>> g;
+    private HashMap<Integer, HashMap<Integer, List<Pair<Integer, Double>>>> minGraph;
+    private HashMap<Integer, HashMap<Integer, Double>> matDistance;
 
     public AdjacencyList() {
+
         g = new HashMap<>();
+        minGraph = new HashMap<>();
+        matDistance = new HashMap<>();
     }
 
     public AdjacencyList(HashMap<Integer, List<Pair<Integer, Double>>> g) {
@@ -78,6 +85,8 @@ public class AdjacencyList {
 
         List<Pair<Integer, Integer>> orderedSavingsKey = orderByValue(savings);
 
+        // Merge route between nodes
+
         return null;
     }
 
@@ -100,6 +109,34 @@ public class AdjacencyList {
     }
 
     public HashMap<Integer, Double> dijkstra(Integer source) {
-        return null;
+        if (!minGraph.containsKey(source)) {
+
+        }
+
+        return matDistance.get(source);
+    }
+
+    public HashMap<Integer, List<Pair<Integer, Double>>> getCompleteGraph() {
+        return g;
+    }
+
+    public void setCompleteGraph(HashMap<Integer, List<Pair<Integer, Double>>> g) {
+        this.g = g;
+    }
+
+    public HashMap<Integer, HashMap<Integer, List<Pair<Integer, Double>>>> getMinGraph() {
+        return minGraph;
+    }
+
+    public void setMinGraph(HashMap<Integer, HashMap<Integer, List<Pair<Integer, Double>>>> minGraph) {
+        this.minGraph = minGraph;
+    }
+
+    public HashMap<Integer, HashMap<Integer, Double>> getMatDistance() {
+        return matDistance;
+    }
+
+    public void setMatDistance(HashMap<Integer, HashMap<Integer, Double>> matDistance) {
+        this.matDistance = matDistance;
     }
 }
