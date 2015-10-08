@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 /**
  * Class implement a Bin.
  */
@@ -49,8 +51,14 @@ public class Bin {
      */
     public boolean addGood(Good good){
         if ( getVolumeWasted() >= (good.getVolume()*good.getQnt()) ){
-            volumeCurrent += good.getVolume()*good.getQnt();
-            goods.add(good);
+            Good g = containsId(good.getId());
+            if (g != null){
+                g.setQnt(g.getQnt()+good.getQnt());
+                volumeCurrent += g.getVolume()*good.getQnt();
+            }else {
+                volumeCurrent += good.getVolume()*good.getQnt();
+                goods.add(good);
+            }
             return true;
         }
         return false;
@@ -61,12 +69,52 @@ public class Bin {
      * @return boolean value, true if the function remove the good correctly, else false.
      */
     public boolean removeGood(Good good){
-        if (goods.contains(good)){
+        Good g = containsId(good.getId());
+        if (g!=null){
             volumeCurrent -= good.getQnt()*good.getVolume();
-            goods.remove(good);
+            if (g.getQnt()-good.getQnt() <=0)
+                goods.remove(good);
+            else
+                g.setQnt(g.getQnt()-good.getQnt());
             return true;
         }
         return false;
     }
+    /**
+     * contains Id method looking for the id param in the bins, than return
+     * the Good object if it is founded, null if it isn't.
+     * @param id that will be looking for in the bin
+     * @return null when the ID isn't in the bin, else the good with the same ID is returned.
+     */
+    public Good containsId(Integer id){
+        for (Good good: goods){
+            if (Objects.equals(id, good.getId()))
+                return good;
+        }
+        return null;
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Bin)) return false;
+
+        Bin bin = (Bin) o;
+
+        return Double.compare(bin.volumeCurrent, volumeCurrent) == 0
+                && Double.compare(bin.volumeMax, volumeMax) == 0
+                && goods.equals(bin.goods);
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        temp = Double.doubleToLongBits(volumeCurrent);
+        result = (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(volumeMax);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + goods.hashCode();
+        return result;
+    }
 }

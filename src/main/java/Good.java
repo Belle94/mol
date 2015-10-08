@@ -6,23 +6,23 @@ import java.util.Comparator;
  * and finally the description of the obj
  */
 public class Good {
-    private double id;
+    private Integer id;
     private double volume;
-    private double qnt;
-    private double description;
+    private Integer qnt;
+    private String description;
 
-    public Good(double id, double volume, double qnt, double description) {
+    public Good(Integer id, double volume, Integer qnt, String description) {
         this.id = id;
         this.volume = volume;
         this.qnt = qnt;
         this.description = description;
     }
 
-    public double getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(double id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -34,19 +34,19 @@ public class Good {
         this.volume = volume;
     }
 
-    public double getQnt() {
+    public Integer getQnt() {
         return qnt;
     }
 
-    public void setQnt(double qnt) {
+    public void setQnt(Integer qnt) {
         this.qnt = qnt;
     }
 
-    public double getDescription() {
+    public String getDescription() {
         return description;
     }
 
-    public void setDescription(double description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
@@ -62,5 +62,30 @@ public class Good {
                 return 1;
             return 0;
         };
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Good)) return false;
+
+        Good good = (Good) o;
+        if (Double.compare(good.volume, volume) != 0) return false;
+        if (!id.equals(good.id)) return false;
+        if (!qnt.equals(good.qnt)) return false;
+        return !(description != null ? !description.equals(good.description) : good.description != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        result = id.hashCode();
+        temp = Double.doubleToLongBits(volume);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + qnt.hashCode();
+        result = 31 * result + (description != null ? description.hashCode() : 0);
+        return result;
     }
 }
