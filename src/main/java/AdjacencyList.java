@@ -1,12 +1,9 @@
 import javafx.util.Pair;
 
-<<<<<<< HEAD
 import java.util.*;
-=======
 import javax.xml.transform.Source;
 import java.util.*;
 import java.util.stream.Collectors;
->>>>>>> origin/master
 
 public class AdjacencyList {
     private HashMap<Integer, List<Pair<Integer, Double>>> g;
@@ -131,7 +128,6 @@ public class AdjacencyList {
         }
     }
 
-<<<<<<< HEAD
     public HashMap<Vehicle, AdjacencyList> clark_wright
             (Integer vehicles, Integer zero) {
         DistanceMatrix matDistance = new DistanceMatrix(this);
@@ -191,8 +187,7 @@ public class AdjacencyList {
     public void set(HashMap<Integer, List<Pair<Integer, Double>>> g) {
         this.g = g;
     }
-}
-=======
+
     public Set<Integer> getNodes(){
         return g.keySet();
     }
@@ -302,4 +297,3 @@ public class AdjacencyList {
         };
     }
 }
->>>>>>> origin/master
