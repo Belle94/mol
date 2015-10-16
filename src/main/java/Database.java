@@ -3,6 +3,7 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -29,6 +30,14 @@ public class Database {
         closeConnection();
     }
 
+    public Client getClientByID(Integer id) throws SQLException {
+        return daoClient.queryForId(id);
+    }
+
+    public List<Client> getAllClients() throws SQLException {
+        return daoClient.queryForAll();
+    }
+
     public void deleteClient(Client client) throws SQLException, ClassNotFoundException {
         openConnection();
         daoClient.delete(client);
@@ -40,6 +49,14 @@ public class Database {
         daoOrder.createIfNotExists(order);
         daoGoodOrder.createIfNotExists(goodOrder);
         closeConnection();
+    }
+
+    public Order getOrderByID(Integer id) throws SQLException {
+        return daoOrder.queryForId(id);
+    }
+
+    public List<Order> getAllOrders() throws SQLException {
+        return daoOrder.queryForAll();
     }
 
     public void deleteOrder(Order order) throws SQLException, ClassNotFoundException {
@@ -54,6 +71,14 @@ public class Database {
         closeConnection();
     }
 
+    public Good getGoodByID(Integer id) throws SQLException {
+        return daoGood.queryForId(id);
+    }
+
+    public List<Good> getAllGoods() throws SQLException {
+        return daoGood.queryForAll();
+    }
+
     public void deleteGood(Good good) throws SQLException, ClassNotFoundException {
         openConnection();
         daoGood.delete(good);
@@ -66,6 +91,14 @@ public class Database {
         closeConnection();
     }
 
+    public Itinerary getItineraryByID(Integer id) throws SQLException {
+        return daoItinerary.queryForId(id);
+    }
+
+    public List<Itinerary> getAllItineraries() throws SQLException {
+        return daoItinerary.queryForAll();
+    }
+
     public void deleteItinerary(Itinerary itinerary) throws SQLException, ClassNotFoundException {
         openConnection();
         daoItinerary.delete(itinerary);
@@ -76,6 +109,14 @@ public class Database {
         openConnection();
         daoVehicle.createIfNotExists(vehicle);
         closeConnection();
+    }
+
+    public Vehicle getVehiclesByNumberPlate(String numberPlate) throws SQLException {
+        return daoVehicle.queryForId(numberPlate);
+    }
+
+    public List<Vehicle> getAllVehicles() throws SQLException {
+        return daoVehicle.queryForAll();
     }
 
     public void deleteVehicle(Vehicle vehicle) throws SQLException, ClassNotFoundException {
