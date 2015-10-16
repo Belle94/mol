@@ -156,8 +156,6 @@ public class AdjacencyList {
                 // capacity of the vehicle, then merge the two routes
                 // and decrease the number of vehicles used
                 // and set decrease to true
-
-                
             }
         }
 
