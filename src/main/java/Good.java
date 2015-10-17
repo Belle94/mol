@@ -31,7 +31,7 @@ public class Good {
         // all persisted classes must define a no-arg constructor with at least package visibility
     }
 
-    public Good(Integer id, double volume, Integer qnt, String description) {
+    public Good(double volume, Integer qnt, String description) {
         this.id = id;
         this.volume = volume;
         this.qnt = qnt;
