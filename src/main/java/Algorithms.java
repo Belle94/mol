@@ -23,7 +23,8 @@ public class Algorithms{
         bins.add(new Bin(volumeMax)); //add first bin
         for(Good good : goods){
             for (int j=0; j<good.getQnt();j++) {
-                bins = insertGood(new Good(good.getId(), good.getVolume(), 1, good.getDescription()), bins);
+                good.setQnt(1);
+                bins = insertGood(good, bins);
                 if (bins == null){
                     System.err.println("[Error] Something doing wrong");
                 }
