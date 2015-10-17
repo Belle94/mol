@@ -72,7 +72,6 @@ public class Database {
 
     public void deleteGood(Good good) throws SQLException, ClassNotFoundException {
         daoGood.delete(good);
-<<<<<<< HEAD
     }
 
     public List<GoodOrder> getAllGoodOrders() throws SQLException {
@@ -81,8 +80,6 @@ public class Database {
 
     public List<GoodOrder> getGoodOrdersByOrderID(Integer idOrder) throws SQLException {
         return daoGoodOrder.queryForEq("order", idOrder);
-=======
->>>>>>> clark_wright
     }
 
     public void addItinerary(Itinerary itinerary) throws SQLException, ClassNotFoundException {
