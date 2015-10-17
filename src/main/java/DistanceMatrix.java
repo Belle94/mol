@@ -2,9 +2,6 @@ import javafx.util.Pair;
 
 import java.util.HashMap;
 
-/**
- * Created by luca on 10/3/15.
- */
 public class DistanceMatrix {
     private HashMap<Pair<Integer, Integer>, Double> mat;
     private HashMap<Integer, AdjacencyList> minGraph;
