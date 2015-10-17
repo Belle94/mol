@@ -20,14 +20,13 @@ public class Database {
     private Dao<Itinerary,Integer> daoItinerary;
     private Dao<Vehicle,String> daoVehicle;
 
-    public Database(String databaseUrl){
+    public Database(String databaseUrl) throws SQLException, ClassNotFoundException {
         this.databaseUrl = databaseUrl;
+        openConnection();
     }
 
     public void addClient(Client client) throws SQLException, ClassNotFoundException {
-        openConnection();
         daoClient.createIfNotExists(client);
-        closeConnection();
     }
 
     public Client getClientByID(Integer id) throws SQLException {
@@ -39,16 +38,12 @@ public class Database {
     }
 
     public void deleteClient(Client client) throws SQLException, ClassNotFoundException {
-        openConnection();
         daoClient.delete(client);
-        closeConnection();
     }
 
     public void addOrder(Order order, GoodOrder goodOrder) throws SQLException, ClassNotFoundException {
-        openConnection();
         daoOrder.createIfNotExists(order);
         daoGoodOrder.createIfNotExists(goodOrder);
-        closeConnection();
     }
 
     public Order getOrderByID(Integer id) throws SQLException {
@@ -60,15 +55,11 @@ public class Database {
     }
 
     public void deleteOrder(Order order) throws SQLException, ClassNotFoundException {
-        openConnection();
         daoOrder.delete(order);
-        closeConnection();
     }
 
     public void addGood(Good good) throws SQLException, ClassNotFoundException {
-        openConnection();
         daoGood.createIfNotExists(good);
-        closeConnection();
     }
 
     public Good getGoodByID(Integer id) throws SQLException {
@@ -80,15 +71,11 @@ public class Database {
     }
 
     public void deleteGood(Good good) throws SQLException, ClassNotFoundException {
-        openConnection();
         daoGood.delete(good);
-        closeConnection();
     }
 
     public void addItinerary(Itinerary itinerary) throws SQLException, ClassNotFoundException {
-        openConnection();
         daoItinerary.createIfNotExists(itinerary);
-        closeConnection();
     }
 
     public Itinerary getItineraryByID(Integer id) throws SQLException {
@@ -100,15 +87,11 @@ public class Database {
     }
 
     public void deleteItinerary(Itinerary itinerary) throws SQLException, ClassNotFoundException {
-        openConnection();
         daoItinerary.delete(itinerary);
-        closeConnection();
     }
 
     public void addVehicle(Vehicle vehicle) throws SQLException, ClassNotFoundException {
-        openConnection();
         daoVehicle.createIfNotExists(vehicle);
-        closeConnection();
     }
 
     public Vehicle getVehiclesByNumberPlate(String numberPlate) throws SQLException {
@@ -120,9 +103,7 @@ public class Database {
     }
 
     public void deleteVehicle(Vehicle vehicle) throws SQLException, ClassNotFoundException {
-        openConnection();
         daoVehicle.delete(vehicle);
-        closeConnection();
     }
 
     /**
@@ -150,7 +131,7 @@ public class Database {
      * @throws SQLException
      * @throws ClassNotFoundException
      */
-    private void openConnection() throws SQLException, ClassNotFoundException {
+    public void openConnection() throws SQLException, ClassNotFoundException {
         final String prefixString = "jdbc:sqlite:";
         Class.forName("org.sqlite.JDBC");
         jdbcConnectionSource = new JdbcConnectionSource(prefixString+databaseUrl);
