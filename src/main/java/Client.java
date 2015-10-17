@@ -48,8 +48,8 @@ public class Client {
     }
 
     public void setCharge(Integer charge) {
-        this.charge = charge >= 0 ? charge :
-                this.charge == null ? 0 : charge;
+        this.charge = charge != null ?
+                charge >= 0 ? charge : 0 : 0;
     }
 
     public ForeignCollection<Order> getOrders() {
