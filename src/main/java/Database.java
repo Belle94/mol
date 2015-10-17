@@ -20,8 +20,9 @@ public class Database {
     private Dao<Itinerary,Integer> daoItinerary;
     private Dao<Vehicle,String> daoVehicle;
 
-    public Database(String databaseUrl){
+    public Database(String databaseUrl) throws SQLException, ClassNotFoundException {
         this.databaseUrl = databaseUrl;
+        openConnection();
     }
 
     public void addClient(Client client) throws SQLException, ClassNotFoundException {
@@ -71,6 +72,7 @@ public class Database {
 
     public void deleteGood(Good good) throws SQLException, ClassNotFoundException {
         daoGood.delete(good);
+<<<<<<< HEAD
     }
 
     public List<GoodOrder> getAllGoodOrders() throws SQLException {
@@ -79,6 +81,8 @@ public class Database {
 
     public List<GoodOrder> getGoodOrdersByOrderID(Integer idOrder) throws SQLException {
         return daoGoodOrder.queryForEq("order", idOrder);
+=======
+>>>>>>> clark_wright
     }
 
     public void addItinerary(Itinerary itinerary) throws SQLException, ClassNotFoundException {
@@ -138,7 +142,7 @@ public class Database {
      * @throws SQLException
      * @throws ClassNotFoundException
      */
-    private void openConnection() throws SQLException, ClassNotFoundException {
+    public void openConnection() throws SQLException, ClassNotFoundException {
         final String prefixString = "jdbc:sqlite:";
         Class.forName("org.sqlite.JDBC");
         jdbcConnectionSource = new JdbcConnectionSource(prefixString+databaseUrl);
