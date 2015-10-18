@@ -14,8 +14,8 @@ public class Client {
     private String name;
     @DatabaseField(canBeNull = false, columnName = CHARGE_FIELD_NAME)
     private Integer charge;
-    @ForeignCollectionField
-    private ForeignCollection<Order> orders;
+    /*@ForeignCollectionField
+    private ForeignCollection<Order> orders;*/
 
     public Client(){
         // all persisted classes must define a no-arg constructor with at least package visibility
@@ -23,7 +23,6 @@ public class Client {
 
     public Client(String name, Integer charge) {
         this.name = name;
-        this.charge = null;
         setCharge(charge);
     }
 
@@ -52,17 +51,24 @@ public class Client {
                 charge >= 0 ? charge : 0 : 0;
     }
 
-    public ForeignCollection<Order> getOrders() {
+    /*public ForeignCollection<Order> getOrders() {
         return orders;
     }
 
     public void setOrders(ForeignCollection<Order> orders) {
         this.orders = orders;
-    }
+    }*/
 
     @Override
     public int hashCode() {
         return super.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "ID: " + id +
+                "\nName: " + name +
+                "\nCharge: " + charge + "\n";
     }
 
     @Override
