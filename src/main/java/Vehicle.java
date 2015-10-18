@@ -70,4 +70,11 @@ public class Vehicle{
     public void setItineraries(ForeignCollection<Itinerary> itineraries) {
         this.itineraries = itineraries;
     }
+
+    @Override
+    public String toString() {
+        return "ID: " + numberPlate +
+                "\nCurrent charge: " + chargeCurrent +
+                "\nMax charge: " + chargeMax;
+    }
 }
