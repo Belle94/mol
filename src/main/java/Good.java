@@ -32,6 +32,12 @@ public class Good {
     }
 
     public Good(double volume, Integer qnt, String description) {
+        this.volume = volume;
+        this.qnt = qnt;
+        this.description = description;
+    }
+
+    public Good(Integer id, double volume, Integer qnt, String description) {
         this.id = id;
         this.volume = volume;
         this.qnt = qnt;
