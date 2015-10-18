@@ -23,6 +23,19 @@ public class GoodOrder {
         // all persisted classes must define a no-arg constructor with at least package visibility
     }
 
+    public GoodOrder (Integer id, Order o, Good g, Integer q) {
+        this.id = id;
+        this.order = o;
+        this.good = g;
+        this.qnt = q;
+    }
+
+    public GoodOrder (Order o, Good g, Integer q) {
+        this.order = o;
+        this.good = g;
+        this.qnt = q;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -53,5 +66,13 @@ public class GoodOrder {
 
     public void setQnt(Integer qnt) {
         this.qnt = qnt;
+    }
+
+    @Override
+    public String toString() {
+        return "ID: " + id +
+                "\nOrder: " + order.getId() +
+                "\nGood: " + good.getId() +
+                "\nQuantity: " + qnt;
     }
 }
