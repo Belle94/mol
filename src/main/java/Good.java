@@ -107,6 +107,14 @@ public class Good {
     }
 
     @Override
+    public String toString() {
+        return "ID: " + id +
+                "\nVolume: " + volume +
+                "\nQuantity: " + qnt +
+                "\nDescription: " + description;
+    }
+
+    @Override
     public int hashCode() {
         int result;
         long temp;
