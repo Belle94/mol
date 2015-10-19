@@ -3,8 +3,9 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.*;
-import java.util.Optional;
 
+import java.util.HashMap;
+import java.util.Optional;
 
 /**
  * Class of graphic interface
@@ -18,17 +19,47 @@ public class Gui {
     private TableView table;
     private TextField search;
     private Menu file, edit, view;
+    private HashMap<KeyCombination, Boolean> keyPressed;
     private double prefWidth = 800.0;
     private double prefHeight = 600.0;
 
     /**
-     * builder, call methods for configuring the interface
+     * builder that calls methods for configuring the interface
      */
     public Gui(){
-        initTable();
-        initSearch();
+        initKeyPressed();
         initMenu();
+        initSearch();
+        inithBox();
+        initTable();
+        initvBox();
         initRootElement();
+    }
+    private void initKeyPressed(){
+        keyPressed = new HashMap<>();
+        keyPressed.put(KeyCombination.keyCombination("Ctrl+F"),false);
+    }
+    /**
+     * set and init the Horizontal Box used to contain search text filed
+     */
+    private void inithBox(){
+        hBox = new HBox();
+        hBox.getChildren().add(search);
+        hBox.setStyle("-fx-padding: 0 0 0 2; -fx-background-color: transparent;");
+        hBox.setPrefHeight(search.getHeight());
+    }
+    /**
+     * set and init the Vertical Box. VBox contain ScrollPane and consequently the Table.
+     */
+    private void initvBox(){
+        vBox = new VBox();
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setContent(table);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setPrefSize(prefWidth, prefHeight );
+        vBox.getChildren().add(scrollPane);
+        vBox.setPrefSize(prefWidth, prefHeight - prefHeight);
     }
     /**
      * Set and initialize Menu Item
@@ -38,6 +69,7 @@ public class Gui {
         initMenuFile();
         initMenuEdit();
         initMenuView();
+
         menuBar.getMenus().addAll(file,edit,view);
     }
     /**
@@ -68,9 +100,20 @@ public class Gui {
         add.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
         modify.setAccelerator(KeyCombination.keyCombination("Ctrl+E"));
         delete.setAccelerator(KeyCombination.keyCombination("Ctrl+D"));
-        find.setAccelerator(KeyCombination.keyCombination("Ctrl+F"));
 
-        edit.getItems().addAll(add,modify,delete);
+        find.setAccelerator(KeyCombination.keyCombination("Ctrl+F"));
+        find.setOnAction(e -> {
+            if (keyPressed.get(KeyCombination.keyCombination("Ctrl+F"))) {
+                vBox.getChildren().remove(hBox);
+                keyPressed.put(KeyCombination.keyCombination("Ctrl+F"), false);
+            }else {
+                vBox.getChildren().add(0, hBox);
+                search.requestFocus();
+                keyPressed.put(KeyCombination.keyCombination("Ctrl+F"), true);
+            }
+        });
+
+        edit.getItems().addAll(add, modify, delete, find);
     }
     /**
      * set and initialize View section Menu
@@ -87,13 +130,19 @@ public class Gui {
         Goods.setAccelerator(KeyCombination.keyCombination("Alt+G"));
         Itineraries.setAccelerator(KeyCombination.keyCombination("Alt+I"));
         Vehicles.setAccelerator(KeyCombination.keyCombination("Alt+V"));
+
         view.getItems().addAll(Orders,Clients,Goods,Vehicles,Itineraries);
     }
     /**
      * Set and initialize table
      */
     private void initTable(){
+        double prefHOffset=2;
+        double prefVOffset=31;
         table = new TableView();
+
+        table.setPrefWidth(prefWidth -prefHOffset);
+        table.setPrefHeight(prefHeight -prefVOffset);
     }
     /**
      * Set and initialize search textView item
@@ -102,19 +151,12 @@ public class Gui {
         search = new TextField();
         search.setPromptText("Search");
         search.setMinWidth(25.0);
-        search.setAlignment(Pos.TOP_CENTER);
     }
     /**
      * Set and initialize Root Item
      */
     private void initRootElement(){
         borderPane = new BorderPane();
-        vBox = new VBox();
-        hBox = new HBox();
-        vBox.getChildren().add(hBox);
-        vBox.getChildren().add(table);
-        hBox.getChildren().add(search);
-        hBox.setPrefHeight(search.getHeight());
         borderPane.setPrefSize(prefWidth,prefHeight);
         borderPane.setCenter(vBox);
         borderPane.setTop(menuBar);
