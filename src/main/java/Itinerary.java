@@ -29,6 +29,19 @@ public class Itinerary {
         // all persisted classes must define a no-arg constructor with at least package visibility
     }
 
+    public Itinerary(Integer id, Vehicle v, Date d, Integer r) {
+        this.id = id;
+        this.vehicle = v;
+        this.date = d;
+        this.rank = r;
+    }
+
+    public Itinerary(Vehicle v, Date d, Integer r) {
+        this.vehicle = v;
+        this.date = d;
+        this.rank = r;
+    }
+
     public Integer getId() {
         return id;
     }
