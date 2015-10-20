@@ -30,19 +30,16 @@ public class DatabaseTest {
                 db.addClient(c);
 
                 for (Integer j = 0; j < 4; j++) {
-                    Order o = new Order();
-                    o.setClient(c);
-                    o.setDate(new Date());
-                    GoodOrder go = new GoodOrder();
-                    go.setOrder(o);
+                    Order o = new Order(c,new Date(), new Itinerary());
+                    Itinerary it = new Itinerary()
+                    db.addOrder(o);
                     Integer k = 0;
                     for (; k < (4) + 1; k++) {
                         Good g = new Good((new Random()).nextInt(6) + 4, 4, "desc" + k.toString());
-                        go.setGood(g);
                         db.addGood(g);
+                        GoodOrder go = new GoodOrder(o,g,1);
+                        db.addGoodOrder(go);
                     }
-                    go.setQnt(k-1);
-                    db.addOrder(o, go);
                 }
             }
         } catch (Exception e) {
@@ -71,12 +68,15 @@ public class DatabaseTest {
             System.out.println("------");
         }
 
-        /*System.out.println("\nORDERS:");
+        System.out.println("\nORDERS:");
         for (Order o : db.getAllOrders()) {
             System.out.println("------");
-            System.out.println(o.toString());
+            if (o.getClient() != null)
+                System.out.println(o.toString());
+            else
+                System.out.println("null");
             System.out.println("------");
-        }*/
+        }
 
         System.out.println("\nGOOD_ORDER");
         for (GoodOrder go : db.getAllGoodOrders()) {
