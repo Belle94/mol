@@ -22,31 +22,7 @@ public class DatabaseTest {
     }
 
     public void init() {
-        try {
-            db.openConnection();
-            for (Integer i = 0; i < 2; i++) {
 
-                Client c = new Client("c" + i.toString(), (new Random()).nextInt(90));
-                db.addClient(c);
-
-                for (Integer j = 0; j < 4; j++) {
-                    Order o = new Order(c,new Date(), new Itinerary());
-                    Itinerary it = new Itinerary()
-                    db.addOrder(o);
-                    Integer k = 0;
-                    for (; k < (4) + 1; k++) {
-                        Good g = new Good((new Random()).nextInt(6) + 4, 4, "desc" + k.toString());
-                        db.addGood(g);
-                        GoodOrder go = new GoodOrder(o,g,1);
-                        db.addGoodOrder(go);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            db.closeConnection();
-        }
     }
 
     @Test
