@@ -1,3 +1,7 @@
+import com.j256.ormlite.dao.ForeignCollection;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -5,10 +9,16 @@ import java.util.Objects;
 /**
  * Class implement a Bin.
  */
+@DatabaseTable(tableName = "bin")
 public class Bin {
+    @DatabaseField(generatedId = true)
+    Integer id;
+    @DatabaseField(canBeNull = false)
     private double volumeCurrent;
+    @DatabaseField(canBeNull = false)
     private double volumeMax;
-    private List<Good> goods;
+
+    private ForeignCollection<Good> goods;
 
     public Bin(double volumeMax){
         this(0, volumeMax);
@@ -17,7 +27,6 @@ public class Bin {
     public Bin(double volumeCurrent, double volumeMax) {
         this.volumeCurrent = volumeCurrent;
         this.volumeMax = volumeMax;
-        goods = new ArrayList<>();
     }
 
     public double getVolumeWasted() {
@@ -38,14 +47,6 @@ public class Bin {
 
     public void setVolumeMax(double volumeMax) {
         this.volumeMax = volumeMax;
-    }
-
-    public List<Good> getGoods() {
-        return goods;
-    }
-
-    public void setGoods(List<Good> goods) {
-        this.goods = goods;
     }
 
     /**

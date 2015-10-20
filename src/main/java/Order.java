@@ -12,7 +12,8 @@ import java.util.Date;
 public class Order {
     public final static String CLIENT_FIELD_NAME = "client_id";
     public final static String DATE_FIELD_NAME = "date";
-    public final static String ITINERARY_FIELD_NAME = "it";
+    public final static String BIN_FIELD_NAME = "bin_id";
+    public final static String POS_FIELD_NAME = "pos";
 
     @DatabaseField (generatedId = true)
     private Integer id;
@@ -21,27 +22,24 @@ public class Order {
     private Client client;
     @DatabaseField (canBeNull = false, columnName = DATE_FIELD_NAME)
     private Date date;
-    @DatabaseField(foreign = true, foreignAutoRefresh = true,
-            columnName = ITINERARY_FIELD_NAME)
-    private Itinerary itinerary;
-    @ForeignCollectionField
-    private ForeignCollection<GoodOrder> goodOrders;
+    @DatabaseField (canBeNull = false, columnName = POS_FIELD_NAME)
+    Integer pos;
+    @DatabaseField (canBeNull = false, columnName = BIN_FIELD_NAME)
+    private Bin bin;
 
     public Order() {
         // all persisted classes must define a no-arg constructor with at least package visibility
     }
 
-    public Order (Integer id, Client c, Date d, Itinerary i) {
+    public Order (Integer id, Client c, Date d) {
         this.id = id;
         this.client = c;
         this.date = d;
-        this.itinerary = i;
     }
 
-    public Order (Client c, Date d, Itinerary i) {
+    public Order (Client c, Date d) {
         this.client = c;
         this.date = d;
-        this.itinerary = i;
     }
 
     public Integer getId() {
@@ -68,27 +66,26 @@ public class Order {
         this.date = date;
     }
 
-    public ForeignCollection<GoodOrder> getGoodOrders() {
-        return goodOrders;
+    public Bin getBin() {
+        return bin;
     }
 
-    public void setGoodOrders(ForeignCollection<GoodOrder> goodOrders) {
-        this.goodOrders = goodOrders;
+    public void setBin(Bin bin) {
+        this.bin = bin;
     }
 
-    public Itinerary getItinerary() {
-        return itinerary;
+    public Integer getPos() {
+        return pos;
     }
 
-    public void setItinerary(Itinerary itinerary) {
-        this.itinerary = itinerary;
+    public void setPos(Integer pos) {
+        this.pos = pos;
     }
 
     @Override
     public String toString() {
         return "ID: " + id +
                 "\nClient ID: " + client.getId() +
-                "\nDate: " + date.toString() /*+
-                "\nItinerary: " + itinerary.getId()*/;
+                "\nDate: " + date.toString();
     }
 }
