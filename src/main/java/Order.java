@@ -16,7 +16,7 @@ public class Order {
 
     @DatabaseField (generatedId = true)
     private Integer id;
-    @DatabaseField(foreign = true, foreignAutoRefresh = true,
+    @DatabaseField(foreign = true, foreignAutoRefresh = true, canBeNull = false,
             columnName = CLIENT_FIELD_NAME)
     private Client client;
     @DatabaseField (canBeNull = false, columnName = DATE_FIELD_NAME)
@@ -88,7 +88,7 @@ public class Order {
     public String toString() {
         return "ID: " + id +
                 "\nClient ID: " + client.getId() +
-                "\nDate: " + date.toString() +
-                "\nItinerary: " + itinerary.getId();
+                "\nDate: " + date.toString() /*+
+                "\nItinerary: " + itinerary.getId()*/;
     }
 }
