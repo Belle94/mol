@@ -41,9 +41,8 @@ public class Database {
         daoClient.delete(client);
     }
 
-    public void addOrder(Order order, GoodOrder goodOrder) throws SQLException, ClassNotFoundException {
+    public void addOrder(Order order) throws SQLException, ClassNotFoundException {
         daoOrder.createIfNotExists(order);
-        daoGoodOrder.createIfNotExists(goodOrder);
     }
 
     public Order getOrderByID(Integer id) throws SQLException {
@@ -80,6 +79,10 @@ public class Database {
 
     public List<GoodOrder> getGoodOrdersByOrderID(Integer idOrder) throws SQLException {
         return daoGoodOrder.queryForEq("order", idOrder);
+    }
+
+    public void addGoodOrder(GoodOrder go) throws SQLException {
+        daoGoodOrder.createIfNotExists(go);
     }
 
     public void addItinerary(Itinerary itinerary) throws SQLException, ClassNotFoundException {
