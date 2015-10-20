@@ -11,7 +11,11 @@ public class Bin {
     private List<Good> goods;
 
     public Bin(double volumeMax){
-        this.volumeCurrent = 0;
+        this(0, volumeMax);
+    }
+
+    public Bin(double volumeCurrent, double volumeMax) {
+        this.volumeCurrent = volumeCurrent;
         this.volumeMax = volumeMax;
         goods = new ArrayList<>();
     }
