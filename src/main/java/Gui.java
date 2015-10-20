@@ -9,7 +9,6 @@ import java.util.Optional;
 
 /**
  * Class of graphic interface
- * Created by bruce on 17/10/15.
  */
 public class Gui {
     private BorderPane borderPane;
@@ -28,14 +27,21 @@ public class Gui {
      * builder that calls methods for configuring the interface
      */
     public Gui(){
-        initKeyPressed();
-        initMenu();
-        initSearch();
-        inithBox();
-        initTable();
-        initStackPane();
-        initRootElement();
+        try {
+            initKeyPressed();
+            initMenu();
+            initSearch();
+            inithBox();
+            initTable();
+            initStackPane();
+            initRootElement();
+        }catch (Exception e){
+            errorMessage("Something Wrong!","Error Message: "+e.getMessage());
+        }
     }
+    /**
+     * init Keys structure, and set all keys to false.
+     */
     private void initKeyPressed(){
         keyPressed = new HashMap<>();
         keyPressed.put(KeyCombination.keyCombination("Ctrl+F"),false);
@@ -76,14 +82,19 @@ public class Gui {
      */
     private void initMenuFile(){
         file = new Menu("File");
-        MenuItem load = new MenuItem("load");
-        MenuItem save = new MenuItem("save");
-        MenuItem save_as = new MenuItem("save_as");
-        MenuItem quit = new MenuItem("quit");
+        MenuItem load = new MenuItem("Load");
+        MenuItem save = new MenuItem("Save");
+        MenuItem save_as = new MenuItem("Save as ");
+        MenuItem quit = new MenuItem("Quit");
         load.setAccelerator(KeyCombination.keyCombination("Ctrl+L"));
         save.setAccelerator(KeyCombination.keyCombination("Ctrl+S"));
         save_as.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+S"));
         quit.setAccelerator(KeyCombination.keyCombination("Ctrl+Q"));
+
+        quit.setOnAction(e-> {
+            if (confirmMessage("Exit Confirmation","Are u sure u want to exit?"))
+                System.exit(0);
+        });
 
         file.getItems().addAll(load, save, save_as, quit);
     }
@@ -92,10 +103,10 @@ public class Gui {
      */
     private void initMenuEdit(){
         edit = new Menu("Edit");
-        MenuItem add = new MenuItem("add");
-        MenuItem modify = new MenuItem("modify");
-        MenuItem find = new MenuItem("find");
-        MenuItem delete = new MenuItem("delete");
+        MenuItem add = new MenuItem("Add");
+        MenuItem modify = new MenuItem("Modify");
+        MenuItem find = new MenuItem("Find");
+        MenuItem delete = new MenuItem("Delete");
         add.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
         modify.setAccelerator(KeyCombination.keyCombination("Ctrl+E"));
         delete.setAccelerator(KeyCombination.keyCombination("Ctrl+D"));
@@ -169,43 +180,32 @@ public class Gui {
      * Setup general alert window
      * @param alert alert to setup
      * @param title title of the alert
-     * @param header header of the alert
+     * @param content body of the alert
      * @return alert's return value
      */
-    private Optional<ButtonType> setupMessage(Alert alert, String title, String header) {
+    private Optional<ButtonType> setupMessage(Alert alert, String title, String content) {
         alert.setTitle(title);
-        alert.setHeaderText(header);
+        alert.setHeaderText(title);
+        alert.setContentText(content);
         return alert.showAndWait();
     }
     /**
      * Error alert with the given title and header
      * @param title title of the error alert
-     * @param header header of the error alert
+     * @param content body of the error alert
      */
-    private void errorMessage(String title, String header) {
+    private void errorMessage(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        setupMessage(alert, title, header);
+        setupMessage(alert, title, content);
     }
     /**
      * Confirm message with the given title and header
      * @param title title of the confirm alert
-     * @param header header of the confirm alert
+     * @param content body of the confirm alert
      * @return alert's return value
      */
-    private boolean confirmMessage(String title, String header) {
+    private boolean confirmMessage(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        return setupMessage(alert, title, header).get() != ButtonType.CANCEL;
-    }
-    /**
-     * Text input alert with the given title and header
-     * @param title title of the given text input alert
-     * @param header header of the given text input alert
-     * @return alert's return value
-     */
-    private Optional<String> textInputMessage(String title, String header) {
-        TextInputDialog textInputDialog = new TextInputDialog();
-        textInputDialog.setTitle(title);
-        textInputDialog.setHeaderText(header);
-        return textInputDialog.showAndWait();
+        return setupMessage(alert, title, content).get() != ButtonType.CANCEL;
     }
 }
