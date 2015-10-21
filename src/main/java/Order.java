@@ -88,6 +88,6 @@ public class Order {
                 "\nClient ID: " + client.getId() +
                 "\nDate: " + date.toString() +
                 "\nPos: " + pos +
-                "\nBin: " bin.get;
+                "\nBin: " + bin.getId();
     }
 }
