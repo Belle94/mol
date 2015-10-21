@@ -29,6 +29,14 @@ public class Bin {
         this.volumeMax = volumeMax;
     }
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public double getVolumeWasted() {
         return volumeMax - volumeCurrent;
     }
