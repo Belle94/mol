@@ -17,8 +17,8 @@ public class Database {
     private Dao<Order,Integer> daoOrder;
     private Dao<GoodOrder,Integer> daoGoodOrder;
     private Dao<Good,Integer> daoGood;
-    private Dao<Itinerary,Integer> daoItinerary;
     private Dao<Vehicle,String> daoVehicle;
+    private Dao<Bin,Integer> daoBin;
 
     public Database(String databaseUrl) throws SQLException, ClassNotFoundException {
         this.databaseUrl = databaseUrl;
@@ -85,22 +85,6 @@ public class Database {
         daoGoodOrder.createIfNotExists(go);
     }
 
-    public void addItinerary(Itinerary itinerary) throws SQLException, ClassNotFoundException {
-        daoItinerary.createIfNotExists(itinerary);
-    }
-
-    public Itinerary getItineraryByID(Integer id) throws SQLException {
-        return daoItinerary.queryForId(id);
-    }
-
-    public List<Itinerary> getAllItineraries() throws SQLException {
-        return daoItinerary.queryForAll();
-    }
-
-    public void deleteItinerary(Itinerary itinerary) throws SQLException, ClassNotFoundException {
-        daoItinerary.delete(itinerary);
-    }
-
     public void addVehicle(Vehicle vehicle) throws SQLException, ClassNotFoundException {
         daoVehicle.createIfNotExists(vehicle);
     }
@@ -117,6 +101,22 @@ public class Database {
         daoVehicle.delete(vehicle);
     }
 
+    public void addBin(Bin bin) throws SQLException {
+        daoBin.createIfNotExists(bin);
+    }
+
+    public List<Bin> getAllBins() throws SQLException {
+        return daoBin.queryForAll();
+    }
+
+    public Bin getBinById(Integer id) throws SQLException {
+        return daoBin.queryForId(id);
+    }
+
+    public void deleteBin(Bin b) throws SQLException {
+        daoBin.delete(b);
+    }
+
     /**
      * Setup our database and DAOs
      */
@@ -128,13 +128,13 @@ public class Database {
             daoOrder = DaoManager.createDao(jdbcConnectionSource, Order.class);
             daoGoodOrder = DaoManager.createDao(jdbcConnectionSource, GoodOrder.class);
             daoGood = DaoManager.createDao(jdbcConnectionSource, Good.class);
-            daoItinerary = DaoManager.createDao(jdbcConnectionSource, Itinerary.class);
+            daoBin = DaoManager.createDao(jdbcConnectionSource, Bin.class);
             daoVehicle = DaoManager.createDao(jdbcConnectionSource, Vehicle.class);
             TableUtils.createTableIfNotExists(jdbcConnectionSource, Client.class);
             TableUtils.createTableIfNotExists(jdbcConnectionSource, Order.class);
             TableUtils.createTableIfNotExists(jdbcConnectionSource, Good.class);
             TableUtils.createTableIfNotExists(jdbcConnectionSource, GoodOrder.class);
-            TableUtils.createTableIfNotExists(jdbcConnectionSource, Itinerary.class);
+            TableUtils.createTableIfNotExists(jdbcConnectionSource, Bin.class);
             TableUtils.createTableIfNotExists(jdbcConnectionSource, Vehicle.class);
     }
     /**
