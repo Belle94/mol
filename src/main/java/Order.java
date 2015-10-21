@@ -86,6 +86,8 @@ public class Order {
     public String toString() {
         return "ID: " + id +
                 "\nClient ID: " + client.getId() +
-                "\nDate: " + date.toString();
+                "\nDate: " + date.toString() +
+                "\nPos: " + pos +
+                "\nBin: " bin.get;
     }
 }
