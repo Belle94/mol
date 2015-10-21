@@ -60,7 +60,7 @@ public class Vehicle{
     public void setChargeCurrent(double chargeCurrent) {
         this.chargeCurrent = chargeCurrent;
     }
-`
+
     @Override
     public String toString() {
         return "ID: " + numberPlate +

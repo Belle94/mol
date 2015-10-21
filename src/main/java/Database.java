@@ -3,8 +3,10 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * class that implement method to access a database
@@ -49,6 +51,10 @@ public class Database {
         return daoOrder.queryForId(id);
     }
 
+    public List<Order> getOrdersInBin(Bin bin) throws SQLException {
+        return daoOrder.queryForEq(Order.BIN_FIELD_NAME, bin.getId());
+    }
+
     public List<Order> getAllOrders() throws SQLException {
         return daoOrder.queryForAll();
     }
@@ -65,6 +71,21 @@ public class Database {
         return daoGood.queryForId(id);
     }
 
+    public List<Good> getGoodsInBin(Bin bin) throws SQLException {
+        LinkedList<Good> l = new LinkedList<>();
+        for (Order o : getOrdersInBin(bin))
+            l.addAll(getGoodByOrder(o).stream().collect(Collectors.toList()));
+
+        return l;
+    }
+
+    public List<Good> getGoodByOrder(Order order) throws SQLException {
+        return daoGoodOrder.queryForEq(
+                GoodOrder.ORDER_FIELD_NAME,
+                order.getId()).stream().map(GoodOrder::getGood)
+                .collect(Collectors.toCollection(LinkedList::new));
+    }
+
     public List<Good> getAllGoods() throws SQLException {
         return daoGood.queryForAll();
     }
@@ -75,10 +96,6 @@ public class Database {
 
     public List<GoodOrder> getAllGoodOrders() throws SQLException {
         return daoGoodOrder.queryForAll();
-    }
-
-    public List<GoodOrder> getGoodOrdersByOrderID(Integer idOrder) throws SQLException {
-        return daoGoodOrder.queryForEq("order", idOrder);
     }
 
     public void addGoodOrder(GoodOrder go) throws SQLException {

@@ -1,6 +1,8 @@
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
@@ -22,7 +24,41 @@ public class DatabaseTest {
     }
 
     public void init() {
+        try {
 
+            Bin bin = new Bin(160);
+            db.addBin(bin);
+
+            Integer pos = 0;
+
+            for (int k = 0; k < 100; k++) {
+                Good g = new Good(10,10,"desc" + k);
+                db.addGood(g);
+            }
+
+            List<Good> gs = db.getAllGoods();
+
+            for (int i = 0; i < 4; i++, pos++) {
+                Client c = new Client("c" + i, 40);
+                db.addClient(c);
+
+                for (int j = 0; j < 4; j++, pos++) {
+                    Order o = new Order(c, new Date());
+                    o.setBin(bin);
+                    o.setPos(pos);
+                    db.addOrder(o);
+
+                    for (int k = 0; k < 3; k++) {
+                        GoodOrder go = new GoodOrder(o,
+                                gs.get(new Random().nextInt(100)),
+                                1);
+                        db.addGoodOrder(go);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -36,7 +72,6 @@ public class DatabaseTest {
     }
     @Test
     public void outputDatabaseTest() throws Exception{
-        db.openConnection();
         System.out.println("CLIENTS:");
         for (Client c : db.getAllClients()) {
             System.out.println("------");

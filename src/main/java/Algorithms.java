@@ -4,7 +4,7 @@ import org.omg.CORBA.INTERNAL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-public class Algorithms{
+/*public class Algorithms{
     /**
      * First fit decreasing algorithm for bin packing problem.
      * Every single bin will be assign to vehicle.
@@ -14,7 +14,7 @@ public class Algorithms{
      * @param volumeMax the Maximal volume that can be transported
      * @return List of Bin, null if empty or the volumeMax isn't enough.
      */
-    public static List<Bin> firstFitDecreasing(List<Good> goods, double volumeMax) {
+    /*public static List<Bin> firstFitDecreasing(List<Good> goods, double volumeMax) {
         if (goods.isEmpty()){
             return null;
         }
@@ -39,7 +39,7 @@ public class Algorithms{
      * (but with maximal Volume assigned) inside of a list is required.
      * @return List of Bin, null if empty or the volumeMax isn't enough.
      */
-    public static List<Bin> insertGood(Good good, List<Bin> bins){
+    /*public static List<Bin> insertGood(Good good, List<Bin> bins){
         if (bins.isEmpty()){
             return null;
         }
@@ -63,4 +63,4 @@ public class Algorithms{
         return bins;
     }
 
-}
+}*/
