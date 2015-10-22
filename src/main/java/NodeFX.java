@@ -15,12 +15,12 @@ public class NodeFX {
         this.px = px;
         this.py = py;
         dim_rag = 5;
-        area_non_amm = 7;
-        dist_nodi = 14;
+        area_non_amm = 8;
+        dist_nodi = 16;
         Random rand = new Random();
-        int r = rand.nextInt(255);
-        int g = rand.nextInt(255);
-        int b = rand.nextInt(255);
+        int r = rand.nextInt(240);
+        int g = rand.nextInt(240);
+        int b = rand.nextInt(240);
         colore = Color.rgb(r,g,b);
         max_nodi = 10;
     }
@@ -29,9 +29,9 @@ public class NodeFX {
         this.px = px;
         this.py = py;
         this.colore = colore;
-        dim_rag = 5;
-        area_non_amm = 7;
-        dist_nodi = 14;
+        dim_rag = 2;
+        area_non_amm = 5;
+        dist_nodi = 10;
         max_nodi = 10;
     }
 
@@ -97,5 +97,24 @@ public class NodeFX {
 
     public void setColore(Color colore) {
         this.colore = colore;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof NodeFX)) return false;
+
+        NodeFX nodeFX = (NodeFX) o;
+
+        if (px != nodeFX.px) return false;
+        return py == nodeFX.py;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = px;
+        result = 31 * result + py;
+        return result;
     }
 }

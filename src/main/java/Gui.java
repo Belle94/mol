@@ -1,11 +1,15 @@
 import javafx.geometry.Pos;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.*;
-
+import javafx.scene.paint.Color;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.Random;
 
 /**
  * Class of graphic interface
@@ -14,6 +18,9 @@ public class Gui {
     private BorderPane borderPane;
     private MenuBar menuBar;
     private HBox hBox;
+    private ArrayList <NodeFX> node;
+    private Canvas canvas;
+    private GraphicsContext gc;
     private StackPane stackPane;
     private TableView table;
     private TextField search;
@@ -39,12 +46,30 @@ public class Gui {
             errorMessage("Something Wrong!","Error Message: "+e.getMessage());
         }
     }
+
+    /**
+     * init nodes and edges on graph
+     */
+    private  void initGraph(){
+        int n=1000;
+        node = new ArrayList<>(n);
+
+        for (int i = 0; i < n; i++) {
+            Random rand = new Random();
+            int x = rand.nextInt(800);
+            int y = rand.nextInt(600);
+            node.add(new NodeFX(x, y, Color.RED));
+        }
+    }
+
+
     /**
      * init Keys structure, and set all keys to false.
      */
     private void initKeyPressed(){
         keyPressed = new HashMap<>();
-        keyPressed.put(KeyCombination.keyCombination("Ctrl+F"),false);
+        keyPressed.put(KeyCombination.keyCombination("Ctrl+F"), false);
+        keyPressed.put(KeyCombination.keyCombination("Alt+M"), false);
     }
     /**
      * set and init the Horizontal Box used to contain search text filed
@@ -56,7 +81,7 @@ public class Gui {
         hBox.setStyle("-fx-padding: 0 0 0 2; -fx-background-color: transparent;");
     }
     /**
-     * set and init the Vertical Box. VBox contain ScrollPane and consequently the Table.
+     * set and init the stackPane. StackPane contain ScrollPane and consequently the Table.
      */
     private void initStackPane(){
         stackPane = new StackPane();
@@ -67,6 +92,32 @@ public class Gui {
         stackPane.getChildren().add(scrollPane);
         stackPane.setAlignment(Pos.TOP_LEFT);
     }
+
+    /**
+     * set and init the Canvas pane. That pane is used to draw nodes and edges.
+     */
+    private void initCanvasPane(){
+        canvas = new Canvas(prefWidth,prefHeight-prefMenuHeight);
+        gc = canvas.getGraphicsContext2D();
+        drawShapes(gc);
+    }
+
+    /**
+     * draw the object
+     * @param gc
+     */
+    private void drawShapes(GraphicsContext gc){
+        gc.setFill(Color.WHITE);
+        gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        for(NodeFX n:node) {
+            gc.setFill(n.getColore());
+            gc.fillOval(n.getPx() - n.getDim_rag(), n.getPy() - n.getDim_rag(), n.getDim_rag() * 2, n.getDim_rag() * 2);
+            gc.setFill(Color.BLACK);
+            //gc.strokeOval(n.getPx() - n.getDist_nodi(), n.getPy() - n.getDist_nodi(), n.getDist_nodi() * 2, n.getDist_nodi() * 2);
+            //gc.strokeOval(n.getPx()-n.getArea_non_amm(), n.getPy()-n.getArea_non_amm(), n.getArea_non_amm()*2, n.getArea_non_amm()*2);
+        }
+    }
+
     /**
      * Set and initialize Menu Item
      */
@@ -92,7 +143,7 @@ public class Gui {
         quit.setAccelerator(KeyCombination.keyCombination("Ctrl+Q"));
 
         quit.setOnAction(e-> {
-            if (confirmMessage("Exit Confirmation","Are u sure u want to exit?"))
+            if (confirmMessage("Exit Confirmation", "Are u sure u want to exit?"))
                 System.exit(0);
         });
 
@@ -103,12 +154,12 @@ public class Gui {
      */
     private void initMenuEdit(){
         edit = new Menu("Edit");
-        MenuItem add = new MenuItem("Add");
-        MenuItem modify = new MenuItem("Modify");
+        //MenuItem add = new MenuItem("Add");
+        //MenuItem modify = new MenuItem("Modify");
         MenuItem find = new MenuItem("Find");
         MenuItem delete = new MenuItem("Delete");
-        add.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
-        modify.setAccelerator(KeyCombination.keyCombination("Ctrl+E"));
+        //add.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
+        //modify.setAccelerator(KeyCombination.keyCombination("Ctrl+E"));
         delete.setAccelerator(KeyCombination.keyCombination("Ctrl+D"));
 
         find.setAccelerator(KeyCombination.keyCombination("Ctrl+F"));
@@ -116,14 +167,14 @@ public class Gui {
             if (keyPressed.get(KeyCombination.keyCombination("Ctrl+F"))) {
                 stackPane.getChildren().remove(hBox);
                 keyPressed.put(KeyCombination.keyCombination("Ctrl+F"), false);
-            }else {
+            } else {
                 stackPane.getChildren().add(hBox);
                 search.requestFocus();
                 keyPressed.put(KeyCombination.keyCombination("Ctrl+F"), true);
             }
         });
 
-        edit.getItems().addAll(add, modify, delete, find);
+        edit.getItems().addAll(delete, find);
     }
     /**
      * set and initialize View section Menu
@@ -135,13 +186,28 @@ public class Gui {
         MenuItem Goods = new MenuItem("Goods");
         MenuItem Itineraries = new MenuItem("Itineraries");
         MenuItem Vehicles = new MenuItem("Vehicles");
+        MenuItem Maps = new MenuItem("Maps");
         Orders.setAccelerator(KeyCombination.keyCombination("Alt+O"));
         Clients.setAccelerator(KeyCombination.keyCombination("Alt+C"));
         Goods.setAccelerator(KeyCombination.keyCombination("Alt+G"));
         Itineraries.setAccelerator(KeyCombination.keyCombination("Alt+I"));
         Vehicles.setAccelerator(KeyCombination.keyCombination("Alt+V"));
+        Maps.setAccelerator(KeyCombination.keyCombination("Alt+M"));
 
-        view.getItems().addAll(Orders,Clients,Goods,Vehicles,Itineraries);
+        view.getItems().addAll(Orders, Clients, Goods, Vehicles, Itineraries, Maps);
+
+        Maps.setOnAction(event -> {
+            if(keyPressed.get(KeyCombination.keyCombination("Alt+M"))) {
+                borderPane.setCenter(stackPane);
+                keyPressed.put(KeyCombination.keyCombination("Alt+M"), false);
+            }else {
+                borderPane.getChildren().remove(stackPane);
+                initGraph();
+                initCanvasPane();
+                borderPane.setCenter(canvas);
+                keyPressed.put(KeyCombination.keyCombination("Alt+M"), true);
+            }
+        });
     }
     /**
      * Set and initialize table
