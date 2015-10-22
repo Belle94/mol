@@ -3,6 +3,7 @@
  */
 
 import javafx.scene.paint.Color;
+import java.util.Random;
 
 public class NodeFX {
     public int px, py;
@@ -13,12 +14,25 @@ public class NodeFX {
     public NodeFX(int px, int py) {
         this.px = px;
         this.py = py;
+        dim_rag = 5;
+        area_non_amm = 7;
+        dist_nodi = 14;
+        Random rand = new Random();
+        int r = rand.nextInt(255);
+        int g = rand.nextInt(255);
+        int b = rand.nextInt(255);
+        colore = Color.rgb(r,g,b);
+        max_nodi = 10;
     }
 
     public NodeFX(int px, int py, Color colore) {
         this.px = px;
         this.py = py;
         this.colore = colore;
+        dim_rag = 5;
+        area_non_amm = 7;
+        dist_nodi = 14;
+        max_nodi = 10;
     }
 
     public int getPx() {
@@ -49,16 +63,24 @@ public class NodeFX {
         return area_non_amm;
     }
 
-    public void setArea_non_amm(int area_non_amm) {
-        this.area_non_amm = area_non_amm;
+    public boolean setArea_non_amm(int area_non_amm) {
+        if(area_non_amm > dim_rag)
+            this.area_non_amm = area_non_amm;
+        else
+            return false;
+        return true;
     }
 
     public int getDist_nodi() {
         return dist_nodi;
     }
 
-    public void setDist_nodi(int dist_nodi) {
-        this.dist_nodi = dist_nodi;
+    public boolean setDist_nodi(int dist_nodi) {
+        if(dist_nodi > 2*area_non_amm)
+            this.dist_nodi = dist_nodi;
+        else
+            return false;
+        return true;
     }
 
     public int getMax_nodi() {
