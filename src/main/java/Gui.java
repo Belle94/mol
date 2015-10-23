@@ -19,6 +19,8 @@ public class Gui {
     private MenuBar menuBar;
     private HBox hBox;
     private ArrayList <NodeFX> node;
+    private NodeFX startnode, finalnode;
+    private EdgeFX edge;
     private Canvas canvas;
     private GraphicsContext gc;
     private StackPane stackPane;
@@ -51,17 +53,33 @@ public class Gui {
      * init nodes and edges on graph
      */
     private  void initGraph(){
-        int n=1000;
+        int x , y;
+        /*int n=10;
+        boolean control = false;
+
         node = new ArrayList<>(n);
 
         for (int i = 0; i < n; i++) {
-            Random rand = new Random();
-            int x = rand.nextInt(800);
-            int y = rand.nextInt(600);
+            while(control == false){
+                Random rand = new Random();
+                x = rand.nextInt(770);
+                y = rand.nextInt(540);
+                if((x > 10) && (y > 10)){
+                    control = true;
+                }
+            }
             node.add(new NodeFX(x, y, Color.RED));
-        }
+            control = false;
+        }*/
+        Random rand = new Random();
+        x = rand.nextInt(770);
+        y = rand.nextInt(540);
+        startnode = new NodeFX(x,y);
+        x = rand.nextInt(770);
+        y = rand.nextInt(540);
+        finalnode = new NodeFX(x,y);
+        edge = new EdgeFX(startnode,finalnode,Color.BLACK,true,1.0);
     }
-
 
     /**
      * init Keys structure, and set all keys to false.
@@ -109,13 +127,21 @@ public class Gui {
     private void drawShapes(GraphicsContext gc){
         gc.setFill(Color.WHITE);
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        for(NodeFX n:node) {
+        gc.setFill(startnode.colore);
+        gc.fillOval(startnode.getPx() - startnode.getDim_rag(), startnode.getPy() - startnode.getDim_rag(), startnode.getDim_rag() * 2, startnode.getDim_rag() * 2);
+        gc.setFill(finalnode.colore);
+        gc.fillOval(finalnode.getPx() - finalnode.getDim_rag(), finalnode.getPy() - finalnode.getDim_rag(), finalnode.getDim_rag() * 2, finalnode.getDim_rag() * 2);
+        gc.setFill(edge.getColor());
+        gc.setLineWidth(edge.getWeight());
+        gc.strokeLine(startnode.getPx(),startnode.getPy(),finalnode.getPx(),finalnode.getPy());
+        /*for(NodeFX n:node) {
             gc.setFill(n.getColore());
             gc.fillOval(n.getPx() - n.getDim_rag(), n.getPy() - n.getDim_rag(), n.getDim_rag() * 2, n.getDim_rag() * 2);
             gc.setFill(Color.BLACK);
+            gc.strokeRect(10,10,780,550);
             //gc.strokeOval(n.getPx() - n.getDist_nodi(), n.getPy() - n.getDist_nodi(), n.getDist_nodi() * 2, n.getDist_nodi() * 2);
             //gc.strokeOval(n.getPx()-n.getArea_non_amm(), n.getPy()-n.getArea_non_amm(), n.getArea_non_amm()*2, n.getArea_non_amm()*2);
-        }
+        }*/
     }
 
     /**
