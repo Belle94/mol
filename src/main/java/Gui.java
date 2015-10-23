@@ -19,8 +19,7 @@ public class Gui {
     private MenuBar menuBar;
     private HBox hBox;
     private ArrayList <NodeFX> node;
-    private NodeFX startnode, finalnode;
-    private EdgeFX edge;
+    private ArrayList <EdgeFX> edge;
     private Canvas canvas;
     private GraphicsContext gc;
     private StackPane stackPane;
@@ -53,8 +52,8 @@ public class Gui {
      * init nodes and edges on graph
      */
     private  void initGraph(){
-        int x , y;
-        /*int n=10;
+        int x = 10 , y = 10;
+        int n=500;
         boolean control = false;
 
         node = new ArrayList<>(n);
@@ -62,23 +61,34 @@ public class Gui {
         for (int i = 0; i < n; i++) {
             while(control == false){
                 Random rand = new Random();
-                x = rand.nextInt(770);
-                y = rand.nextInt(540);
-                if((x > 10) && (y > 10)){
-                    control = true;
+                x = 10 + rand.nextInt(770);
+                y = 10 + rand.nextInt(540);
+                control = true;
+                for (int j = 0; j < i; j++) {
+                    int oldx = node.get(j).getPx();
+                    int oldy = node.get(j).getPy();
+                    int rag = node.get(j).getArea_non_amm();
+                    if (x - rag < oldx + rag && x + rag > oldx - rag && y - rag < oldy + rag && y + rag > oldy - rag) {
+                        control = false;
+                        System.out.println("collisione");
+                        break;
+                    }
+                    else {
+                        control = true;
+                    }
                 }
             }
             node.add(new NodeFX(x, y, Color.RED));
             control = false;
-        }*/
-        Random rand = new Random();
+        }
+        /*Random rand = new Random();
         x = rand.nextInt(770);
         y = rand.nextInt(540);
         startnode = new NodeFX(x,y);
         x = rand.nextInt(770);
         y = rand.nextInt(540);
         finalnode = new NodeFX(x,y);
-        edge = new EdgeFX(startnode,finalnode,Color.BLACK,true,1.0);
+        edge = new EdgeFX(startnode,finalnode,Color.BLACK,true,1.0);*/
     }
 
     /**
@@ -127,21 +137,21 @@ public class Gui {
     private void drawShapes(GraphicsContext gc){
         gc.setFill(Color.WHITE);
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        gc.setFill(startnode.colore);
+        /*gc.setFill(startnode.colore);
         gc.fillOval(startnode.getPx() - startnode.getDim_rag(), startnode.getPy() - startnode.getDim_rag(), startnode.getDim_rag() * 2, startnode.getDim_rag() * 2);
         gc.setFill(finalnode.colore);
         gc.fillOval(finalnode.getPx() - finalnode.getDim_rag(), finalnode.getPy() - finalnode.getDim_rag(), finalnode.getDim_rag() * 2, finalnode.getDim_rag() * 2);
         gc.setFill(edge.getColor());
         gc.setLineWidth(edge.getWeight());
-        gc.strokeLine(startnode.getPx(),startnode.getPy(),finalnode.getPx(),finalnode.getPy());
-        /*for(NodeFX n:node) {
+        gc.strokeLine(startnode.getPx(),startnode.getPy(),finalnode.getPx(),finalnode.getPy());*/
+        for(NodeFX n:node) {
             gc.setFill(n.getColore());
             gc.fillOval(n.getPx() - n.getDim_rag(), n.getPy() - n.getDim_rag(), n.getDim_rag() * 2, n.getDim_rag() * 2);
             gc.setFill(Color.BLACK);
-            gc.strokeRect(10,10,780,550);
+            //gc.strokeRect(10, 10, 780, 550);
             //gc.strokeOval(n.getPx() - n.getDist_nodi(), n.getPy() - n.getDist_nodi(), n.getDist_nodi() * 2, n.getDist_nodi() * 2);
             //gc.strokeOval(n.getPx()-n.getArea_non_amm(), n.getPy()-n.getArea_non_amm(), n.getArea_non_amm()*2, n.getArea_non_amm()*2);
-        }*/
+        }
     }
 
     /**

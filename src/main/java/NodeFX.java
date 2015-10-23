@@ -29,9 +29,9 @@ public class NodeFX {
         this.px = px;
         this.py = py;
         this.colore = colore;
-        dim_rag = 2;
-        area_non_amm = 5;
-        dist_nodi = 10;
+        dim_rag = 3;
+        area_non_amm = 10;
+        dist_nodi = 15;
         max_nodi = 10;
     }
 
