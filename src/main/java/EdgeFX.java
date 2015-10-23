@@ -9,6 +9,17 @@ public class EdgeFX {
     Boolean oriented;
     Double weight;
 
+    /**
+     * Edge Constructor. An edge link two Node, from start to final.
+     * If the edge is an oriented edge, it can be traveled from
+     * startNode to finalNode and not from final to start.
+     * If the edge isn't oriented (false) can be traveled in any way.
+     * @param startNode node where start the edge.
+     * @param finalNode node were ends the edge.
+     * @param color the color of the node.
+     * @param oriented boolean value: true if the edge is oriented.
+     * @param weight the weight of the node.
+     */
     public EdgeFX(NodeFX startNode, NodeFX finalNode, Color color, Boolean oriented, Double weight) {
         this.startNode = startNode;
         this.finalNode = finalNode;
