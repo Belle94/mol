@@ -4,7 +4,7 @@ import org.omg.CORBA.INTERNAL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-/*public class Algorithms{
+public class Algorithms{
     /**
      * First fit decreasing algorithm for bin packing problem.
      * Every single bin will be assign to vehicle.
@@ -15,7 +15,7 @@ import java.util.List;
      * @return List of Bin which can be null if empty or the volumeMax
      *         isn't enough to contain a single good.
      */
-    /*public static List<Bin> firstFitDecreasing(List<Good> goods, double volumeMax) {
+    public static List<Bin> firstFitDecreasing(List<Good> goods, double volumeMax) {
         if (goods.isEmpty()){
             return null;
         }
@@ -42,7 +42,7 @@ import java.util.List;
      * @return List of Bin which can be null if empty or the volumeMax
      *         isn't enough to contain a single good.
      */
-    /*public static List<Bin> insertGood(Good good, List<Bin> bins){
+    public static List<Bin> insertGood(Good good, List<Bin> bins){
         if (bins.isEmpty()){
             return null;
         }
@@ -66,4 +66,55 @@ import java.util.List;
         return bins;
     }
 
-}*/
+    /**
+     * implement addGood method, refresh the volumeCurrent
+     * @param good will be added
+     * @return boolean value, true if the function add the good correctly, else false.
+     */
+    public boolean addGood(Good good){
+        if ( getVolumeWasted() >= (good.getVolume()*good.getQnt()) ){
+            Good g = containsId(good.getId());
+            if (g != null){
+                g.setQnt(g.getQnt()+good.getQnt());
+                volumeCurrent += g.getVolume()*good.getQnt();
+            }else {
+                volumeCurrent += good.getVolume()*good.getQnt();
+                goods.add(good);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * implement removeGood method, refresh the volumeCurrent
+     * @param good will be remove
+     * @return boolean value, true if the function remove the good correctly, else false.
+     */
+    public boolean removeGood(Good good){
+        Good g = containsId(good.getId());
+        if (g!=null){
+            volumeCurrent -= good.getQnt()*good.getVolume();
+            if (g.getQnt()-good.getQnt() <=0)
+                goods.remove(good);
+            else
+                g.setQnt(g.getQnt()-good.getQnt());
+            return true;
+        }
+        return false;
+    }
+    /**
+     * contains Id method looking for the id param in the bins, than return
+     * the Good object if it is founded, null if it isn't.
+     * @param id that will be looking for in the bin
+     * @return null when the ID isn't in the bin, else the good with the same ID is returned.
+     */
+    public Good containsId(Integer id){
+        for (Good good: goods){
+            if (Objects.equals(id, good.getId()))
+                return good;
+        }
+        return null;
+    }
+
+}
