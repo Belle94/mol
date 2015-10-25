@@ -154,6 +154,7 @@ public class Database {
             TableUtils.createTableIfNotExists(jdbcConnectionSource, Bin.class);
             TableUtils.createTableIfNotExists(jdbcConnectionSource, Vehicle.class);
     }
+
     /**
      * Open a connection with the database
      * @throws SQLException
@@ -165,6 +166,7 @@ public class Database {
         jdbcConnectionSource = new JdbcConnectionSource(prefixString+databaseUrl);
         setupDao();
     }
+    
     /**
      * Closes the connection with the database
      */

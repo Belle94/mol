@@ -11,7 +11,7 @@ import static org.junit.Assert.assertEquals;
 
 public class DatabaseTest {
     Database db;
-
+    static int co = 0;
     public DatabaseTest() {
         try {
             db = new Database("test.db");
@@ -19,8 +19,9 @@ public class DatabaseTest {
             e.printStackTrace();
         }
 
-        // Init db
-        init();
+        if (co++ == 1)
+            // Init db
+            init();
     }
 
     public void init() {
@@ -41,13 +42,14 @@ public class DatabaseTest {
             for (int i = 0; i < 4; i++, pos++) {
                 Client c = new Client("c" + i, 40);
                 db.addClient(c);
+                c.setId(db.getAllClients().get(i).getId());
 
                 for (int j = 0; j < 4; j++, pos++) {
-                    Order o = new Order(c, new Date());
-                    o.setBin(bin);
-                    o.setPos(pos);
+                    Order o = new Order(c, new Date(), pos, bin);
                     db.addOrder(o);
 
+                    o.setId(db.getAllOrders().get(
+                            db.getAllOrders().size() - 1).getId());
                     for (int k = 0; k < 3; k++) {
                         GoodOrder go = new GoodOrder(o,
                                 gs.get(new Random().nextInt(100)),
@@ -71,31 +73,36 @@ public class DatabaseTest {
 
     }
     @Test
-    public void outputDatabaseTest() throws Exception{
-        System.out.println("CLIENTS:");
-        for (Client c : db.getAllClients()) {
-            System.out.println("------");
-            System.out.println(c.toString());
-            System.out.println("------");
-        }
+    public void outputDatabaseTest() {
+        try {
+            System.out.println("CLIENTS:");
 
-        System.out.println("\nORDERS:");
-        for (Order o : db.getAllOrders()) {
-            System.out.println("------");
-            if (o.getClient() != null)
-                System.out.println(o.toString());
-            else
-                System.out.println("null");
-            System.out.println("------");
-        }
+            for (Client c : db.getAllClients()) {
+                System.out.println("------");
+                System.out.println(c.toString());
+                System.out.println("------");
+            }
 
-        System.out.println("\nGOOD_ORDER");
-        for (GoodOrder go : db.getAllGoodOrders()) {
-            System.out.println("------");
-            System.out.println(go.toString());
-            System.out.println("------");
+            System.out.println("\nORDERS:");
+            for (Order o : db.getAllOrders()) {
+                System.out.println("------");
+                if (o.getClient() != null)
+                    System.out.println(o.toString());
+                else
+                    System.out.println("null");
+                System.out.println("------");
+            }
+
+            System.out.println("\nGOOD_ORDER");
+            for (GoodOrder go : db.getAllGoodOrders()) {
+                System.out.println("------");
+                System.out.println(go.toString());
+                System.out.println("------");
+            }
+            db.closeConnection();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        db.closeConnection();
     }
 
     @Test

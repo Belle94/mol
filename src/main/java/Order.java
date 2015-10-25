@@ -24,22 +24,24 @@ public class Order {
     private Date date;
     @DatabaseField (canBeNull = false, columnName = POS_FIELD_NAME)
     Integer pos;
-    @DatabaseField (canBeNull = false, columnName = BIN_FIELD_NAME)
+    @DatabaseField (foreign = true, foreignAutoRefresh = true, canBeNull = true,
+            columnName = BIN_FIELD_NAME)
     private Bin bin;
 
     public Order() {
         // all persisted classes must define a no-arg constructor with at least package visibility
     }
 
-    public Order (Integer id, Client c, Date d) {
+    public Order (Integer id, Client client, Date date, Integer pos, Bin bin) {
         this.id = id;
-        this.client = c;
-        this.date = d;
+        this.client = client;
+        this.pos = pos;
+        this.bin = bin;
+        this.date = date;
     }
 
-    public Order (Client c, Date d) {
-        this.client = c;
-        this.date = d;
+    public Order (Client client, Date date, Integer pos, Bin bin) {
+        this(null, client, date, pos, bin);
     }
 
     public Integer getId() {

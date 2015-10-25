@@ -11,14 +11,16 @@ import java.util.Objects;
  */
 @DatabaseTable(tableName = "bin")
 public class Bin {
-    @DatabaseField(id = true, generatedId = true)
-    Integer id;
+    @DatabaseField(generatedId = true)
+    private Integer id;
     @DatabaseField(canBeNull = false)
     private double volumeCurrent;
     @DatabaseField(canBeNull = false)
     private double volumeMax;
 
-    //private ForeignCollection<Good> goods;
+    public Bin() {
+        // required by ORMLite
+    }
 
     public Bin(double volumeMax){
         this(0, volumeMax);
@@ -58,7 +60,6 @@ public class Bin {
     }
 
     /*
-    /**
      * implement addGood method, refresh the volumeCurrent
      * @param good will be added
      * @return boolean value, true if the function add the good correctly, else false.
