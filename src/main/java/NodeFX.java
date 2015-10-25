@@ -16,13 +16,13 @@ public class NodeFX {
         this.py = py;
         dim_rag = 5;
         area_non_amm = 8;
-        dist_nodi = 16;
+        dist_nodi = 30;
         Random rand = new Random();
         int r = rand.nextInt(240);
         int g = rand.nextInt(240);
         int b = rand.nextInt(240);
         colore = Color.rgb(r,g,b);
-        max_nodi = 10;
+        max_nodi = 500;
     }
 
     public NodeFX(int px, int py, Color colore) {
@@ -31,8 +31,8 @@ public class NodeFX {
         this.colore = colore;
         dim_rag = 3;
         area_non_amm = 10;
-        dist_nodi = 15;
-        max_nodi = 10;
+        dist_nodi = 30;
+        max_nodi = 8;
     }
 
     public int getPx() {

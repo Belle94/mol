@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.Random;
+import java.lang.Math;
 
 /**
  * Class of graphic interface
@@ -52,12 +53,58 @@ public class Gui {
      * init nodes and edges on graph
      */
     private  void initGraph(){
-        int x = 10 , y = 10;
-        int n=500;
-        boolean control = false;
-
+        int x, y;
+        int n=100;
+        boolean control = true;
+        double contrAng = 0;
+        int count = 1;
+        int index = 0;
         node = new ArrayList<>(n);
 
+        /*Random rand = new Random();
+        x = 10 + rand.nextInt(770);
+        y = 10 + rand.nextInt(540);*/
+        x = (int)(prefWidth/2);
+        y = (int)(prefHeight/2);
+        node.add(new NodeFX(x, y, Color.RED));
+
+        double ang = 360/node.get(index).getMax_nodi();
+        int distNode = node.get(index).getDist_nodi();
+
+        while(count < n) {
+            int oldx = node.get(index).getPx();
+            int oldy = node.get(index).getPy();
+            while (contrAng != 360.0 && count < n) {
+                double radAng = Math.toRadians(contrAng);
+                x = (int) (oldx + (distNode * Math.cos(radAng)));
+                y = (int) (oldy + (distNode * Math.sin(radAng)));
+
+                for (int j = 0; j < count; j++) {
+                    int vx = node.get(j).getPx();
+                    int vy = node.get(j).getPy();
+                    int rag = node.get(j).getArea_non_amm();
+                    if (x - rag < vx + rag && x + rag > vx - rag && y - rag < vy + rag && y + rag > vy - rag) {
+                        control = false;
+                        System.out.println("Collisione");
+                        break;
+                    }
+                    else {
+                        control = true;
+                    }
+                }
+                if(control==true) {
+                    node.add(new NodeFX(x, y, Color.BLUE));
+                    count++;
+                }
+                contrAng += ang;
+                System.out.println(contrAng);
+            }
+            index++;
+            contrAng = 0;
+        }
+
+
+        /*
         for (int i = 0; i < n; i++) {
             while(control == false){
                 Random rand = new Random();
@@ -80,15 +127,8 @@ public class Gui {
             }
             node.add(new NodeFX(x, y, Color.RED));
             control = false;
-        }
-        /*Random rand = new Random();
-        x = rand.nextInt(770);
-        y = rand.nextInt(540);
-        startnode = new NodeFX(x,y);
-        x = rand.nextInt(770);
-        y = rand.nextInt(540);
-        finalnode = new NodeFX(x,y);
-        edge = new EdgeFX(startnode,finalnode,Color.BLACK,true,1.0);*/
+        }*/
+
     }
 
     /**
@@ -125,7 +165,7 @@ public class Gui {
      * set and init the Canvas pane. That pane is used to draw nodes and edges.
      */
     private void initCanvasPane(){
-        canvas = new Canvas(prefWidth,prefHeight-prefMenuHeight);
+        canvas = new Canvas(prefWidth, prefHeight-prefMenuHeight);
         gc = canvas.getGraphicsContext2D();
         drawShapes(gc);
     }
@@ -137,20 +177,13 @@ public class Gui {
     private void drawShapes(GraphicsContext gc){
         gc.setFill(Color.WHITE);
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
-        /*gc.setFill(startnode.colore);
-        gc.fillOval(startnode.getPx() - startnode.getDim_rag(), startnode.getPy() - startnode.getDim_rag(), startnode.getDim_rag() * 2, startnode.getDim_rag() * 2);
-        gc.setFill(finalnode.colore);
-        gc.fillOval(finalnode.getPx() - finalnode.getDim_rag(), finalnode.getPy() - finalnode.getDim_rag(), finalnode.getDim_rag() * 2, finalnode.getDim_rag() * 2);
-        gc.setFill(edge.getColor());
-        gc.setLineWidth(edge.getWeight());
-        gc.strokeLine(startnode.getPx(),startnode.getPy(),finalnode.getPx(),finalnode.getPy());*/
         for(NodeFX n:node) {
             gc.setFill(n.getColore());
             gc.fillOval(n.getPx() - n.getDim_rag(), n.getPy() - n.getDim_rag(), n.getDim_rag() * 2, n.getDim_rag() * 2);
             gc.setFill(Color.BLACK);
-            //gc.strokeRect(10, 10, 780, 550);
+            gc.strokeRect(10, 10, 780, 550);
             //gc.strokeOval(n.getPx() - n.getDist_nodi(), n.getPy() - n.getDist_nodi(), n.getDist_nodi() * 2, n.getDist_nodi() * 2);
-            //gc.strokeOval(n.getPx()-n.getArea_non_amm(), n.getPy()-n.getArea_non_amm(), n.getArea_non_amm()*2, n.getArea_non_amm()*2);
+            //gc.strokeOval(n.getPx() - n.getArea_non_amm(), n.getPy() - n.getArea_non_amm(), n.getArea_non_amm() * 2, n.getArea_non_amm() * 2);
         }
     }
 
