@@ -1,13 +1,40 @@
 import javafx.util.Pair;
 import org.omg.CORBA.INTERNAL;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+
 public class Algorithms{
+    public static String DATABASE_NAME = "test.db";
+    private static Boolean flag = false;
+    public static Database db;
+
+    /**
+     * Initializes the database
+     * @param database_name database name
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
+    public static void init(String database_name) throws SQLException, ClassNotFoundException {
+        flag = true;
+        db = new Database(database_name);
+        DATABASE_NAME = database_name;
+    }
+
+    /**
+     * Set the database
+     * @param database Database
+     */
+    public static void init(Database database) {
+        db = database;
+    }
+
     /**
      * First fit decreasing algorithm for bin packing problem.
-     * Every single bin will be assign to vehicle.
+     * Every single bin will be assigned to a new vehicle.
      * The bin contains a list of good, every good is placed
      * in the bin just to get the best possible packaging.
      * @param goods the goods that will be fit into the bins
@@ -16,6 +43,12 @@ public class Algorithms{
      *         isn't enough to contain a single good.
      */
     public static List<Bin> firstFitDecreasing(List<Good> goods, double volumeMax) {
+        try {
+            if (!flag)
+                init(DATABASE_NAME);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (goods.isEmpty()){
             return null;
         }
@@ -42,21 +75,21 @@ public class Algorithms{
      * @return List of Bin which can be null if empty or the volumeMax
      *         isn't enough to contain a single good.
      */
-    public static List<Bin> insertGood(Good good, List<Bin> bins){
+    private static List<Bin> insertGood(Good good, List<Bin> bins){
         if (bins.isEmpty()){
             return null;
         }
         double volumeMax = bins.get(0).getVolumeMax();
         boolean added = false;
         for (Bin bin:bins){
-            if (bin.addGood(good)){
+            if (addGood(bin, good)){
                 added = true;
                 break;
             }
         }
         if (!added){
             Bin bin = new Bin(volumeMax);
-            if (!bin.addGood(good)){
+            if (!addGood(bin, good)){
                 System.err.println("[Error] the maximum Volume of bins must be greater " +
                         "than the volume of a good");
                 return null;
@@ -71,12 +104,12 @@ public class Algorithms{
      * @param good will be added
      * @return boolean value, true if the function add the good correctly, else false.
      */
-    public boolean addGood(Good good){
-        if ( getVolumeWasted() >= (good.getVolume()*good.getQnt()) ){
-            Good g = containsId(good.getId());
-            if (g != null){
+    private static boolean addGood(Bin bin, Good good){
+        if ( bin.getVolumeWasted() >= (good.getVolume()*good.getQnt()) ){
+            Good g = containsId(bin, good.getId());
+            if (g != null) {
                 g.setQnt(g.getQnt()+good.getQnt());
-                volumeCurrent += g.getVolume()*good.getQnt();
+                bin.setVolumeCurrent(bin.getVolumeCurrent() + g.getVolume()*good.getQnt());
             }else {
                 volumeCurrent += good.getVolume()*good.getQnt();
                 goods.add(good);
@@ -91,7 +124,7 @@ public class Algorithms{
      * @param good will be remove
      * @return boolean value, true if the function remove the good correctly, else false.
      */
-    public boolean removeGood(Good good){
+    public static boolean removeGood(Bin bin, Good good){
         Good g = containsId(good.getId());
         if (g!=null){
             volumeCurrent -= good.getQnt()*good.getVolume();
@@ -109,8 +142,8 @@ public class Algorithms{
      * @param id that will be looking for in the bin
      * @return null when the ID isn't in the bin, else the good with the same ID is returned.
      */
-    public Good containsId(Integer id){
-        for (Good good: goods){
+    public static Good containsId(List<Good> gs, Integer id){
+        for (Good good: gs){
             if (Objects.equals(id, good.getId()))
                 return good;
         }
