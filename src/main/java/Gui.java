@@ -6,10 +6,8 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Optional;
-import java.util.Random;
+
+import java.util.*;
 import java.lang.Math;
 
 /**
@@ -18,6 +16,7 @@ import java.lang.Math;
 public class Gui {
     private BorderPane borderPane;
     private MenuBar menuBar;
+    private Pane generateInputPane;
     private HBox hBox;
     private ArrayList <NodeFX> node;
     private ArrayList <EdgeFX> edge;
@@ -38,6 +37,7 @@ public class Gui {
     public Gui(){
         try {
             initKeyPressed();
+            initGenerateInputPane();
             initMenu();
             initSearch();
             inithBox();
@@ -138,6 +138,19 @@ public class Gui {
         keyPressed = new HashMap<>();
         keyPressed.put(KeyCombination.keyCombination("Ctrl+F"), false);
         keyPressed.put(KeyCombination.keyCombination("Alt+M"), false);
+        keyPressed.put(KeyCombination.keyCombination("Ctrl+G"), false);
+    }
+
+    /**
+     * sets all keys to false except the input in true;
+     * @param k input key
+     */
+    private void setKeyPressed(KeyCombination k){
+        for(Map.Entry<KeyCombination, Boolean> entry : keyPressed.entrySet()) {
+            KeyCombination key = entry.getKey();
+            keyPressed.put(key,false);
+        }
+        keyPressed.put(k,true);
     }
     /**
      * set and init the Horizontal Box used to contain search text filed
@@ -223,13 +236,17 @@ public class Gui {
      */
     private void initMenuEdit(){
         edit = new Menu("Edit");
-        //MenuItem add = new MenuItem("Add");
-        //MenuItem modify = new MenuItem("Modify");
         MenuItem find = new MenuItem("Find");
         MenuItem delete = new MenuItem("Delete");
-        //add.setAccelerator(KeyCombination.keyCombination("Ctrl+N"));
-        //modify.setAccelerator(KeyCombination.keyCombination("Ctrl+E"));
+        MenuItem genInputMap = new MenuItem("Generate Input");
         delete.setAccelerator(KeyCombination.keyCombination("Ctrl+D"));
+        genInputMap.setAccelerator(KeyCombination.keyCombination("Ctrl+G"));
+        genInputMap.setOnAction(e->{
+            if (!keyPressed.get(KeyCombination.keyCombination("Ctrl+G"))) {
+                setKeyPressed(KeyCombination.keyCombination("Ctrl+G"));
+                borderPane.setCenter(generateInputPane);
+            }
+        });
 
         find.setAccelerator(KeyCombination.keyCombination("Ctrl+F"));
         find.setOnAction(e -> {
@@ -243,7 +260,42 @@ public class Gui {
             }
         });
 
-        edit.getItems().addAll(delete, find);
+        edit.getItems().addAll(genInputMap,delete, find);
+    }
+    private void initGenerateInputPane(){
+        generateInputPane = new StackPane();
+        GridPane container = new GridPane();
+        List<Label> labels = new ArrayList<>();
+        List<TextInputControl> textList = new ArrayList<>();
+        HBox headerBox = new HBox();
+        Button gen, cancel;
+        gen = new Button("Generate");
+        cancel = new Button("Cancel");
+        Label headerLabel = new Label("Generate Input");
+        headerLabel.setStyle("-fx-font-family: 'Goha-Tibeb Zemen'; -fx-font-size: 20px; -fx-text-fill: coral;");
+        headerBox.setStyle("-fx-alignment: top-left; -fx-padding: 20 0 20 -20;");
+        headerBox.getChildren().add(headerLabel);
+        labels.add(new Label("Numero Nodi: "));
+        labels.add(new Label("Dimensione Nodo: "));
+        labels.add(new Label("Dimensione Raggio:"));
+        labels.add(new Label("Superfice non amm.:"));
+        labels.add(new Label("Colore Nodo: "));
+        labels.add(new Label("Colore Arco: "));
+        labels.add(new Label("Archi orientati: "));
+        for (int i=0;i<labels.size(); i++){
+            labels.get(i).setStyle("-fx-pref-height:25px; -fx-alignment: center-left; " +
+                    "-fx-font-family: 'Goha-Tibeb Zemen'; -fx-font-size: 14px;");
+            TextField t = new TextField();
+            t.setStyle("-fx-max-width: 65px; -fx-alignment: center");
+            textList.add(i, t);
+            container.add(labels.get(i),0,i+1);
+            container.add(t,1,i+1);
+        }
+        container.add(headerBox,0,0,2,1);
+        container.add(gen,0, labels.size()+1);
+        container.add(cancel,1,labels.size()+1);
+        container.setStyle("-fx-hgap: 10px; -fx-vgap: 5px; -fx-padding: 0 0 0 40px; -fx-background-color: white;");
+        generateInputPane.getChildren().add(container);
     }
     /**
      * set and initialize View section Menu
@@ -266,15 +318,12 @@ public class Gui {
         view.getItems().addAll(Orders, Clients, Goods, Vehicles, Itineraries, Maps);
 
         Maps.setOnAction(event -> {
-            if(keyPressed.get(KeyCombination.keyCombination("Alt+M"))) {
-                borderPane.setCenter(stackPane);
-                keyPressed.put(KeyCombination.keyCombination("Alt+M"), false);
-            }else {
-                borderPane.getChildren().remove(stackPane);
+
+            if (!keyPressed.get(KeyCombination.keyCombination("Alt+M"))) {
+                setKeyPressed(KeyCombination.keyCombination("Alt+M"));
                 initGraph();
                 initCanvasPane();
                 borderPane.setCenter(canvas);
-                keyPressed.put(KeyCombination.keyCombination("Alt+M"), true);
             }
         });
     }
