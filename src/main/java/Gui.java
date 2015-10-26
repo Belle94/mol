@@ -1,9 +1,14 @@
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.*;
 
+import java.sql.Date;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Optional;
 
@@ -16,6 +21,10 @@ public class Gui {
     private HBox hBox;
     private StackPane stackPane;
     private TableView table;
+    private TableView<Client> tClient;
+    private TableView<Order> tOrder;
+    private TableView<Good> tGood;
+    private TableView<Vehicle> tVehicle;
     private TextField search;
     private Menu file, edit, view;
     private HashMap<KeyCombination, Boolean> keyPressed;
@@ -33,6 +42,10 @@ public class Gui {
             initSearch();
             inithBox();
             initTable();
+            initClientTable();
+            initOrderTable();
+            initGoodTable();
+            initVehicleTable();
             initStackPane();
             initRootElement();
         }catch (Exception e){
@@ -44,7 +57,11 @@ public class Gui {
      */
     private void initKeyPressed(){
         keyPressed = new HashMap<>();
-        keyPressed.put(KeyCombination.keyCombination("Ctrl+F"),false);
+        keyPressed.put(KeyCombination.keyCombination("Ctrl+F"), false);
+        keyPressed.put(KeyCombination.keyCombination("Alt+C"), false);
+        keyPressed.put(KeyCombination.keyCombination("Alt+O"), false);
+        keyPressed.put(KeyCombination.keyCombination("Alt+G"), false);
+        keyPressed.put(KeyCombination.keyCombination("Alt+V"), false);
     }
     /**
      * set and init the Horizontal Box used to contain search text filed
@@ -91,8 +108,8 @@ public class Gui {
         save_as.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+S"));
         quit.setAccelerator(KeyCombination.keyCombination("Ctrl+Q"));
 
-        quit.setOnAction(e-> {
-            if (confirmMessage("Exit Confirmation","Are u sure u want to exit?"))
+        quit.setOnAction(e -> {
+            if (confirmMessage("Exit Confirmation", "Are u sure u want to exit?"))
                 System.exit(0);
         });
 
@@ -116,7 +133,7 @@ public class Gui {
             if (keyPressed.get(KeyCombination.keyCombination("Ctrl+F"))) {
                 stackPane.getChildren().remove(hBox);
                 keyPressed.put(KeyCombination.keyCombination("Ctrl+F"), false);
-            }else {
+            } else {
                 stackPane.getChildren().add(hBox);
                 search.requestFocus();
                 keyPressed.put(KeyCombination.keyCombination("Ctrl+F"), true);
@@ -133,16 +150,43 @@ public class Gui {
         MenuItem Orders = new MenuItem("Orders");
         MenuItem Clients = new MenuItem("Clients");
         MenuItem Goods = new MenuItem("Goods");
-        MenuItem Itineraries = new MenuItem("Itineraries");
         MenuItem Vehicles = new MenuItem("Vehicles");
         Orders.setAccelerator(KeyCombination.keyCombination("Alt+O"));
         Clients.setAccelerator(KeyCombination.keyCombination("Alt+C"));
         Goods.setAccelerator(KeyCombination.keyCombination("Alt+G"));
-        Itineraries.setAccelerator(KeyCombination.keyCombination("Alt+I"));
         Vehicles.setAccelerator(KeyCombination.keyCombination("Alt+V"));
+        Clients.setOnAction(e -> {
+            if (!keyPressed.get(KeyCombination.keyCombination("Alt+C"))) {
+                stackPane.getChildren().add(tClient);
+                search.requestFocus();
+                keyPressed.put(KeyCombination.keyCombination("Alt+C"), true);
+            }
+        });
+        Orders.setOnAction(e -> {
+            if (!keyPressed.get(KeyCombination.keyCombination("Alt+O"))) {
+                stackPane.getChildren().add(tOrder);
+                search.requestFocus();
+                keyPressed.put(KeyCombination.keyCombination("Alt+O"), true);
+            }
+        });
+        Goods.setOnAction(e -> {
+            if (!keyPressed.get(KeyCombination.keyCombination("Alt+G"))) {
+                stackPane.getChildren().add(tGood);
+                search.requestFocus();
+                keyPressed.put(KeyCombination.keyCombination("Alt+G"), true);
+            }
+        });
+        Vehicles.setOnAction(e -> {
+            if (!keyPressed.get(KeyCombination.keyCombination("Alt+V"))) {
+                stackPane.getChildren().add(tVehicle);
+                search.requestFocus();
+                keyPressed.put(KeyCombination.keyCombination("Alt+V"), true);
+            }
+        });
 
-        view.getItems().addAll(Orders,Clients,Goods,Vehicles,Itineraries);
+        view.getItems().addAll(Orders, Clients, Goods, Vehicles);
     }
+
     /**
      * Set and initialize table
      */
@@ -151,8 +195,132 @@ public class Gui {
         table = new TableView();
         table.setEditable(false);
         table.setTableMenuButtonVisible(true);
-        table.setMinSize(prefWidth-(prefWidth*offset),prefHeight-prefMenuHeight-(prefHeight*offset));
+        table.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
     }
+
+    private void initClientTable(){
+        double offset = 0.003;
+        double colw = prefWidth/3;
+        tClient = new TableView();
+        try {
+            Database database = new Database("test.db");
+            ObservableList<Client> clients = FXCollections.observableList(database.getAllClients());
+            tClient.setItems(clients);
+            database.closeConnection();
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        tClient.setEditable(false);
+        TableColumn<Client,Integer> cId = new TableColumn("Id");
+        cId.setMinWidth(colw);
+        cId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        TableColumn<Client,String> cName = new TableColumn("Name");
+        cName.setMinWidth(colw);
+        cName.setCellValueFactory(new PropertyValueFactory<>("name"));
+        TableColumn<Client,Integer> cCharge = new TableColumn("Charge");
+        cCharge.setMinWidth(colw);
+        cCharge.setCellValueFactory(new PropertyValueFactory<>("charge"));
+        tClient.getColumns().addAll(cId, cName, cCharge);
+        tClient.setTableMenuButtonVisible(true);
+        tClient.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
+    }
+
+    private void initOrderTable(){
+        double offset = 0.003;
+        double colw = prefWidth/5;
+        tOrder = new TableView();
+        try {
+            Database database = new Database("test.db");
+            ObservableList<Order> orders = FXCollections.observableList(database.getAllOrders());
+            tOrder.setItems(orders);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        tOrder.setEditable(false);
+        TableColumn<Order,Integer> cId = new TableColumn("Id");
+        cId.setMinWidth(colw);
+        cId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        TableColumn<Order,Client> cClient = new TableColumn("Client");
+        cClient.setMinWidth(colw);
+        cClient.setCellValueFactory(new PropertyValueFactory<>("client"));
+        TableColumn<Order,Date> cDate = new TableColumn("Date");
+        cDate.setMinWidth(colw);
+        cDate.setCellValueFactory(new PropertyValueFactory<>("date"));
+        TableColumn<Order,Integer> cPos = new TableColumn("Pos");
+        cPos.setMinWidth(colw);
+        cPos.setCellValueFactory(new PropertyValueFactory<>("pos"));
+        TableColumn<Order,Bin> cBin = new TableColumn("Bin");
+        cBin.setMinWidth(colw);
+        cBin.setCellValueFactory(new PropertyValueFactory<>("bin"));
+        tOrder.getColumns().addAll(cId,cClient,cDate,cPos,cBin);
+        tOrder.setTableMenuButtonVisible(true);
+        tOrder.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
+    }
+
+    private void initGoodTable(){
+        double offset = 0.003;
+        double colw = prefWidth/4;
+        tGood = new TableView();
+        try {
+            Database database = new Database("test.db");
+            ObservableList<Good> goods = FXCollections.observableList(database.getAllGoods());
+            tGood.setItems(goods);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        tGood.setEditable(false);
+        TableColumn<Good,Integer> cId = new TableColumn("Id");
+        cId.setMinWidth(colw);
+        cId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        TableColumn<Good, Object> cVolume = new TableColumn("Volume");
+        cVolume.setMinWidth(colw);
+        cVolume.setCellValueFactory(new PropertyValueFactory<>("volume"));
+        TableColumn<Good,Integer> cQnt = new TableColumn("Qnt");
+        cQnt.setMinWidth(colw);
+        cQnt.setCellValueFactory(new PropertyValueFactory<>("qnt"));
+        TableColumn<Good,String> cDescription = new TableColumn("Description");
+        cDescription.setMinWidth(colw);
+        cDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
+        tGood.getColumns().addAll(cId,cVolume,cQnt,cDescription);
+        tGood.setTableMenuButtonVisible(true);
+        tGood.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
+    }
+
+    private void initVehicleTable(){
+        double offset = 0.003;
+        double colw = prefWidth/4;
+        tVehicle = new TableView();
+        try {
+            Database database = new Database("test.db");
+            ObservableList<Vehicle> vehicles = FXCollections.observableList(database.getAllVehicles());
+            tVehicle.setItems(vehicles);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        tVehicle.setEditable(false);
+        TableColumn<Vehicle,String> cNumberPlate = new TableColumn("NumberPlate");
+        cNumberPlate.setMinWidth(colw);
+        cNumberPlate.setCellValueFactory(new PropertyValueFactory<>("numberPlate"));
+        TableColumn<Vehicle, Object> cChargeCurrent = new TableColumn("Charge Current");
+        cChargeCurrent.setMinWidth(colw);
+        cChargeCurrent.setCellValueFactory(new PropertyValueFactory<>("chargeCurrent"));
+        TableColumn<Vehicle,Object> cChargeMax = new TableColumn("Charge Max");
+        cChargeMax.setMinWidth(colw);
+        cChargeMax.setCellValueFactory(new PropertyValueFactory<>("chargeMax"));
+        TableColumn<Vehicle,Bin> cBin = new TableColumn("Bin");
+        cBin.setMinWidth(colw);
+        cBin.setCellValueFactory(new PropertyValueFactory<>("bin"));
+        tVehicle.getColumns().addAll(cNumberPlate,cChargeCurrent,cChargeMax,cBin);
+        tVehicle.setTableMenuButtonVisible(true);
+        tVehicle.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
+    }
+
     /**
      * Set and initialize search textView item
      */
