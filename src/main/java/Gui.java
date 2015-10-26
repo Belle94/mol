@@ -48,7 +48,6 @@ public class Gui {
             initMenu();
             initSearch();
             inithBox();
-            initTable();
             initClientTable();
             initOrderTable();
             initGoodTable();
@@ -92,6 +91,16 @@ public class Gui {
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         stackPane.getChildren().add(scrollPane);
         stackPane.setAlignment(Pos.TOP_LEFT);
+    }
+    /**
+     * Set and initialize Menu Item
+     */
+    private void initMenu(){
+        menuBar = new MenuBar();
+        initMenuFile();
+        initMenuEdit();
+        initMenuView();
+        menuBar.getMenus().addAll(file, edit, view);
     }
     /**
      * set and initialize file section Menu
@@ -186,16 +195,7 @@ public class Gui {
         view.getItems().addAll(Orders, Clients, Goods, Vehicles);
     }
 
-    /**
-     * Set and initialize table
-     */
-    private void initTable(){
-        double offset = 0.003;
-        table = new TableView();
-        table.setEditable(false);
-        table.setTableMenuButtonVisible(true);
-        table.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
-    }
+
     /**
      * Set and initialize client's table
      */
