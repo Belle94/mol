@@ -1,11 +1,27 @@
+import com.j256.ormlite.dao.ForeignCollection;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
+import com.j256.ormlite.table.DatabaseTable;
 /**
  * Class that implement Vehicle. Each vehicle transport the goods
  */
+@DatabaseTable (tableName = "vehicle")
 public class Vehicle{
+    public final static String CHARGE_CURRENT_FIELD_NAME = "current charge";
+    public final static String CHARGE_MAX_FIELD_NAME = "maximal charge";
+
+    @DatabaseField(id = true)
     private String numberPlate;
+    @DatabaseField(canBeNull = false, columnName = CHARGE_CURRENT_FIELD_NAME)
     private double chargeCurrent;
+    @DatabaseField(canBeNull = false, columnName = CHARGE_MAX_FIELD_NAME)
     private double chargeMax;
+    @DatabaseField(foreign = true, canBeNull = false)
     private Bin bin;
+
+    public Vehicle() {
+        // all persisted classes must define a no-arg constructor with at least package visibility
+    }
 
     public Vehicle(String numberPlate, double chargeMax, Bin bin) {
         this.numberPlate = numberPlate;
@@ -43,5 +59,12 @@ public class Vehicle{
 
     public void setChargeCurrent(double chargeCurrent) {
         this.chargeCurrent = chargeCurrent;
+    }
+
+    @Override
+    public String toString() {
+        return "ID: " + numberPlate +
+                "\nCurrent charge: " + chargeCurrent +
+                "\nMax charge: " + chargeMax;
     }
 }

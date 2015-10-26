@@ -1,3 +1,7 @@
+import com.j256.ormlite.dao.ForeignCollection;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -5,15 +9,34 @@ import java.util.Objects;
 /**
  * Class implement a Bin.
  */
+@DatabaseTable(tableName = "bin")
 public class Bin {
+    @DatabaseField(generatedId = true)
+    private Integer id;
+    @DatabaseField(canBeNull = false)
     private double volumeCurrent;
+    @DatabaseField(canBeNull = false)
     private double volumeMax;
-    private List<Good> goods;
+
+    public Bin() {
+        // required by ORMLite
+    }
 
     public Bin(double volumeMax){
-        this.volumeCurrent = 0;
+        this(0, volumeMax);
+    }
+
+    public Bin(double volumeCurrent, double volumeMax) {
+        this.volumeCurrent = volumeCurrent;
         this.volumeMax = volumeMax;
-        goods = new ArrayList<>();
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public double getVolumeWasted() {
@@ -36,20 +59,12 @@ public class Bin {
         this.volumeMax = volumeMax;
     }
 
-    public List<Good> getGoods() {
-        return goods;
-    }
-
-    public void setGoods(List<Good> goods) {
-        this.goods = goods;
-    }
-
-    /**
+    /*
      * implement addGood method, refresh the volumeCurrent
      * @param good will be added
      * @return boolean value, true if the function add the good correctly, else false.
      */
-    public boolean addGood(Good good){
+    /*public boolean addGood(Good good){
         if ( getVolumeWasted() >= (good.getVolume()*good.getQnt()) ){
             Good g = containsId(good.getId());
             if (g != null){
@@ -68,7 +83,7 @@ public class Bin {
      * @param good will be remove
      * @return boolean value, true if the function remove the good correctly, else false.
      */
-    public boolean removeGood(Good good){
+    /*public boolean removeGood(Good good){
         Good g = containsId(good.getId());
         if (g!=null){
             volumeCurrent -= good.getQnt()*good.getVolume();
@@ -86,13 +101,13 @@ public class Bin {
      * @param id that will be looking for in the bin
      * @return null when the ID isn't in the bin, else the good with the same ID is returned.
      */
-    public Good containsId(Integer id){
+    /*public Good containsId(Integer id){
         for (Good good: goods){
             if (Objects.equals(id, good.getId()))
                 return good;
         }
         return null;
-    }
+    }*/
 
     @Override
     public boolean equals(Object o) {
@@ -103,7 +118,7 @@ public class Bin {
 
         return Double.compare(bin.volumeCurrent, volumeCurrent) == 0
                 && Double.compare(bin.volumeMax, volumeMax) == 0
-                && goods.equals(bin.goods);
+                /*&& goods.equals(bin.goods)*/;
     }
 
     @Override
@@ -114,7 +129,7 @@ public class Bin {
         result = (int) (temp ^ (temp >>> 32));
         temp = Double.doubleToLongBits(volumeMax);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + goods.hashCode();
+        //result = 31 * result + goods.hashCode();
         return result;
     }
 }
