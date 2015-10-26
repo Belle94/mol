@@ -8,28 +8,17 @@ import java.util.List;
 import java.util.Objects;
 
 public class Algorithms{
-    public static String DATABASE_NAME = "test.db";
     private static Boolean flag = false;
-    public static Database db;
+    private static List<Good> goods;
 
     /**
      * Initializes the database
-     * @param database_name database name
      * @throws SQLException
      * @throws ClassNotFoundException
      */
-    public static void init(String database_name) throws SQLException, ClassNotFoundException {
+    public static void init() throws SQLException, ClassNotFoundException {
         flag = true;
-        db = new Database(database_name);
-        DATABASE_NAME = database_name;
-    }
 
-    /**
-     * Set the database
-     * @param database Database
-     */
-    public static void init(Database database) {
-        db = database;
     }
 
     /**
@@ -45,7 +34,7 @@ public class Algorithms{
     public static List<Bin> firstFitDecreasing(List<Good> goods, double volumeMax) {
         try {
             if (!flag)
-                init(DATABASE_NAME);
+                init();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -104,14 +93,16 @@ public class Algorithms{
      * @param good will be added
      * @return boolean value, true if the function add the good correctly, else false.
      */
-    private static boolean addGood(Bin bin, Good good){
+    private static boolean addGood(Bin bin, List<Good> goods, Good good){
         if ( bin.getVolumeWasted() >= (good.getVolume()*good.getQnt()) ){
-            Good g = containsId(bin, good.getId());
+            Good g = containsId(goods, good.getId());
             if (g != null) {
                 g.setQnt(g.getQnt()+good.getQnt());
-                bin.setVolumeCurrent(bin.getVolumeCurrent() + g.getVolume()*good.getQnt());
+                bin.setVolumeCurrent(bin.getVolumeCurrent() +
+                        g.getVolume()*good.getQnt());
             }else {
-                volumeCurrent += good.getVolume()*good.getQnt();
+                bin.setVolumeCurrent(bin.getVolumeCurrent() +
+                        good.getVolume()*good.getQnt());
                 goods.add(good);
             }
             return true;
@@ -124,10 +115,11 @@ public class Algorithms{
      * @param good will be remove
      * @return boolean value, true if the function remove the good correctly, else false.
      */
-    public static boolean removeGood(Bin bin, Good good){
-        Good g = containsId(good.getId());
+    public static boolean removeGood(Bin bin, List<Good> goods, Good good){
+        Good g = containsId(goods, good.getId());
         if (g!=null){
-            volumeCurrent -= good.getQnt()*good.getVolume();
+            bin.setVolumeCurrent(bin.getVolumeCurrent() -
+                    good.getQnt()*good.getVolume());
             if (g.getQnt()-good.getQnt() <=0)
                 goods.remove(good);
             else
