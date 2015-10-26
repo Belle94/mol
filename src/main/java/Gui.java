@@ -61,9 +61,6 @@ public class Gui {
         int index = 0;
         node = new ArrayList<>(n);
 
-        /*Random rand = new Random();
-        x = 10 + rand.nextInt(770);
-        y = 10 + rand.nextInt(540);*/
         x = (int)(prefWidth/2);
         y = (int)(prefHeight/2);
         node.add(new NodeFX(x, y, Color.RED));
@@ -85,7 +82,6 @@ public class Gui {
                     int rag = node.get(j).getArea_non_amm();
                     if (x - rag < vx + rag && x + rag > vx - rag && y - rag < vy + rag && y + rag > vy - rag) {
                         control = false;
-                        System.out.println("Collisione");
                         break;
                     }
                     else {
@@ -97,38 +93,10 @@ public class Gui {
                     count++;
                 }
                 contrAng += ang;
-                System.out.println(contrAng);
             }
             index++;
             contrAng = 0;
         }
-
-
-        /*
-        for (int i = 0; i < n; i++) {
-            while(control == false){
-                Random rand = new Random();
-                x = 10 + rand.nextInt(770);
-                y = 10 + rand.nextInt(540);
-                control = true;
-                for (int j = 0; j < i; j++) {
-                    int oldx = node.get(j).getPx();
-                    int oldy = node.get(j).getPy();
-                    int rag = node.get(j).getArea_non_amm();
-                    if (x - rag < oldx + rag && x + rag > oldx - rag && y - rag < oldy + rag && y + rag > oldy - rag) {
-                        control = false;
-                        System.out.println("collisione");
-                        break;
-                    }
-                    else {
-                        control = true;
-                    }
-                }
-            }
-            node.add(new NodeFX(x, y, Color.RED));
-            control = false;
-        }*/
-
     }
 
     /**
