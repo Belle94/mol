@@ -2,10 +2,17 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.*;
+import javafx.scene.text.Font;
 
 import java.sql.Date;
 import java.sql.SQLException;
@@ -78,21 +85,13 @@ public class Gui {
     private void initStackPane(){
         stackPane = new StackPane();
         ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setContent(table);
+        Label label = new Label("MOL PROJECT");
+        label.setFont(new Font("Arial", 20));
+        scrollPane.setContent(label);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         stackPane.getChildren().add(scrollPane);
         stackPane.setAlignment(Pos.TOP_LEFT);
-    }
-    /**
-     * Set and initialize Menu Item
-     */
-    private void initMenu(){
-        menuBar = new MenuBar();
-        initMenuFile();
-        initMenuEdit();
-        initMenuView();
-        menuBar.getMenus().addAll(file, edit, view);
     }
     /**
      * set and initialize file section Menu
@@ -197,6 +196,9 @@ public class Gui {
         table.setTableMenuButtonVisible(true);
         table.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
     }
+    /**
+     * Set and initialize client's table
+     */
 
     private void initClientTable(){
         double offset = 0.003;
@@ -224,6 +226,9 @@ public class Gui {
         tClient.setTableMenuButtonVisible(true);
         tClient.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
     }
+    /**
+     * Set and initialize Order's table
+     */
 
     private void initOrderTable(){
         double offset = 0.003;
@@ -254,10 +259,14 @@ public class Gui {
         TableColumn<Order,Bin> cBin = new TableColumn("Bin");
         cBin.setMinWidth(colw);
         cBin.setCellValueFactory(new PropertyValueFactory<>("bin"));
-        tOrder.getColumns().addAll(cId,cClient,cDate,cPos,cBin);
+        tOrder.getColumns().addAll(cId, cClient, cDate, cPos, cBin);
         tOrder.setTableMenuButtonVisible(true);
         tOrder.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
     }
+
+    /**
+     * Set and initialize Good's table
+     */
 
     private void initGoodTable(){
         double offset = 0.003;
@@ -285,10 +294,14 @@ public class Gui {
         TableColumn<Good,String> cDescription = new TableColumn("Description");
         cDescription.setMinWidth(colw);
         cDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
-        tGood.getColumns().addAll(cId,cVolume,cQnt,cDescription);
+        tGood.getColumns().addAll(cId, cVolume, cQnt, cDescription);
         tGood.setTableMenuButtonVisible(true);
         tGood.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
     }
+
+    /**
+     * Set and initialize Vehicle's table
+     */
 
     private void initVehicleTable(){
         double offset = 0.003;
