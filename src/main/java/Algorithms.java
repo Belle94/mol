@@ -1,9 +1,7 @@
-import javafx.util.Pair;
-import org.omg.CORBA.INTERNAL;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 public class Algorithms{
     /**
      * First fit decreasing algorithm for bin packing problem.
@@ -38,7 +36,7 @@ public class Algorithms{
      * (but with maximal Volume assigned) inside of a list is required.
      * @return List of Bin, null if empty or the volumeMax isn't enough.
      */
-    public static List<Bin> insertGood(Good good, List<Bin> bins){
+    private static List<Bin> insertGood(Good good, List<Bin> bins){
         if (bins.isEmpty()){
             return null;
         }
@@ -61,5 +59,4 @@ public class Algorithms{
         }
         return bins;
     }
-
 }

@@ -1,6 +1,4 @@
 import javafx.util.Pair;
-
-import javax.xml.transform.Source;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,10 +47,12 @@ public class AdjacencyList {
      * Add new node with an empty List.
      * @param source the value of the node
      */
-    public void addNode(Integer source){
+    public boolean addNode(Integer source){
         if (!g.containsKey(source)) {
             g.put(source, new ArrayList<>());
+            return true;
         }
+        return false;
     }
 
     public void addNeighbors(Integer source, List<Pair<Integer, Double>> ns) {
@@ -127,7 +127,6 @@ public class AdjacencyList {
      * @return the graph with the shortest path form the node source to each other nodes.
      */
     public HashMap<Integer, List<Pair<Integer, Double>>> Dijkstra(Integer source){
-        //HashMap<Integer, List<Pair<Integer, Double>>> pg = new HashMap<>();
         AdjacencyList pg = new AdjacencyList();
         int n = this.getNumNodes();
         Integer u;
