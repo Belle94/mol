@@ -18,6 +18,8 @@ public class Bin {
     @DatabaseField(canBeNull = false)
     private double volumeMax;
 
+    private List<Good> goods;
+
     public Bin() {
         // required by ORMLite
     }
@@ -118,7 +120,7 @@ public class Bin {
 
         return Double.compare(bin.volumeCurrent, volumeCurrent) == 0
                 && Double.compare(bin.volumeMax, volumeMax) == 0
-                /*&& goods.equals(bin.goods)*/;
+                && goods.equals(bin.goods);
     }
 
     @Override
@@ -129,7 +131,7 @@ public class Bin {
         result = (int) (temp ^ (temp >>> 32));
         temp = Double.doubleToLongBits(volumeMax);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
-        //result = 31 * result + goods.hashCode();
+        result = 31 * result + goods.hashCode();
         return result;
     }
 }
