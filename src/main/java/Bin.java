@@ -17,20 +17,16 @@ public class Bin {
     private double volumeCurrent;
     @DatabaseField(canBeNull = false)
     private double volumeMax;
-
     private List<Good> goods;
 
-    public Bin() {
-        // required by ORMLite
+    public Bin(){
+        //empty for Db
     }
 
     public Bin(double volumeMax){
-        this(0, volumeMax);
-    }
-
-    public Bin(double volumeCurrent, double volumeMax) {
-        this.volumeCurrent = volumeCurrent;
+        this.volumeCurrent = 0;
         this.volumeMax = volumeMax;
+        goods = new ArrayList<>();
     }
 
     public Integer getId() {
@@ -61,7 +57,15 @@ public class Bin {
         this.volumeMax = volumeMax;
     }
 
-    /*
+    public List<Good> getGoods() {
+        return goods;
+    }
+
+    public void setGoods(List<Good> goods) {
+        this.goods = goods;
+    }
+
+    /**
      * implement addGood method, refresh the volumeCurrent
      * @param good will be added
      * @return boolean value, true if the function add the good correctly, else false.
@@ -127,11 +131,19 @@ public class Bin {
     public int hashCode() {
         int result;
         long temp;
+        result = id.hashCode();
         temp = Double.doubleToLongBits(volumeCurrent);
-        result = (int) (temp ^ (temp >>> 32));
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
         temp = Double.doubleToLongBits(volumeMax);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
-        result = 31 * result + goods.hashCode();
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Bin" +
+                "\nid: " + id +
+                "\nvolumeCurrent: " + volumeCurrent +
+                "\nvolumeMax: " + volumeMax;
     }
 }

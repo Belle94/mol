@@ -12,9 +12,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.*;
-import javafx.scene.text.Font;
-
-import java.sql.Date;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Optional;
@@ -30,7 +27,6 @@ public class Gui {
     private Pane generateInputPane;
     private HBox hBox;
     private StackPane stackPane;
-    private TableView table;
     private TableView<Client> tClient;
     private TableView tOrder;
     private TableView<Good> tGood;
@@ -60,6 +56,7 @@ public class Gui {
             initRootElement();
         }catch (Exception e){
             errorMessage("Something Wrong!","Error Message: "+e.getMessage());
+            System.err.println("\n[ERROR] +"+e.getMessage());
         }
     }
 
@@ -68,9 +65,18 @@ public class Gui {
      */
     private void initKeyPressed(){
         keyPressed = new HashMap<>();
+        keyPressed.put(KeyCombination.keyCombination("Ctrl+L"), false);
+        keyPressed.put(KeyCombination.keyCombination("Ctrl+S"), false);
+        keyPressed.put(KeyCombination.keyCombination("Ctrl+Shift+S"), false);
+        keyPressed.put(KeyCombination.keyCombination("Ctrl+Q"), false);
+        keyPressed.put(KeyCombination.keyCombination("Ctrl+G"), false);
+        keyPressed.put(KeyCombination.keyCombination("Ctrl+D"), false);
         keyPressed.put(KeyCombination.keyCombination("Ctrl+F"), false);
         keyPressed.put(KeyCombination.keyCombination("Alt+M"), false);
-        keyPressed.put(KeyCombination.keyCombination("Ctrl+G"), false);
+        keyPressed.put(KeyCombination.keyCombination("Alt+O"), false);
+        keyPressed.put(KeyCombination.keyCombination("Alt+C"), false);
+        keyPressed.put(KeyCombination.keyCombination("Alt+G"), false);
+        keyPressed.put(KeyCombination.keyCombination("Alt+V"), false);
     }
 
     /**
@@ -97,15 +103,7 @@ public class Gui {
      * set and init the stackPane. StackPane contain ScrollPane and consequently the Table.
      */
     private void initStackPane(){
-        stackPane = new StackPane();
-        ScrollPane scrollPane = new ScrollPane();
-        Label label = new Label("MOL PROJECT");
-        label.setFont(new Font("Arial", 20));
-        scrollPane.setContent(label);
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        stackPane.getChildren().add(scrollPane);
-        stackPane.setAlignment(Pos.TOP_LEFT);
+
     }
 
 
@@ -212,45 +210,40 @@ public class Gui {
      */
     private void initMenuView(){
         view = new Menu("View");
-        MenuItem Orders = new MenuItem("Orders");
-        MenuItem Clients = new MenuItem("Clients");
-        MenuItem Goods = new MenuItem("Goods");
-        MenuItem Vehicles = new MenuItem("Vehicles");
-        MenuItem Maps = new MenuItem("Maps");
-        Orders.setAccelerator(KeyCombination.keyCombination("Alt+O"));
-        Clients.setAccelerator(KeyCombination.keyCombination("Alt+C"));
-        Goods.setAccelerator(KeyCombination.keyCombination("Alt+G"));
-        Vehicles.setAccelerator(KeyCombination.keyCombination("Alt+V"));
-        Clients.setOnAction(e -> {
+        MenuItem orders = new MenuItem("Orders");
+        MenuItem clients = new MenuItem("Clients");
+        MenuItem goods = new MenuItem("Goods");
+        MenuItem vehicles = new MenuItem("Vehicles");
+        orders.setAccelerator(KeyCombination.keyCombination("Alt+O"));
+        clients.setAccelerator(KeyCombination.keyCombination("Alt+C"));
+        goods.setAccelerator(KeyCombination.keyCombination("Alt+G"));
+        vehicles.setAccelerator(KeyCombination.keyCombination("Alt+V"));
+        clients.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Alt+C"))) {
-                stackPane.getChildren().add(tClient);
-                search.requestFocus();
-                keyPressed.put(KeyCombination.keyCombination("Alt+C"), true);
+                borderPane.setCenter(tClient);
+                setKeyPressed(KeyCombination.keyCombination("Alt+C"));
             }
         });
-        Orders.setOnAction(e -> {
+        orders.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Alt+O"))) {
-                stackPane.getChildren().add(tOrder);
-                search.requestFocus();
-                keyPressed.put(KeyCombination.keyCombination("Alt+O"), true);
+                borderPane.setCenter(tOrder);
+                setKeyPressed(KeyCombination.keyCombination("Alt+O"));
             }
         });
-        Goods.setOnAction(e -> {
+        goods.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Alt+G"))) {
-                stackPane.getChildren().add(tGood);
-                search.requestFocus();
-                keyPressed.put(KeyCombination.keyCombination("Alt+G"), true);
+                borderPane.setCenter(tGood);
+                setKeyPressed(KeyCombination.keyCombination("Alt+G"));
             }
         });
-        Vehicles.setOnAction(e -> {
+        vehicles.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Alt+V"))) {
-                stackPane.getChildren().add(tVehicle);
-                search.requestFocus();
-                keyPressed.put(KeyCombination.keyCombination("Alt+V"), true);
+                setKeyPressed(KeyCombination.keyCombination("Alt+V"));
+                borderPane.setCenter(tVehicle);
             }
         });
 
-        view.getItems().addAll(Orders, Clients, Goods, Vehicles);
+        view.getItems().addAll(orders, clients, goods, vehicles);
     }
 
 
@@ -296,6 +289,7 @@ public class Gui {
             Database database = new Database("test.db");
             ObservableList<Order> orders = FXCollections.observableList(database.getAllOrders());
             tOrder.setItems(orders);
+            database.closeConnection();
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -312,7 +306,7 @@ public class Gui {
         TableColumn cPos = new TableColumn("Pos");
         cPos.setMinWidth(colw);
         cPos.setCellValueFactory(new PropertyValueFactory<>("pos"));
-        TableColumn cBin = new TableColumn("Bin");
+        TableColumn<Order,Bin> cBin = new TableColumn("Bin");
         cBin.setMinWidth(colw);
         cBin.setCellValueFactory(new PropertyValueFactory<>("bin"));
         tOrder.getColumns().addAll(cId, cClient, cDate, cPos, cBin);
@@ -332,9 +326,8 @@ public class Gui {
             Database database = new Database("test.db");
             ObservableList<Good> goods = FXCollections.observableList(database.getAllGoods());
             tGood.setItems(goods);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
+            database.closeConnection();
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         tGood.setEditable(false);
@@ -367,13 +360,12 @@ public class Gui {
             Database database = new Database("test.db");
             ObservableList<Vehicle> vehicles = FXCollections.observableList(database.getAllVehicles());
             tVehicle.setItems(vehicles);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
+            database.closeConnection();
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         tVehicle.setEditable(false);
-        TableColumn<Vehicle,String> cNumberPlate = new TableColumn("NumberPlate");
+        TableColumn cNumberPlate = new TableColumn("NumberPlate");
         cNumberPlate.setMinWidth(colw);
         cNumberPlate.setCellValueFactory(new PropertyValueFactory<>("numberPlate"));
         TableColumn<Vehicle, Object> cChargeCurrent = new TableColumn("Charge Current");
@@ -403,9 +395,15 @@ public class Gui {
      */
     private void initRootElement(){
         borderPane = new BorderPane();
+        stackPane = new StackPane();
+        ScrollPane scrollPane = new ScrollPane();
         borderPane.setPrefSize(prefWidth,prefHeight);
         borderPane.setCenter(stackPane);
         borderPane.setTop(menuBar);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        stackPane.getChildren().add(scrollPane);
+        stackPane.setAlignment(Pos.TOP_LEFT);
     }
     /**
      * @return main panel

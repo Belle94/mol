@@ -24,6 +24,7 @@ public class Client {
         setCharge(charge);
     }
 
+
     public Integer getId() {
         return id;
     }
