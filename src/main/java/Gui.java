@@ -1,5 +1,6 @@
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingNode;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
@@ -16,7 +17,12 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.*;
+import org.graphstream.graph.*;
+import org.graphstream.graph.implementations.*;
+import org.graphstream.ui.view.View;
+import org.graphstream.ui.view.Viewer;
 
+import javax.swing.*;
 
 /**
  * Class of graphic interface
@@ -37,7 +43,7 @@ public class Gui {
     private double prefWidth = 800.0;
     private double prefHeight = 600.0;
     private double prefMenuHeight=30;
-
+    private View graphPanel;
     /**
      * builder that calls methods for configuring the interface
      */
@@ -58,6 +64,21 @@ public class Gui {
             errorMessage("Something Wrong!","Error Message: "+e.getMessage());
             System.err.println("\n[ERROR] +"+e.getMessage());
         }
+    }
+
+    private void initGraph(){
+        Graph graph = new SingleGraph("Maps");
+        graph.addNode("A");
+        graph.addNode("B");
+        graph.addNode("C");
+        graph.addNode("D");
+        graph.addEdge("AB", "A", "B");
+        graph.addEdge("BC", "B", "C");
+        graph.addEdge("CD", "C", "D");
+        graph.addEdge("DA", "D", "A");
+        Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
+        viewer.enableAutoLayout();
+        graphPanel = viewer.addDefaultView(false);
     }
 
     /**
@@ -88,7 +109,7 @@ public class Gui {
             KeyCombination key = entry.getKey();
             keyPressed.put(key,false);
         }
-        keyPressed.put(k,true);
+        keyPressed.put(k, true);
     }
     /**
      * set and init the Horizontal Box used to contain search text filed
@@ -130,7 +151,7 @@ public class Gui {
         save.setAccelerator(KeyCombination.keyCombination("Ctrl+S"));
         save_as.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+S"));
         quit.setAccelerator(KeyCombination.keyCombination("Ctrl+Q"));
-        quit.setOnAction(e-> {
+        quit.setOnAction(e -> {
             if (confirmMessage("Exit Confirmation", "Are u sure u want to exit?"))
                 System.exit(0);
         });
@@ -147,7 +168,7 @@ public class Gui {
         MenuItem genInputMap = new MenuItem("Generate Input");
         delete.setAccelerator(KeyCombination.keyCombination("Ctrl+D"));
         genInputMap.setAccelerator(KeyCombination.keyCombination("Ctrl+G"));
-        genInputMap.setOnAction(e->{
+        genInputMap.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Ctrl+G"))) {
                 setKeyPressed(KeyCombination.keyCombination("Ctrl+G"));
                 borderPane.setCenter(generateInputPane);
@@ -199,9 +220,9 @@ public class Gui {
             container.add(labels.get(i),0,i+1);
             container.add(t,1,i+1);
         }
-        container.add(headerBox,0,0,2,1);
-        container.add(gen,0, labels.size()+1);
-        container.add(cancel,1,labels.size()+1);
+        container.add(headerBox, 0, 0, 2, 1);
+        container.add(gen, 0, labels.size() + 1);
+        container.add(cancel, 1, labels.size() + 1);
         container.setStyle("-fx-hgap: 10px; -fx-vgap: 5px; -fx-padding: 0 0 0 40px; -fx-background-color: white;");
         generateInputPane.getChildren().add(container);
     }
@@ -214,10 +235,12 @@ public class Gui {
         MenuItem clients = new MenuItem("Clients");
         MenuItem goods = new MenuItem("Goods");
         MenuItem vehicles = new MenuItem("Vehicles");
+        MenuItem maps = new MenuItem("Maps");
         orders.setAccelerator(KeyCombination.keyCombination("Alt+O"));
         clients.setAccelerator(KeyCombination.keyCombination("Alt+C"));
         goods.setAccelerator(KeyCombination.keyCombination("Alt+G"));
         vehicles.setAccelerator(KeyCombination.keyCombination("Alt+V"));
+        maps.setAccelerator(KeyCombination.keyCombination("Alt+M"));
         clients.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Alt+C"))) {
                 borderPane.setCenter(tClient);
@@ -242,10 +265,21 @@ public class Gui {
                 borderPane.setCenter(tVehicle);
             }
         });
-
-        view.getItems().addAll(orders, clients, goods, vehicles);
+        maps.setOnAction(e -> {
+            if (!keyPressed.get(KeyCombination.keyCombination("Alt+M"))) {
+                setKeyPressed(KeyCombination.keyCombination("Alt+M"));
+                initGraph();
+                SwingNode graphPanelNode = new SwingNode();
+                createSwingContent(graphPanelNode);
+                borderPane.setCenter(graphPanelNode);
+            }
+        });
+        view.getItems().addAll(orders, clients, goods, vehicles, maps);
     }
 
+    private void createSwingContent(final SwingNode node){
+        SwingUtilities.invokeLater(() -> node.setContent((JComponent) graphPanel));
+    }
 
     /**
      * Set and initialize client's table
