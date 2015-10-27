@@ -102,14 +102,6 @@ public class Good {
     }
 
     @Override
-    public String toString() {
-        return "ID: " + id +
-                "\nVolume: " + volume +
-                "\nQuantity: " + qnt +
-                "\nDescription: " + description;
-    }
-
-    @Override
     public int hashCode() {
         int result;
         long temp;
@@ -119,5 +111,12 @@ public class Good {
         result = 31 * result + qnt.hashCode();
         result = 31 * result + (description != null ? description.hashCode() : 0);
         return result;
+    }
+    @Override
+    public String toString() {
+        return "ID: " + id +
+                "\nVolume: " + volume +
+                "\nQuantity: " + qnt +
+                "\nDescription: " + description;
     }
 }

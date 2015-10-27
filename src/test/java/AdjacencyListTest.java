@@ -27,7 +27,7 @@ public class AdjacencyListTest {
         assertEquals(h, g);
 
     }
-    private void printGraph(AdjacencyList g){
+    public static void printGraph(AdjacencyList g){
         for(Integer k : g.getNodes()){
             System.out.println("Node "+k+"\t hashCode: "+ g.getGraph().get(k).hashCode());
             for (Pair<Integer,Double> c : g.getGraph().get(k)){

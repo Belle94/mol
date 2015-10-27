@@ -21,6 +21,9 @@ dependencies {
     runtime 'org.xerial.thirdparty:nestedvm:1.0'
     compile 'org.xerial:sqlite-jdbc:3.8.11'
     runtime 'org.xerial:sqlite-jdbc:3.8.11'
+    compile 'org.graphstream:gs-core:1.3'
+    compile 'org.graphstream:gs-algo:1.3'
+    compile 'org.graphstream:gs-ui:1.3'
 }
 
 jar{
