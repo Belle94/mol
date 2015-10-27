@@ -128,7 +128,7 @@ public class AdjacencyList {
     }
 
     public HashMap<Vehicle, AdjacencyList> clark_wright
-            (Integer vehicles, Integer zero) {
+            (Database db, Integer vehicles, Integer zero) {
         DistanceMatrix matDistance = new DistanceMatrix(this);
         HashMap<Pair<Integer, Integer>, Double> savings = new HashMap<>();
         // initializing savings
