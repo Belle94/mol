@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.Optional;
 import java.util.*;
 
-
 /**
  * Class of graphic interface
  */
@@ -25,14 +24,13 @@ public class Gui {
     private BorderPane borderPane;
     private MenuBar menuBar;
     private Pane generateInputPane;
-    private HBox hBox;
+    private HBox searchPane;
     private StackPane stackPane;
     private TableView<Client> tClient;
     private TableView tOrder;
     private TableView<Good> tGood;
     private TableView<Vehicle> tVehicle;
     private TextField search;
-    private Menu file, edit, view;
     private HashMap<KeyCombination, Boolean> keyPressed;
     private double prefWidth = 800.0;
     private double prefHeight = 600.0;
@@ -52,7 +50,6 @@ public class Gui {
             initOrderTable();
             initGoodTable();
             initVehicleTable();
-            initStackPane();
             initRootElement();
         }catch (Exception e){
             errorMessage("Something Wrong!","Error Message: "+e.getMessage());
@@ -78,7 +75,6 @@ public class Gui {
         keyPressed.put(KeyCombination.keyCombination("Alt+G"), false);
         keyPressed.put(KeyCombination.keyCombination("Alt+V"), false);
     }
-
     /**
      * sets all keys to false except the input in true;
      * @param k input key
@@ -94,34 +90,27 @@ public class Gui {
      * set and init the Horizontal Box used to contain search text filed
      */
     private void inithBox(){
-        hBox = new HBox();
-        hBox.getChildren().add(search);
-        hBox.setMaxHeight(25);
-        hBox.setStyle("-fx-padding: 0 0 0 2; -fx-background-color: transparent;");
+        searchPane = new HBox();
+        searchPane.getChildren().add(search);
+        searchPane.setMaxHeight(25);
+        searchPane.setStyle("-fx-padding: 0 0 0 2; -fx-background-color: transparent;");
     }
-    /**
-     * set and init the stackPane. StackPane contain ScrollPane and consequently the Table.
-     */
-    private void initStackPane(){
-
-    }
-
-
     /**
      * Set and initialize Menu Item
      */
     private void initMenu(){
         menuBar = new MenuBar();
-        initMenuFile();
-        initMenuEdit();
-        initMenuView();
+        Menu file, edit, view;
+        file = initMenuFile();
+        edit = initMenuEdit();
+        view = initMenuView();
         menuBar.getMenus().addAll(file, edit, view);
     }
     /**
      * set and initialize file section Menu
      */
-    private void initMenuFile(){
-        file = new Menu("File");
+    private Menu initMenuFile(){
+        Menu file = new Menu("File");
         MenuItem load = new MenuItem("Load");
         MenuItem save = new MenuItem("Save");
         MenuItem save_as = new MenuItem("Save as ");
@@ -134,14 +123,14 @@ public class Gui {
             if (confirmMessage("Exit Confirmation", "Are u sure u want to exit?"))
                 System.exit(0);
         });
-
         file.getItems().addAll(load, save, save_as, quit);
+        return file;
     }
     /**
      * set and initialize edit section Menu
      */
-    private void initMenuEdit(){
-        edit = new Menu("Edit");
+    private Menu initMenuEdit(){
+        Menu edit = new Menu("Edit");
         MenuItem find = new MenuItem("Find");
         MenuItem delete = new MenuItem("Delete");
         MenuItem genInputMap = new MenuItem("Generate Input");
@@ -150,24 +139,29 @@ public class Gui {
         genInputMap.setOnAction(e->{
             if (!keyPressed.get(KeyCombination.keyCombination("Ctrl+G"))) {
                 setKeyPressed(KeyCombination.keyCombination("Ctrl+G"));
-                borderPane.setCenter(generateInputPane);
+                stackPane.getChildren().clear();
+                stackPane.getChildren().add(generateInputPane);
             }
         });
 
         find.setAccelerator(KeyCombination.keyCombination("Ctrl+F"));
         find.setOnAction(e -> {
             if (keyPressed.get(KeyCombination.keyCombination("Ctrl+F"))) {
-                stackPane.getChildren().remove(hBox);
+                stackPane.getChildren().remove(searchPane);
                 keyPressed.put(KeyCombination.keyCombination("Ctrl+F"), false);
             } else {
-                stackPane.getChildren().add(hBox);
+                stackPane.getChildren().add(searchPane);
                 search.requestFocus();
                 keyPressed.put(KeyCombination.keyCombination("Ctrl+F"), true);
             }
         });
-
         edit.getItems().addAll(genInputMap,delete, find);
+        return edit;
     }
+
+    /**
+     * set and Generate Input Pane.
+     */
     private void initGenerateInputPane(){
         generateInputPane = new StackPane();
         GridPane container = new GridPane();
@@ -208,8 +202,8 @@ public class Gui {
     /**
      * set and initialize View section Menu
      */
-    private void initMenuView(){
-        view = new Menu("View");
+    private Menu initMenuView(){
+        Menu view = new Menu("View");
         MenuItem orders = new MenuItem("Orders");
         MenuItem clients = new MenuItem("Clients");
         MenuItem goods = new MenuItem("Goods");
@@ -244,6 +238,7 @@ public class Gui {
         });
 
         view.getItems().addAll(orders, clients, goods, vehicles);
+        return view;
     }
 
 
@@ -277,10 +272,10 @@ public class Gui {
         tClient.setTableMenuButtonVisible(true);
         tClient.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
     }
+
     /**
      * Set and initialize Order's table
      */
-
     private void initOrderTable(){
         double offset = 0.003;
         double colw = prefWidth/5;
@@ -398,12 +393,15 @@ public class Gui {
         stackPane = new StackPane();
         ScrollPane scrollPane = new ScrollPane();
         borderPane.setPrefSize(prefWidth,prefHeight);
-        borderPane.setCenter(stackPane);
+        borderPane.setCenter(scrollPane);
         borderPane.setTop(menuBar);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        stackPane.getChildren().add(scrollPane);
+        //scrollPane.setContent(stackPane);
         stackPane.setAlignment(Pos.TOP_LEFT);
+        setKeyPressed(KeyCombination.keyCombination("Ctrl+G"));
+        stackPane.getChildren().addAll(generateInputPane);
+        borderPane.setCenter(stackPane);
     }
     /**
      * @return main panel

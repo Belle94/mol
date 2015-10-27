@@ -35,4 +35,10 @@ public class AlgorithmsTest{
 
         assertEquals(Algorithms.firstFitDecreasing(testGoodList,max),binsExpected);
     }
+
+    @Test
+    public void testGenRndInputGraph(){
+        AdjacencyList g = Algorithms.generateRndGraph(10,5,10);
+        AdjacencyListTest.printGraph(g);
+    }
 }
