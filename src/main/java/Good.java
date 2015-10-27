@@ -24,11 +24,15 @@ public class Good {
     private Integer qnt;
     @DatabaseField(canBeNull = true, columnName = DESC_FIELD_NAME)
     private String description;
-    @ForeignCollectionField
-    private ForeignCollection<GoodOrder> goodOrders;
 
     public Good() {
         // all persisted classes must define a no-arg constructor with at least package visibility
+    }
+
+    public Good(double volume, Integer qnt, String description) {
+        this.volume = volume;
+        this.qnt = qnt;
+        this.description = description;
     }
 
     public Good(Integer id, double volume, Integer qnt, String description) {
@@ -70,15 +74,6 @@ public class Good {
         this.description = description;
     }
 
-    public ForeignCollection<GoodOrder> getGoodOrders() {
-        return goodOrders;
-    }
-
-    public void setGoodOrders(ForeignCollection<GoodOrder> goodOrders) {
-        this.goodOrders = goodOrders;
-    }
-
-
     /**
      * create and implement a new comparator for goods object.
      * @return comparator of 2 Good
@@ -104,6 +99,14 @@ public class Good {
         if (!qnt.equals(good.qnt)) return false;
         return !(description != null ? !description.equals(good.description) : good.description != null);
 
+    }
+
+    @Override
+    public String toString() {
+        return "ID: " + id +
+                "\nVolume: " + volume +
+                "\nQuantity: " + qnt +
+                "\nDescription: " + description;
     }
 
     @Override

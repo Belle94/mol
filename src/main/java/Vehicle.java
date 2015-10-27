@@ -10,15 +10,13 @@ public class Vehicle{
     public final static String CHARGE_CURRENT_FIELD_NAME = "current charge";
     public final static String CHARGE_MAX_FIELD_NAME = "maximal charge";
 
-    @DatabaseField(id =true)
+    @DatabaseField(id = true)
     private String numberPlate;
     @DatabaseField(canBeNull = false, columnName = CHARGE_CURRENT_FIELD_NAME)
     private double chargeCurrent;
     @DatabaseField(canBeNull = false, columnName = CHARGE_MAX_FIELD_NAME)
     private double chargeMax;
-    @ForeignCollectionField
-    private ForeignCollection<Itinerary> itineraries;
-
+    @DatabaseField(foreign = true, canBeNull = false)
     private Bin bin;
 
     public Vehicle() {
@@ -63,11 +61,10 @@ public class Vehicle{
         this.chargeCurrent = chargeCurrent;
     }
 
-    public ForeignCollection<Itinerary> getItineraries() {
-        return itineraries;
-    }
-
-    public void setItineraries(ForeignCollection<Itinerary> itineraries) {
-        this.itineraries = itineraries;
+    @Override
+    public String toString() {
+        return "ID: " + numberPlate +
+                "\nCurrent charge: " + chargeCurrent +
+                "\nMax charge: " + chargeMax;
     }
 }

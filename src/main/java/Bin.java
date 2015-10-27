@@ -1,3 +1,7 @@
+import com.j256.ormlite.dao.ForeignCollection;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -5,15 +9,36 @@ import java.util.Objects;
 /**
  * Class implement a Bin.
  */
+@DatabaseTable(tableName = "bin")
 public class Bin {
+    @DatabaseField(generatedId = true)
+    private Integer id;
+    @DatabaseField(canBeNull = false)
     private double volumeCurrent;
+    @DatabaseField(canBeNull = false)
     private double volumeMax;
+
     private List<Good> goods;
 
+    public Bin() {
+        // required by ORMLite
+    }
+
     public Bin(double volumeMax){
-        this.volumeCurrent = 0;
+        this(0, volumeMax);
+    }
+
+    public Bin(double volumeCurrent, double volumeMax) {
+        this.volumeCurrent = volumeCurrent;
         this.volumeMax = volumeMax;
-        goods = new ArrayList<>();
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public double getVolumeWasted() {
@@ -36,15 +61,7 @@ public class Bin {
         this.volumeMax = volumeMax;
     }
 
-    public List<Good> getGoods() {
-        return goods;
-    }
-
-    public void setGoods(List<Good> goods) {
-        this.goods = goods;
-    }
-
-    /**
+    /*
      * implement addGood method, refresh the volumeCurrent
      * @param good will be added
      * @return boolean value, true if the function add the good correctly, else false.

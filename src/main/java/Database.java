@@ -3,8 +3,10 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * class that implement method to access a database
@@ -17,11 +19,12 @@ public class Database {
     private Dao<Order,Integer> daoOrder;
     private Dao<GoodOrder,Integer> daoGoodOrder;
     private Dao<Good,Integer> daoGood;
-    private Dao<Itinerary,Integer> daoItinerary;
     private Dao<Vehicle,String> daoVehicle;
+    private Dao<Bin,Integer> daoBin;
 
-    public Database(String databaseUrl){
+    public Database(String databaseUrl) throws SQLException, ClassNotFoundException {
         this.databaseUrl = databaseUrl;
+        openConnection();
     }
 
     public void addClient(Client client) throws SQLException, ClassNotFoundException {
@@ -40,13 +43,16 @@ public class Database {
         daoClient.delete(client);
     }
 
-    public void addOrder(Order order, GoodOrder goodOrder) throws SQLException, ClassNotFoundException {
+    public void addOrder(Order order) throws SQLException, ClassNotFoundException {
         daoOrder.createIfNotExists(order);
-        daoGoodOrder.createIfNotExists(goodOrder);
     }
 
     public Order getOrderByID(Integer id) throws SQLException {
         return daoOrder.queryForId(id);
+    }
+
+    public List<Order> getOrdersInBin(Bin bin) throws SQLException {
+        return daoOrder.queryForEq(Order.BIN_FIELD_NAME, bin.getId());
     }
 
     public List<Order> getAllOrders() throws SQLException {
@@ -65,6 +71,21 @@ public class Database {
         return daoGood.queryForId(id);
     }
 
+    public List<Good> getGoodsInBin(Bin bin) throws SQLException {
+        LinkedList<Good> l = new LinkedList<>();
+        for (Order o : getOrdersInBin(bin))
+            l.addAll(getGoodByOrder(o).stream().collect(Collectors.toList()));
+
+        return l;
+    }
+
+    public List<Good> getGoodByOrder(Order order) throws SQLException {
+        return daoGoodOrder.queryForEq(
+                GoodOrder.ORDER_FIELD_NAME,
+                order.getId()).stream().map(GoodOrder::getGood)
+                .collect(Collectors.toCollection(LinkedList::new));
+    }
+
     public List<Good> getAllGoods() throws SQLException {
         return daoGood.queryForAll();
     }
@@ -77,24 +98,8 @@ public class Database {
         return daoGoodOrder.queryForAll();
     }
 
-    public List<GoodOrder> getGoodOrdersByOrderID(Integer idOrder) throws SQLException {
-        return daoGoodOrder.queryForEq("order", idOrder);
-    }
-
-    public void addItinerary(Itinerary itinerary) throws SQLException, ClassNotFoundException {
-        daoItinerary.createIfNotExists(itinerary);
-    }
-
-    public Itinerary getItineraryByID(Integer id) throws SQLException {
-        return daoItinerary.queryForId(id);
-    }
-
-    public List<Itinerary> getAllItineraries() throws SQLException {
-        return daoItinerary.queryForAll();
-    }
-
-    public void deleteItinerary(Itinerary itinerary) throws SQLException, ClassNotFoundException {
-        daoItinerary.delete(itinerary);
+    public void addGoodOrder(GoodOrder go) throws SQLException {
+        daoGoodOrder.createIfNotExists(go);
     }
 
     public void addVehicle(Vehicle vehicle) throws SQLException, ClassNotFoundException {
@@ -113,6 +118,22 @@ public class Database {
         daoVehicle.delete(vehicle);
     }
 
+    public void addBin(Bin bin) throws SQLException {
+        daoBin.createIfNotExists(bin);
+    }
+
+    public List<Bin> getAllBins() throws SQLException {
+        return daoBin.queryForAll();
+    }
+
+    public Bin getBinById(Integer id) throws SQLException {
+        return daoBin.queryForId(id);
+    }
+
+    public void deleteBin(Bin b) throws SQLException {
+        daoBin.delete(b);
+    }
+
     /**
      * Setup our database and DAOs
      */
@@ -124,26 +145,28 @@ public class Database {
             daoOrder = DaoManager.createDao(jdbcConnectionSource, Order.class);
             daoGoodOrder = DaoManager.createDao(jdbcConnectionSource, GoodOrder.class);
             daoGood = DaoManager.createDao(jdbcConnectionSource, Good.class);
-            daoItinerary = DaoManager.createDao(jdbcConnectionSource, Itinerary.class);
+            daoBin = DaoManager.createDao(jdbcConnectionSource, Bin.class);
             daoVehicle = DaoManager.createDao(jdbcConnectionSource, Vehicle.class);
             TableUtils.createTableIfNotExists(jdbcConnectionSource, Client.class);
             TableUtils.createTableIfNotExists(jdbcConnectionSource, Order.class);
             TableUtils.createTableIfNotExists(jdbcConnectionSource, Good.class);
             TableUtils.createTableIfNotExists(jdbcConnectionSource, GoodOrder.class);
-            TableUtils.createTableIfNotExists(jdbcConnectionSource, Itinerary.class);
+            TableUtils.createTableIfNotExists(jdbcConnectionSource, Bin.class);
             TableUtils.createTableIfNotExists(jdbcConnectionSource, Vehicle.class);
     }
+
     /**
      * Open a connection with the database
      * @throws SQLException
      * @throws ClassNotFoundException
      */
-    private void openConnection() throws SQLException, ClassNotFoundException {
+    public void openConnection() throws SQLException, ClassNotFoundException {
         final String prefixString = "jdbc:sqlite:";
         Class.forName("org.sqlite.JDBC");
         jdbcConnectionSource = new JdbcConnectionSource(prefixString+databaseUrl);
         setupDao();
     }
+    
     /**
      * Closes the connection with the database
      */
