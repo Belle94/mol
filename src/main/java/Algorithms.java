@@ -1,10 +1,8 @@
-import javafx.util.Pair;
-import org.omg.CORBA.INTERNAL;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-/*public class Algorithms{
+public class Algorithms{
+
     /**
      * First fit decreasing algorithm for bin packing problem.
      * Every single bin will be assign to vehicle.
@@ -15,7 +13,7 @@ import java.util.List;
      * @return List of Bin which can be null if empty or the volumeMax
      *         isn't enough to contain a single good.
      */
-    /*public static List<Bin> firstFitDecreasing(List<Good> goods, double volumeMax) {
+    public static List<Bin> firstFitDecreasing(List<Good> goods, double volumeMax) {
         if (goods.isEmpty()){
             return null;
         }
@@ -42,7 +40,7 @@ import java.util.List;
      * @return List of Bin which can be null if empty or the volumeMax
      *         isn't enough to contain a single good.
      */
-    /*public static List<Bin> insertGood(Good good, List<Bin> bins){
+    private static List<Bin> insertGood(Good good, List<Bin> bins){
         if (bins.isEmpty()){
             return null;
         }
@@ -65,5 +63,4 @@ import java.util.List;
         }
         return bins;
     }
-
-}*/
+}

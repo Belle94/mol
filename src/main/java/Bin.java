@@ -64,7 +64,7 @@ public class Bin {
      * @param good will be added
      * @return boolean value, true if the function add the good correctly, else false.
      */
-    /*public boolean addGood(Good good){
+    public boolean addGood(Good good){
         if ( getVolumeWasted() >= (good.getVolume()*good.getQnt()) ){
             Good g = containsId(good.getId());
             if (g != null){
@@ -83,7 +83,7 @@ public class Bin {
      * @param good will be remove
      * @return boolean value, true if the function remove the good correctly, else false.
      */
-    /*public boolean removeGood(Good good){
+    public boolean removeGood(Good good){
         Good g = containsId(good.getId());
         if (g!=null){
             volumeCurrent -= good.getQnt()*good.getVolume();
@@ -101,13 +101,13 @@ public class Bin {
      * @param id that will be looking for in the bin
      * @return null when the ID isn't in the bin, else the good with the same ID is returned.
      */
-    /*public Good containsId(Integer id){
+    public Good containsId(Integer id){
         for (Good good: goods){
             if (Objects.equals(id, good.getId()))
                 return good;
         }
         return null;
-    }*/
+    }
 
     @Override
     public boolean equals(Object o) {
