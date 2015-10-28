@@ -35,10 +35,13 @@ public class AdjacencyList {
      * @param distance the weight
      */
     public void addEdge(Integer source, Integer destination, Double distance) {
-        List<Pair<Integer, Double>> n = g.containsKey(source) ?
+        List<Pair<Integer, Double>> nodes = g.containsKey(source) ?
                 g.get(source) : new ArrayList<>();
-        n.add(new Pair<>(destination, distance));
-        g.put(source, n);
+        for (Pair<Integer,Double> node: nodes)
+            if (node.getKey().equals(destination))
+                return;
+        nodes.add(new Pair<>(destination, distance));
+        g.put(source, nodes);
         if (!g.containsKey(destination))
             addNode(destination);
     }
