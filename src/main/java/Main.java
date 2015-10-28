@@ -23,6 +23,7 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage stage) throws Exception {
+
         Gui gui = new Gui();
         stage.setTitle("Progetto MOL");
         Scene scene = new Scene(gui.getRootElement());

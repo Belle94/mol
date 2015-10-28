@@ -19,9 +19,6 @@ import java.util.Optional;
 import java.util.*;
 import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.*;
-import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants;
-import org.graphstream.ui.spriteManager.Sprite;
-import org.graphstream.ui.spriteManager.SpriteManager;
 import org.graphstream.ui.view.View;
 import org.graphstream.ui.view.Viewer;
 import javax.swing.*;
@@ -68,29 +65,56 @@ public class Gui {
     }
 
     private void initGraph() {
-        Graph graph = new MultiGraph("Maps");
+        System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
+        Graph graph = new SingleGraph("Maps");
         if (adjacencyList != null){
             int n = adjacencyList.getNumNodes();
             System.out.println(n);
             Integer i;
-            for(i = 0; i < n; i++){
-                graph.addNode(i.toString());
+            for(i = 0; i < n; i++) {
+                Node node =graph.addNode(i.toString());
+                node.addAttribute("ui.label", i.toString());
+                if (i == 0) {
+                    node.addAttribute("ui.style", "size: 25px;" +
+                            " fill-color: #ee283d;" +
+                            " stroke-mode: plain;" +
+                            " stroke-color: #999;" +
+                            " shadow-mode: plain;" +
+                            " shadow-width: 0px;" +
+                            " shadow-color: #999;" +
+                            " shadow-offset: 3px, -3px;");
+                }
+                else{
+                    node.addAttribute("ui.style", "size: 20px;" +
+                            " fill-color: #a5b7c1;" +
+                            " stroke-mode: plain;" +
+                            " stroke-color: #999;" +
+                            " shadow-mode: plain;" +
+                            " shadow-width: 0px;" +
+                            " shadow-color: #999;" +
+                            " shadow-offset: 3px, -3px;");
+
+                }
             }
             for(i = 0; i < n; i++){
                 List<Integer> list = adjacencyList.getNeighbor(i);
+                int c = 0;
                 for(Integer j:list){
                     System.out.println(i + " " + j);
-                    graph.addEdge((i.toString() + j.toString()), i.toString(), j.toString(), true);
+                    Edge edge = graph.addEdge((i.toString() + j.toString()), i.toString(), j.toString(), true);
+                    edge.addAttribute("ui.label",adjacencyList.getDistance(i,c));
+                    edge.addAttribute("ui.style", "shape: cubic-curve;");
+                    c++;
                 }
             }
-
-            SpriteManager sman = new SpriteManager(graph);
-            Sprite s = sman.addSprite("boh");
-            s.attachToNode(i.toString());
         }
+
         Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
         viewer.enableAutoLayout();
         graphPanel = viewer.addDefaultView(false);
+        //graphPanel.getCamera().setViewCenter(2,3,4);
+        graphPanel.getCamera().setViewPercent(2);
+
     }
 
     /**
@@ -233,13 +257,16 @@ public class Gui {
         gen.setOnAction(e -> {
             if (!textList.get(0).getText().isEmpty() && !textList.get(1).getText().isEmpty() && !textList.get(2).getText().isEmpty()) {
                 adjacencyList = Algorithms.generateRndGraph(Integer.parseInt(textList.get(0).getText())-1,
-                        Integer.parseInt(textList.get(1).getText())-1, Integer.parseInt(textList.get(2).getText())-1);
+                        Integer.parseInt(textList.get(1).getText()), Integer.parseInt(textList.get(2).getText()));
                 System.out.println("Generated!");
                 int n = adjacencyList.getNumNodes();
                 for (Integer i = 0; i < n; i++) {
                     List<Integer> list = adjacencyList.getNeighbor(i);
+                    int c = 0;
                     for (Integer j : list) {
-                        System.out.println(i + " " + j);
+                        System.out.print(i + " " + j+" ");
+                        System.out.println(adjacencyList.getDistance(i, c));
+                        c++;
                     }
                 }
 
