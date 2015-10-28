@@ -19,9 +19,11 @@ import java.util.Optional;
 import java.util.*;
 import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.*;
+import org.graphstream.ui.graphicGraph.stylesheet.StyleConstants;
+import org.graphstream.ui.spriteManager.Sprite;
+import org.graphstream.ui.spriteManager.SpriteManager;
 import org.graphstream.ui.view.View;
 import org.graphstream.ui.view.Viewer;
-
 import javax.swing.*;
 
 /**
@@ -31,19 +33,19 @@ public class Gui {
     private BorderPane borderPane;
     private MenuBar menuBar;
     private Pane generateInputPane;
-    private HBox hBox;
+    private HBox searchPane;
     private StackPane stackPane;
     private TableView<Client> tClient;
     private TableView tOrder;
     private TableView<Good> tGood;
     private TableView<Vehicle> tVehicle;
     private TextField search;
-    private Menu file, edit, view;
     private HashMap<KeyCombination, Boolean> keyPressed;
     private double prefWidth = 800.0;
     private double prefHeight = 600.0;
     private double prefMenuHeight=30;
     private View graphPanel;
+    private AdjacencyList adjacencyList;
     /**
      * builder that calls methods for configuring the interface
      */
@@ -58,7 +60,6 @@ public class Gui {
             initOrderTable();
             initGoodTable();
             initVehicleTable();
-            initStackPane();
             initRootElement();
         }catch (Exception e){
             errorMessage("Something Wrong!","Error Message: "+e.getMessage());
@@ -66,16 +67,27 @@ public class Gui {
         }
     }
 
-    private void initGraph(){
-        Graph graph = new SingleGraph("Maps");
-        graph.addNode("A");
-        graph.addNode("B");
-        graph.addNode("C");
-        graph.addNode("D");
-        graph.addEdge("AB", "A", "B");
-        graph.addEdge("BC", "B", "C");
-        graph.addEdge("CD", "C", "D");
-        graph.addEdge("DA", "D", "A");
+    private void initGraph() {
+        Graph graph = new MultiGraph("Maps");
+        if (adjacencyList != null){
+            int n = adjacencyList.getNumNodes();
+            System.out.println(n);
+            Integer i;
+            for(i = 0; i < n; i++){
+                graph.addNode(i.toString());
+            }
+            for(i = 0; i < n; i++){
+                List<Integer> list = adjacencyList.getNeighbor(i);
+                for(Integer j:list){
+                    System.out.println(i + " " + j);
+                    graph.addEdge((i.toString() + j.toString()), i.toString(), j.toString(), true);
+                }
+            }
+
+            SpriteManager sman = new SpriteManager(graph);
+            Sprite s = sman.addSprite("boh");
+            s.attachToNode(i.toString());
+        }
         Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
         viewer.enableAutoLayout();
         graphPanel = viewer.addDefaultView(false);
@@ -99,7 +111,6 @@ public class Gui {
         keyPressed.put(KeyCombination.keyCombination("Alt+G"), false);
         keyPressed.put(KeyCombination.keyCombination("Alt+V"), false);
     }
-
     /**
      * sets all keys to false except the input in true;
      * @param k input key
@@ -115,34 +126,27 @@ public class Gui {
      * set and init the Horizontal Box used to contain search text filed
      */
     private void inithBox(){
-        hBox = new HBox();
-        hBox.getChildren().add(search);
-        hBox.setMaxHeight(25);
-        hBox.setStyle("-fx-padding: 0 0 0 2; -fx-background-color: transparent;");
+        searchPane = new HBox();
+        searchPane.getChildren().add(search);
+        searchPane.setMaxHeight(25);
+        searchPane.setStyle("-fx-padding: 0 0 0 2; -fx-background-color: transparent;");
     }
-    /**
-     * set and init the stackPane. StackPane contain ScrollPane and consequently the Table.
-     */
-    private void initStackPane(){
-
-    }
-
-
     /**
      * Set and initialize Menu Item
      */
     private void initMenu(){
         menuBar = new MenuBar();
-        initMenuFile();
-        initMenuEdit();
-        initMenuView();
+        Menu file, edit, view;
+        file = initMenuFile();
+        edit = initMenuEdit();
+        view = initMenuView();
         menuBar.getMenus().addAll(file, edit, view);
     }
     /**
      * set and initialize file section Menu
      */
-    private void initMenuFile(){
-        file = new Menu("File");
+    private Menu initMenuFile(){
+        Menu file = new Menu("File");
         MenuItem load = new MenuItem("Load");
         MenuItem save = new MenuItem("Save");
         MenuItem save_as = new MenuItem("Save as ");
@@ -155,14 +159,14 @@ public class Gui {
             if (confirmMessage("Exit Confirmation", "Are u sure u want to exit?"))
                 System.exit(0);
         });
-
         file.getItems().addAll(load, save, save_as, quit);
+        return file;
     }
     /**
      * set and initialize edit section Menu
      */
-    private void initMenuEdit(){
-        edit = new Menu("Edit");
+    private Menu initMenuEdit(){
+        Menu edit = new Menu("Edit");
         MenuItem find = new MenuItem("Find");
         MenuItem delete = new MenuItem("Delete");
         MenuItem genInputMap = new MenuItem("Generate Input");
@@ -171,24 +175,29 @@ public class Gui {
         genInputMap.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Ctrl+G"))) {
                 setKeyPressed(KeyCombination.keyCombination("Ctrl+G"));
-                borderPane.setCenter(generateInputPane);
+                stackPane.getChildren().clear();
+                stackPane.getChildren().add(generateInputPane);
             }
         });
 
         find.setAccelerator(KeyCombination.keyCombination("Ctrl+F"));
         find.setOnAction(e -> {
             if (keyPressed.get(KeyCombination.keyCombination("Ctrl+F"))) {
-                stackPane.getChildren().remove(hBox);
+                stackPane.getChildren().remove(searchPane);
                 keyPressed.put(KeyCombination.keyCombination("Ctrl+F"), false);
             } else {
-                stackPane.getChildren().add(hBox);
+                stackPane.getChildren().add(searchPane);
                 search.requestFocus();
                 keyPressed.put(KeyCombination.keyCombination("Ctrl+F"), true);
             }
         });
-
         edit.getItems().addAll(genInputMap,delete, find);
+        return edit;
     }
+
+    /**
+     * set and Generate Input Pane.
+     */
     private void initGenerateInputPane(){
         generateInputPane = new StackPane();
         GridPane container = new GridPane();
@@ -197,20 +206,17 @@ public class Gui {
         HBox headerBox = new HBox();
         Button gen, cancel;
         gen = new Button("Generate");
-        gen.setOnAction(e->{});
+        gen.setOnAction(e -> {
+        });
         cancel = new Button("Cancel");
-        cancel.setOnAction(e-> textList.forEach(javafx.scene.control.TextInputControl::clear));
+        cancel.setOnAction(e -> textList.forEach(javafx.scene.control.TextInputControl::clear));
         Label headerLabel = new Label("Generate Input");
         headerLabel.setStyle("-fx-font-family: 'Goha-Tibeb Zemen'; -fx-font-size: 20px; -fx-text-fill: coral;");
         headerBox.setStyle("-fx-alignment: top-left; -fx-padding: 20 0 20 -20;");
         headerBox.getChildren().add(headerLabel);
-        labels.add(new Label("Numero Nodi: "));
-        labels.add(new Label("Dimensione Nodo: "));
-        labels.add(new Label("Dimensione Raggio:"));
-        labels.add(new Label("Superfice non amm.:"));
-        labels.add(new Label("Colore Nodo: "));
-        labels.add(new Label("Colore Arco: "));
-        labels.add(new Label("Archi orientati: "));
+        labels.add(new Label("Numero Nodi Massimo: "));
+        labels.add(new Label("Numero Archi Massimo: "));
+        labels.add(new Label("Distanza Massima:"));
         for (int i=0;i<labels.size(); i++){
             labels.get(i).setStyle("-fx-pref-height:25px; -fx-alignment: center-left; " +
                     "-fx-font-family: 'Goha-Tibeb Zemen'; -fx-font-size: 14px;");
@@ -224,13 +230,28 @@ public class Gui {
         container.add(gen, 0, labels.size() + 1);
         container.add(cancel, 1, labels.size() + 1);
         container.setStyle("-fx-hgap: 10px; -fx-vgap: 5px; -fx-padding: 0 0 0 40px; -fx-background-color: white;");
+        gen.setOnAction(e -> {
+            if (!textList.get(0).getText().isEmpty() && !textList.get(1).getText().isEmpty() && !textList.get(2).getText().isEmpty()) {
+                adjacencyList = Algorithms.generateRndGraph(Integer.parseInt(textList.get(0).getText())-1,
+                        Integer.parseInt(textList.get(1).getText())-1, Integer.parseInt(textList.get(2).getText())-1);
+                System.out.println("Generated!");
+                int n = adjacencyList.getNumNodes();
+                for (Integer i = 0; i < n; i++) {
+                    List<Integer> list = adjacencyList.getNeighbor(i);
+                    for (Integer j : list) {
+                        System.out.println(i + " " + j);
+                    }
+                }
+
+            }
+        });
         generateInputPane.getChildren().add(container);
     }
     /**
      * set and initialize View section Menu
      */
-    private void initMenuView(){
-        view = new Menu("View");
+    private Menu initMenuView(){
+        Menu view = new Menu("View");
         MenuItem orders = new MenuItem("Orders");
         MenuItem clients = new MenuItem("Clients");
         MenuItem goods = new MenuItem("Goods");
@@ -275,6 +296,7 @@ public class Gui {
             }
         });
         view.getItems().addAll(orders, clients, goods, vehicles, maps);
+        return view;
     }
 
     private void createSwingContent(final SwingNode node){
@@ -311,10 +333,10 @@ public class Gui {
         tClient.setTableMenuButtonVisible(true);
         tClient.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
     }
+
     /**
      * Set and initialize Order's table
      */
-
     private void initOrderTable(){
         double offset = 0.003;
         double colw = prefWidth/5;
@@ -432,12 +454,15 @@ public class Gui {
         stackPane = new StackPane();
         ScrollPane scrollPane = new ScrollPane();
         borderPane.setPrefSize(prefWidth,prefHeight);
-        borderPane.setCenter(stackPane);
+        borderPane.setCenter(scrollPane);
         borderPane.setTop(menuBar);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        stackPane.getChildren().add(scrollPane);
+        //scrollPane.setContent(stackPane);
         stackPane.setAlignment(Pos.TOP_LEFT);
+        setKeyPressed(KeyCombination.keyCombination("Ctrl+G"));
+        stackPane.getChildren().addAll(generateInputPane);
+        borderPane.setCenter(stackPane);
     }
     /**
      * @return main panel

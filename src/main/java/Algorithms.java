@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
+
 public class Algorithms{
     /**
      * First fit decreasing algorithm for bin packing problem.
@@ -57,6 +59,20 @@ public class Algorithms{
             bins.add(bin);
         }
         return bins;
+    }
+
+    public static AdjacencyList generateRndGraph(int nodeMax, int edgeMax, double distanceMax){
+        AdjacencyList g = new AdjacencyList();
+        for (int source=0; source < nodeMax+1; source++) {
+            g.addNode(source);
+            int rndEdge = 1 + (int)(Math.random()*edgeMax);
+            for (int j=0; j < rndEdge; j++){
+                int destination = 1 + (int)(Math.random()*nodeMax);
+                double distance = Math.round( (Math.random()*distanceMax) * 100.0 ) / 100.0;
+                g.addEdge(source, destination, distance);
+            }
+        }
+        return g;
     }
 
 }
