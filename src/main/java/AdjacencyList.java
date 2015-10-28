@@ -1,4 +1,6 @@
 import javafx.util.Pair;
+
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -120,15 +122,19 @@ public class AdjacencyList {
             }
         }
 
+        wMax += 1.0;
+
         for (Integer c : g.keySet()) {
+            List<Pair<Integer, Double>> l = new ArrayList<>();
             for (Pair<Integer, Double> p : g.get(c)) {
-                p = new Pair<>(p.getKey(), wMax - p.getValue());
+                 l.add(new Pair<>(p.getKey(), wMax - p.getValue()));
             }
+            g.put(c, l);
         }
     }
 
     public HashMap<Vehicle, AdjacencyList> clark_wright
-            (Database db, Integer vehicles, Integer zero) {
+            (Database db, Integer vehicles, Integer zero, List<Bin> bins) {
         DistanceMatrix matDistance = new DistanceMatrix(this);
         HashMap<Pair<Integer, Integer>, Double> savings = new HashMap<>();
         // initializing savings
@@ -146,20 +152,41 @@ public class AdjacencyList {
 
         // Merge route between nodes
         boolean decreased = true;
-        for (int i = nodes().size(); i < vehicles && decreased;) {
-            decreased = false;
+        try {
+            for (int i = nodes().size(); i < vehicles && decreased; ) {
+                decreased = false;
 
-            for (Pair<Integer, Integer> p : orderedSavingsKey) {
-                // if clients involved have goods to be transported
-                // for which the sum of the goods is <= than the
-                // capacity of the vehicle, then merge the two routes
-                // and decrease the number of vehicles used
-                // and set decrease to true
+                for (Pair<Integer, Integer> p : orderedSavingsKey) {
+                    // if clients involved have goods to be transported
+                    // for which the sum of the goods is <= than the
+                    // capacity of the vehicle, then merge the two routes
+                    // and decrease the number of vehicles used
+                    // and set decrease to true
 
+                    List<Integer> clientsInvolved = new LinkedList<Integer>();
+                    List<Good> goods = new LinkedList<>();
+                    clientsInvolved.add(p.getKey());
+                    clientsInvolved.add(p.getValue());
+                    Double cap = .0;
+                    for (Integer client : clientsInvolved) {
+                        for (Order o : db.getOrderByClient(client)) {
+                            for (Good g : db.getGoodByOrder(o)) {
+                                cap += g.getVolume();
+                                goods.add(g);
+                            }
+                        }
+                    }
+
+                    final Double finalCap = cap;
+                    bins.stream().filter(
+                            bin -> bin.getVolumeWasted() >= finalCap).forEach(
+                            bin -> goods.forEach(bin::addGood));
+                }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
-        return null;
     }
 
     public static List<Pair<Integer, Integer>> orderByValue(HashMap<Pair<Integer, Integer>, Double> h) {
