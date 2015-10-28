@@ -55,6 +55,14 @@ public class Database {
         return daoOrder.queryForEq(Order.BIN_FIELD_NAME, bin.getId());
     }
 
+    public List<Order> getOrderByClient(Client c) throws SQLException {
+        return daoOrder.queryForEq(Order.CLIENT_FIELD_NAME, c.getId());
+    }
+
+    public List<Order> getOrderByClient(Integer id) throws SQLException {
+        return daoOrder.queryForEq(Order.CLIENT_FIELD_NAME, id);
+    }
+
     public List<Order> getAllOrders() throws SQLException {
         return daoOrder.queryForAll();
     }
