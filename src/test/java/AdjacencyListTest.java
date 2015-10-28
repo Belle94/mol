@@ -36,4 +36,26 @@ public class AdjacencyListTest {
             System.out.println();
         }
     }
+
+    @Test
+    public void testReverseEdgeWeight() {
+        AdjacencyList adj = new AdjacencyList();
+        adj.addEdge(1, 2, 5.0);
+        adj.addEdge(1, 3, 1.0);
+        adj.addEdge(2, 4, 2.0);
+        adj.addEdge(3, 4, 3.0);
+        adj.reverseEdgeWeight();
+
+        AdjacencyList exp = new AdjacencyList();
+        exp.addEdge(1, 2, 1.0);
+        exp.addEdge(1, 3, 5.0);
+        exp.addEdge(2, 4, 4.0);
+        exp.addEdge(3, 4, 3.0);
+
+        printGraph(adj);
+        System.out.println();
+        printGraph(exp);
+
+        assertEquals(exp.getGraph(), adj.getGraph());
+    }
 }
