@@ -1,4 +1,5 @@
 import javafx.util.Pair;
+import sun.jvm.hotspot.oops.DefaultOopVisitor;
 
 import java.sql.SQLException;
 import java.util.*;
@@ -133,8 +134,9 @@ public class AdjacencyList {
         }
     }
 
-    public HashMap<Vehicle, AdjacencyList> clark_wright
+    public HashMap<Bin, AdjacencyList> clark_wright
             (Database db, Integer vehicles, Integer zero, List<Bin> bins) {
+        HashMap<Bin, AdjacencyList> asganaway = new HashMap<>();
         DistanceMatrix matDistance = new DistanceMatrix(this);
         HashMap<Pair<Integer, Integer>, Double> savings = new HashMap<>();
         // initializing savings
@@ -186,7 +188,7 @@ public class AdjacencyList {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
+        return asganaway;
     }
 
     public static List<Pair<Integer, Integer>> orderByValue(HashMap<Pair<Integer, Integer>, Double> h) {
@@ -218,6 +220,7 @@ public class AdjacencyList {
     public Set<Integer> getNodes(){
         return g.keySet();
     }
+
     /**
      * Dijkstra run with a queue Q.
      * The queue as initialize only with Source node.
@@ -229,7 +232,7 @@ public class AdjacencyList {
      * @param source the node where Dijkstra start
      * @return the graph with the shortest path form the node source to each other nodes.
      */
-    public HashMap<Integer, List<Pair<Integer, Double>>> Dijkstra(Integer source){
+    public Pair<HashMap<Integer, Double>, AdjacencyList> dijkstra(Integer source){
         AdjacencyList pg = new AdjacencyList();
         int n = this.getNumNodes();
         Integer u;
@@ -245,8 +248,8 @@ public class AdjacencyList {
         List<Integer> Q = new ArrayList<>();
         Q.add(source);
         while (!Q.isEmpty()){
-            u = Q.get(0);                     // it takes first element on list
-            Q.remove(0);                        // and remove it
+            u = Q.get(0);                     // takes first element on list
+            Q.remove(0);                        // removes first element
 
             if(dist[u-1] == -1){
                 break;
@@ -263,22 +266,19 @@ public class AdjacencyList {
             }
         }
 
-        //creation of graph
+        // graph's creation
         for(int i = 0; i<n; i++){
-            /*boolean ctrl = false;
-            for (int j = i; j < n; j++) {
-                if (i + 1 == prev[j]) {
-                    ctrl = true;
-                }
-            }*/
             if((prev[i] != -1)){
                 pg.addEdge(prev[i],i+1,dist[i]);
             }
-            /*if (!ctrl) {
-                pg.put(i+1, new ArrayList<>());
-            }*/
         }
-        return pg.getGraph();
+
+        HashMap<Integer, Double> ret = new HashMap<>();
+        for (Integer i : prev) {
+            ret.put(i, dist[i]);
+        }
+
+       return (new Pair<>(ret, pg));
     }
 
     @Override
