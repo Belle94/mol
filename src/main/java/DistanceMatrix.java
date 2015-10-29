@@ -11,14 +11,15 @@ public class DistanceMatrix {
         minGraph = new HashMap<>();
 
         for (Integer i : adjacencyList.nodes()) {
-            minGraph.put(i, dijkstra(i, adjacencyList));
+            minGraph.put(i, adjacencyList.dijkstra(i).getValue());
+
         }
     }
 
-    public static AdjacencyList dijkstra(Integer source, AdjacencyList g) {
-        AdjacencyList result = new AdjacencyList();
+    public AdjacencyList subAdjacencyList(Integer source, Integer destination) {
+        AdjacencyList ret = new AdjacencyList();
 
-        return result;
+        return ret;
     }
 
     public HashMap<Pair<Integer, Integer>, Double> get() {
