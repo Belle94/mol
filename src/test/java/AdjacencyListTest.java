@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 
 public class AdjacencyListTest {
     @Test
-    public void Dijkstra() throws Exception {
+    public void testDijkstra() throws Exception {
         AdjacencyList g = new AdjacencyList();
         g.addEdge(1, 6, 14.0);
         g.addEdge(1, 3, 9.0);
@@ -23,7 +23,7 @@ public class AdjacencyListTest {
         h.addEdge(1, 6, 14.0);
         h.addEdge(3, 4, 20.0);
         h.addEdge(6, 5, 23.0);
-        g = new AdjacencyList(g.Dijkstra(1));
+        g = new AdjacencyList(g.dijkstra(1).getValue().getGraph());
         assertEquals(h, g);
 
     }
