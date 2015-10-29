@@ -179,10 +179,19 @@ public class AdjacencyList {
                         }
                     }
 
-                    final Double finalCap = cap;
-                    bins.stream().filter(
-                            bin -> bin.getVolumeWasted() >= finalCap).forEach(
-                            bin -> goods.forEach(bin::addGood));
+                    boolean flag = false;
+                    for (Bin b : bins) {
+                        if (b.getVolumeWasted() >= cap) {
+                            flag = true;
+                            b.addGood(goods);
+                        }
+                    }
+
+                    if (!flag) {
+                        Bin b = new Bin();
+                        b.addGood(goods);
+                        bins.add(b);
+                    }
                 }
             }
         } catch (SQLException e) {
