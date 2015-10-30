@@ -14,6 +14,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.*;
+import java.awt.event.KeyListener;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Optional;
@@ -44,6 +45,7 @@ public class Gui {
     private double prefMenuHeight=30;
     private View graphPanel;
     private AdjacencyList adjacencyList;
+    private double z;
     /**
      * builder that calls methods for configuring the interface
      */
@@ -68,6 +70,7 @@ public class Gui {
     private void initGraph() {
         System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
         Graph graph = new SingleGraph("Maps");
+        z = 1;
         if (adjacencyList != null){
             int n = adjacencyList.getNumNodes();
             Integer i;
@@ -100,7 +103,7 @@ public class Gui {
                 List<Integer> list = adjacencyList.getNeighbor(i);
                 int c = 0;
                 for(Integer j:list){
-                    Edge edge = graph.addEdge((i.toString() + j.toString()), i.toString(), j.toString(), true);
+                    Edge edge = graph.addEdge((i.toString() +"-"+ j.toString()), i.toString(), j.toString(), true);
                     edge.addAttribute("ui.label",adjacencyList.getDistance(i,c));
                     edge.addAttribute("ui.style", "shape: cubic-curve;");
                     c++;
@@ -111,9 +114,38 @@ public class Gui {
         Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
         viewer.enableAutoLayout();
         graphPanel = viewer.addDefaultView(false);
-        //graphPanel.getCamera().setViewCenter(2,3,4);
-        graphPanel.getCamera().setViewPercent(2);
+        graphPanel.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(java.awt.event.KeyEvent e) {
 
+            }
+
+            @Override
+            public void keyPressed(java.awt.event.KeyEvent e) {
+                char ch = e.getKeyChar();
+                if (ch == '+') {
+                    if (z - 0.01 > 0){
+                        z -= 0.01;
+                        graphPanel.getCamera().setViewPercent(z);
+                    }
+                }
+                if(ch == '-'){
+                    if (z + 0.01 < 3){
+                        z += 0.01;
+                        graphPanel.getCamera().setViewPercent(z);
+                    }
+                }
+                if(ch =='0'){
+                    z = 1;
+                    graphPanel.getCamera().setViewPercent(z);
+                }
+            }
+
+            @Override
+            public void keyReleased(java.awt.event.KeyEvent e) {
+
+            }
+        });
     }
 
     /**
@@ -257,24 +289,12 @@ public class Gui {
             if (!textList.get(0).getText().isEmpty() && !textList.get(1).getText().isEmpty() && !textList.get(2).getText().isEmpty()) {
                 adjacencyList = Algorithms.generateRndGraph(Integer.parseInt(textList.get(0).getText())-1,
                         Integer.parseInt(textList.get(1).getText()), Integer.parseInt(textList.get(2).getText()));
-                System.out.println("Generated!");
-/*
-                int n = adjacencyList.getNumNodes();
-                for (Integer i = 0; i < n; i++) {
-                    List<Integer> list = adjacencyList.getNeighbor(i);
-                    int c = 0;
-                    for (Integer j : list) {
-                        System.out.print(i + " " + j+" ");
-                        System.out.println(adjacencyList.getDistance(i, c));
-                        c++;
-                    }
-                }
-*/
                 initGraph();
             }
         });
         generateInputPane.getChildren().add(container);
     }
+
     /**
      * set and initialize View section Menu
      */
@@ -318,7 +338,6 @@ public class Gui {
             if (!keyPressed.get(KeyCombination.keyCombination("Alt+M"))) {
                 setMainPaneGraph();
                 setKeyPressed(KeyCombination.keyCombination("Alt+M"));
-
             }
         });
         view.getItems().addAll(orders, clients, goods, vehicles, maps);
