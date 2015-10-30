@@ -136,7 +136,7 @@ public class AdjacencyList {
 
     public HashMap<Bin, AdjacencyList> clark_wright
             (Database db, Integer vehicles, Integer zero, List<Bin> bins) {
-        HashMap<Bin, AdjacencyList> asganaway = new HashMap<>();
+        HashMap<Bin, AdjacencyList> ret = new HashMap<>();
         DistanceMatrix matDistance = new DistanceMatrix(this);
         HashMap<Pair<Integer, Integer>, Double> savings = new HashMap<>();
         // initializing savings
@@ -154,10 +154,16 @@ public class AdjacencyList {
 
         // Merge route between nodes
         boolean decreased = true;
+        Integer ib = 0;
         try {
-            for (int i = nodes().size(); i < vehicles && decreased; ) {
+            for (; decreased; ib++) {
                 decreased = false;
-
+                List<Integer> l = new LinkedList<>();
+                Pair<Integer, Integer> fp = orderedSavingsKey.get(0);
+                l.add(0);
+                l.add(fp.getKey());
+                l.add(fp.getValue());
+                orderedSavingsKey.remove(fp);
                 for (Pair<Integer, Integer> p : orderedSavingsKey) {
                     // if clients involved have goods to be transported
                     // for which the sum of the goods is <= than the
@@ -165,39 +171,35 @@ public class AdjacencyList {
                     // and decrease the number of vehicles used
                     // and set decrease to true
 
-                    List<Integer> clientsInvolved = new LinkedList<Integer>();
-                    List<Good> goods = new LinkedList<>();
-                    clientsInvolved.add(p.getKey());
-                    clientsInvolved.add(p.getValue());
-                    Double cap = .0;
-                    for (Integer client : clientsInvolved) {
-                        for (Order o : db.getOrderByClient(client)) {
-                            for (Good g : db.getGoodByOrder(o)) {
-                                cap += g.getVolume();
-                                goods.add(g);
+                    if (p.getKey().equals(l.get(l.size() - 1))) {
+                        List<Integer> clientsInvolved = new LinkedList<Integer>();
+                        List<Good> goods = new LinkedList<>();
+                        clientsInvolved.add(p.getKey());
+                        clientsInvolved.add(p.getValue());
+                        Double cap = .0;
+                        for (Integer client : clientsInvolved) {
+                            for (Order o : db.getOrderByClient(client)) {
+                                for (Good g : db.getGoodByOrder(o)) {
+                                    cap += g.getVolume();
+                                    goods.add(g);
+                                }
                             }
                         }
-                    }
 
-                    boolean flag = false;
-                    for (Bin b : bins) {
-                        if (b.getVolumeWasted() >= cap) {
-                            flag = true;
-                            b.addGood(goods);
+                        // Merge routes
+                        if (bins.get(ib).getVolumeWasted() >= cap) {
+                            l.add(p.getValue());
+                            bins.get(ib).addGood(goods);
                         }
-                    }
 
-                    if (!flag) {
-                        Bin b = new Bin();
-                        b.addGood(goods);
-                        bins.add(b);
+                        orderedSavingsKey.remove(p);
                     }
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return asganaway;
+        return ret;
     }
 
     public static List<Pair<Integer, Integer>> orderByValue(HashMap<Pair<Integer, Integer>, Double> h) {
