@@ -8,6 +8,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCombination;
@@ -27,15 +28,15 @@ import javax.swing.*;
  * Class of graphic interface
  */
 public class Gui {
-    private BorderPane borderPane;
+    private BorderPane rootPane;
     private MenuBar menuBar;
     private Pane generateInputPane;
     private HBox searchPane;
-    private StackPane stackPane;
-    private TableView<Client> tClient;
-    private TableView tOrder;
-    private TableView<Good> tGood;
-    private TableView<Vehicle> tVehicle;
+    private StackPane mainPane;
+    private ScrollPane tableClient;
+    private ScrollPane tableOrder;
+    private ScrollPane tableGood;
+    private ScrollPane tableVehicle;
     private TextField search;
     private HashMap<KeyCombination, Boolean> keyPressed;
     private double prefWidth = 800.0;
@@ -52,11 +53,11 @@ public class Gui {
             initGenerateInputPane();
             initMenu();
             initSearch();
-            inithBox();
             initClientTable();
             initOrderTable();
             initGoodTable();
             initVehicleTable();
+            initMainPane();
             initRootElement();
         }catch (Exception e){
             errorMessage("Something Wrong!","Error Message: "+e.getMessage());
@@ -69,7 +70,6 @@ public class Gui {
         Graph graph = new SingleGraph("Maps");
         if (adjacencyList != null){
             int n = adjacencyList.getNumNodes();
-            System.out.println(n);
             Integer i;
             for(i = 0; i < n; i++) {
                 Node node =graph.addNode(i.toString());
@@ -100,7 +100,6 @@ public class Gui {
                 List<Integer> list = adjacencyList.getNeighbor(i);
                 int c = 0;
                 for(Integer j:list){
-                    System.out.println(i + " " + j);
                     Edge edge = graph.addEdge((i.toString() + j.toString()), i.toString(), j.toString(), true);
                     edge.addAttribute("ui.label",adjacencyList.getDistance(i,c));
                     edge.addAttribute("ui.style", "shape: cubic-curve;");
@@ -149,7 +148,7 @@ public class Gui {
     /**
      * set and init the Horizontal Box used to contain search text filed
      */
-    private void inithBox(){
+    private void initSearchPane(){
         searchPane = new HBox();
         searchPane.getChildren().add(search);
         searchPane.setMaxHeight(25);
@@ -199,18 +198,18 @@ public class Gui {
         genInputMap.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Ctrl+G"))) {
                 setKeyPressed(KeyCombination.keyCombination("Ctrl+G"));
-                stackPane.getChildren().clear();
-                stackPane.getChildren().add(generateInputPane);
+                mainPane.getChildren().clear();
+                mainPane.getChildren().add(generateInputPane);
             }
         });
 
         find.setAccelerator(KeyCombination.keyCombination("Ctrl+F"));
         find.setOnAction(e -> {
             if (keyPressed.get(KeyCombination.keyCombination("Ctrl+F"))) {
-                stackPane.getChildren().remove(searchPane);
+                searchPane.setVisible(false);
                 keyPressed.put(KeyCombination.keyCombination("Ctrl+F"), false);
             } else {
-                stackPane.getChildren().add(searchPane);
+                searchPane.setVisible(true);
                 search.requestFocus();
                 keyPressed.put(KeyCombination.keyCombination("Ctrl+F"), true);
             }
@@ -259,6 +258,7 @@ public class Gui {
                 adjacencyList = Algorithms.generateRndGraph(Integer.parseInt(textList.get(0).getText())-1,
                         Integer.parseInt(textList.get(1).getText()), Integer.parseInt(textList.get(2).getText()));
                 System.out.println("Generated!");
+/*
                 int n = adjacencyList.getNumNodes();
                 for (Integer i = 0; i < n; i++) {
                     List<Integer> list = adjacencyList.getNeighbor(i);
@@ -269,7 +269,8 @@ public class Gui {
                         c++;
                     }
                 }
-
+*/
+                initGraph();
             }
         });
         generateInputPane.getChildren().add(container);
@@ -291,35 +292,33 @@ public class Gui {
         maps.setAccelerator(KeyCombination.keyCombination("Alt+M"));
         clients.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Alt+C"))) {
-                borderPane.setCenter(tClient);
+                setMainPane(tableClient);
                 setKeyPressed(KeyCombination.keyCombination("Alt+C"));
             }
         });
         orders.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Alt+O"))) {
-                borderPane.setCenter(tOrder);
+                setMainPane(tableOrder);
                 setKeyPressed(KeyCombination.keyCombination("Alt+O"));
             }
         });
         goods.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Alt+G"))) {
-                borderPane.setCenter(tGood);
+                setMainPane(tableGood);
                 setKeyPressed(KeyCombination.keyCombination("Alt+G"));
             }
         });
         vehicles.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Alt+V"))) {
+                setMainPane(tableVehicle);
                 setKeyPressed(KeyCombination.keyCombination("Alt+V"));
-                borderPane.setCenter(tVehicle);
             }
         });
         maps.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Alt+M"))) {
+                setMainPaneGraph();
                 setKeyPressed(KeyCombination.keyCombination("Alt+M"));
-                initGraph();
-                SwingNode graphPanelNode = new SwingNode();
-                createSwingContent(graphPanelNode);
-                borderPane.setCenter(graphPanelNode);
+
             }
         });
         view.getItems().addAll(orders, clients, goods, vehicles, maps);
@@ -337,7 +336,7 @@ public class Gui {
     private void initClientTable(){
         double offset = 0.003;
         double colw = prefWidth/3;
-        tClient = new TableView();
+        TableView<Client> tClient = new TableView();
         try {
             Database database = new Database("test.db");
             ObservableList<Client> clients = FXCollections.observableList(database.getAllClients());
@@ -359,6 +358,7 @@ public class Gui {
         tClient.getColumns().addAll(cId, cName, cCharge);
         tClient.setTableMenuButtonVisible(true);
         tClient.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
+        tableClient = createSetScrollPane(tClient);
     }
 
     /**
@@ -367,7 +367,7 @@ public class Gui {
     private void initOrderTable(){
         double offset = 0.003;
         double colw = prefWidth/5;
-        tOrder = new TableView();
+        TableView<Order> tOrder = new TableView();
         try {
             Database database = new Database("test.db");
             ObservableList<Order> orders = FXCollections.observableList(database.getAllOrders());
@@ -395,6 +395,7 @@ public class Gui {
         tOrder.getColumns().addAll(cId, cClient, cDate, cPos, cBin);
         tOrder.setTableMenuButtonVisible(true);
         tOrder.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
+        tableOrder = createSetScrollPane(tOrder);
     }
 
     /**
@@ -404,7 +405,7 @@ public class Gui {
     private void initGoodTable(){
         double offset = 0.003;
         double colw = prefWidth/4;
-        tGood = new TableView();
+        TableView<Good> tGood = new TableView();
         try {
             Database database = new Database("test.db");
             ObservableList<Good> goods = FXCollections.observableList(database.getAllGoods());
@@ -429,6 +430,7 @@ public class Gui {
         tGood.getColumns().addAll(cId, cVolume, cQnt, cDescription);
         tGood.setTableMenuButtonVisible(true);
         tGood.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
+        tableGood = createSetScrollPane(tGood);
     }
 
     /**
@@ -438,7 +440,7 @@ public class Gui {
     private void initVehicleTable(){
         double offset = 0.003;
         double colw = prefWidth/4;
-        tVehicle = new TableView();
+        TableView<Vehicle> tVehicle = new TableView();
         try {
             Database database = new Database("test.db");
             ObservableList<Vehicle> vehicles = FXCollections.observableList(database.getAllVehicles());
@@ -463,6 +465,7 @@ public class Gui {
         tVehicle.getColumns().addAll(cNumberPlate,cChargeCurrent,cChargeMax,cBin);
         tVehicle.setTableMenuButtonVisible(true);
         tVehicle.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
+        tableVehicle = createSetScrollPane(tVehicle);
     }
 
     /**
@@ -472,30 +475,54 @@ public class Gui {
         search = new TextField();
         search.setPromptText("Search");
         search.setMinWidth(25.0);
+        initSearchPane();
     }
     /**
      * Set and initialize Root Item
      */
     private void initRootElement(){
-        borderPane = new BorderPane();
-        stackPane = new StackPane();
+        rootPane = new BorderPane();
+        mainPane = new StackPane();
+        rootPane.setPrefSize(prefWidth, prefHeight);
+        rootPane.setTop(menuBar);
+        mainPane.setAlignment(Pos.TOP_LEFT);
+        setKeyPressed(KeyCombination.keyCombination("Ctrl+G"));
+        mainPane.getChildren().addAll(generateInputPane);
+        rootPane.setCenter(mainPane);
+    }
+
+    private void setMainPane(ScrollPane tablePane){
+        mainPane.getChildren().clear();
+        mainPane.getChildren().add(tablePane);
+        mainPane.getChildren().add(searchPane);
+        searchPane.setVisible(false);
+    }
+
+    private void setMainPaneGraph(){
+        mainPane.getChildren().clear();
+        SwingNode graphPanelNode = new SwingNode();
+        createSwingContent(graphPanelNode);
+        mainPane.getChildren().add(graphPanelNode);
+        searchPane.setVisible(false);
+    }
+
+    private ScrollPane createSetScrollPane(TableView tableView){
         ScrollPane scrollPane = new ScrollPane();
-        borderPane.setPrefSize(prefWidth,prefHeight);
-        borderPane.setCenter(scrollPane);
-        borderPane.setTop(menuBar);
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
         scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        //scrollPane.setContent(stackPane);
-        stackPane.setAlignment(Pos.TOP_LEFT);
-        setKeyPressed(KeyCombination.keyCombination("Ctrl+G"));
-        stackPane.getChildren().addAll(generateInputPane);
-        borderPane.setCenter(stackPane);
+        scrollPane.setContent(tableView);
+        return scrollPane;
+    }
+
+    private void initMainPane(){
+        mainPane = new StackPane();
+        mainPane.getChildren().addAll(generateInputPane);
     }
     /**
      * @return main panel
      */
     public Pane getRootElement(){
-        return borderPane;
+        return rootPane;
     }
     /**
      * Setup general alert window
