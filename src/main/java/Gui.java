@@ -19,6 +19,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.*;
+
+import javafx.scene.text.Font;
 import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.*;
 import org.graphstream.ui.view.View;
@@ -44,8 +46,8 @@ public class Gui {
     private double prefHeight = 600.0;
     private double prefMenuHeight=30;
     private View graphPanel;
+    private double zoom;
     private AdjacencyList adjacencyList;
-    private double z;
     /**
      * builder that calls methods for configuring the interface
      */
@@ -70,7 +72,7 @@ public class Gui {
     private void initGraph() {
         System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
         Graph graph = new SingleGraph("Maps");
-        z = 1;
+        zoom = 1;
         if (adjacencyList != null){
             int n = adjacencyList.getNumNodes();
             Integer i;
@@ -116,35 +118,29 @@ public class Gui {
         graphPanel = viewer.addDefaultView(false);
         graphPanel.addKeyListener(new KeyListener() {
             @Override
-            public void keyTyped(java.awt.event.KeyEvent e) {
-
-            }
-
+            public void keyTyped(java.awt.event.KeyEvent e) {}
             @Override
             public void keyPressed(java.awt.event.KeyEvent e) {
                 char ch = e.getKeyChar();
                 if (ch == '+') {
-                    if (z - 0.01 > 0){
-                        z -= 0.01;
-                        graphPanel.getCamera().setViewPercent(z);
+                    if (zoom - 0.01 > 0){
+                        zoom -= 0.01;
+                        graphPanel.getCamera().setViewPercent(zoom);
                     }
                 }
                 if(ch == '-'){
-                    if (z + 0.01 < 3){
-                        z += 0.01;
-                        graphPanel.getCamera().setViewPercent(z);
+                    if (zoom + 0.01 < 3){
+                        zoom += 0.01;
+                        graphPanel.getCamera().setViewPercent(zoom);
                     }
                 }
                 if(ch =='0'){
-                    z = 1;
-                    graphPanel.getCamera().setViewPercent(z);
+                    zoom = 1;
+                    graphPanel.getCamera().setViewPercent(zoom);
                 }
             }
-
             @Override
-            public void keyReleased(java.awt.event.KeyEvent e) {
-
-            }
+            public void keyReleased(java.awt.event.KeyEvent e) {}
         });
     }
 
@@ -266,15 +262,16 @@ public class Gui {
         cancel = new Button("Cancel");
         cancel.setOnAction(e -> textList.forEach(javafx.scene.control.TextInputControl::clear));
         Label headerLabel = new Label("Generate Input");
-        headerLabel.setStyle("-fx-font-family: 'Goha-Tibeb Zemen'; -fx-font-size: 20px; -fx-text-fill: coral;");
+        headerLabel.setFont(new Font("Goha-tibeb Zeman",  14));
+        headerLabel.setStyle("-fx-text-fill: coral;");
         headerBox.setStyle("-fx-alignment: top-left; -fx-padding: 20 0 20 -20;");
         headerBox.getChildren().add(headerLabel);
         labels.add(new Label("Numero Nodi Massimo: "));
         labels.add(new Label("Numero Archi Massimo: "));
         labels.add(new Label("Distanza Massima:"));
         for (int i=0;i<labels.size(); i++){
-            labels.get(i).setStyle("-fx-pref-height:25px; -fx-alignment: center-left; " +
-                    "-fx-font-family: 'Goha-Tibeb Zemen'; -fx-font-size: 14px;");
+            labels.get(i).setFont(new Font("Goha-tibeb Zeman",  14));
+            labels.get(i).setStyle("-fx-pref-height:25px; -fx-alignment: center-left; ");
             TextField t = new TextField();
             t.setStyle("-fx-max-width: 65px; -fx-alignment: center");
             textList.add(i, t);
@@ -355,7 +352,7 @@ public class Gui {
     private void initClientTable(){
         double offset = 0.003;
         double colw = prefWidth/3;
-        TableView<Client> tClient = new TableView();
+        TableView<Client> tClient = new TableView<>();
         try {
             Database database = new Database("test.db");
             ObservableList<Client> clients = FXCollections.observableList(database.getAllClients());
@@ -365,16 +362,18 @@ public class Gui {
             e.printStackTrace();
         }
         tClient.setEditable(false);
-        TableColumn cId = new TableColumn("Id");
+        TableColumn<Client,Integer> cId = new TableColumn<>("Id");
         cId.setMinWidth(colw);
         cId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        TableColumn cName = new TableColumn("Name");
+        TableColumn<Client,String> cName = new TableColumn<>("Name");
         cName.setMinWidth(colw);
         cName.setCellValueFactory(new PropertyValueFactory<>("name"));
-        TableColumn cCharge = new TableColumn("Charge");
+        TableColumn<Client,Integer> cCharge = new TableColumn<>("Charge");
         cCharge.setMinWidth(colw);
         cCharge.setCellValueFactory(new PropertyValueFactory<>("charge"));
-        tClient.getColumns().addAll(cId, cName, cCharge);
+        tClient.getColumns().add(cId);
+        tClient.getColumns().add(cName);
+        tClient.getColumns().add(cCharge);
         tClient.setTableMenuButtonVisible(true);
         tClient.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
         tableClient = createSetScrollPane(tClient);
@@ -386,7 +385,7 @@ public class Gui {
     private void initOrderTable(){
         double offset = 0.003;
         double colw = prefWidth/5;
-        TableView<Order> tOrder = new TableView();
+        TableView<Order> tOrder = new TableView<>();
         try {
             Database database = new Database("test.db");
             ObservableList<Order> orders = FXCollections.observableList(database.getAllOrders());
@@ -396,22 +395,26 @@ public class Gui {
             e.printStackTrace();
         }
         tOrder.setEditable(false);
-        TableColumn cId = new TableColumn("Id");
+        TableColumn<Order,Integer> cId = new TableColumn<>("Id");
         cId.setMinWidth(colw);
         cId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        TableColumn cClient = new TableColumn("Client");
+        TableColumn<Order,Client> cClient = new TableColumn<>("Client");
         cClient.setMinWidth(colw);
         cClient.setCellValueFactory(new PropertyValueFactory<>("client"));
-        TableColumn cDate = new TableColumn("Date");
+        TableColumn<Order,Date> cDate = new TableColumn<>("Date");
         cDate.setMinWidth(colw);
         cDate.setCellValueFactory(new PropertyValueFactory<>("date"));
-        TableColumn cPos = new TableColumn("Pos");
+        TableColumn<Order,Integer> cPos = new TableColumn<>("Pos");
         cPos.setMinWidth(colw);
         cPos.setCellValueFactory(new PropertyValueFactory<>("pos"));
-        TableColumn<Order,Bin> cBin = new TableColumn("Bin");
+        TableColumn<Order,Bin> cBin = new TableColumn<>("Bin");
         cBin.setMinWidth(colw);
         cBin.setCellValueFactory(new PropertyValueFactory<>("bin"));
-        tOrder.getColumns().addAll(cId, cClient, cDate, cPos, cBin);
+        tOrder.getColumns().add(cId);
+        tOrder.getColumns().add(cClient);
+        tOrder.getColumns().add(cDate);
+        tOrder.getColumns().add(cPos);
+        tOrder.getColumns().add(cBin);
         tOrder.setTableMenuButtonVisible(true);
         tOrder.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
         tableOrder = createSetScrollPane(tOrder);
@@ -424,7 +427,7 @@ public class Gui {
     private void initGoodTable(){
         double offset = 0.003;
         double colw = prefWidth/4;
-        TableView<Good> tGood = new TableView();
+        TableView<Good> tGood = new TableView<>();
         try {
             Database database = new Database("test.db");
             ObservableList<Good> goods = FXCollections.observableList(database.getAllGoods());
@@ -434,19 +437,22 @@ public class Gui {
             e.printStackTrace();
         }
         tGood.setEditable(false);
-        TableColumn<Good,Integer> cId = new TableColumn("Id");
+        TableColumn<Good,Integer> cId = new TableColumn<>("Id");
         cId.setMinWidth(colw);
         cId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        TableColumn<Good, Object> cVolume = new TableColumn("Volume");
+        TableColumn<Good, Object> cVolume = new TableColumn<>("Volume");
         cVolume.setMinWidth(colw);
         cVolume.setCellValueFactory(new PropertyValueFactory<>("volume"));
-        TableColumn<Good,Integer> cQnt = new TableColumn("Qnt");
+        TableColumn<Good,Integer> cQnt = new TableColumn<>("Qnt");
         cQnt.setMinWidth(colw);
         cQnt.setCellValueFactory(new PropertyValueFactory<>("qnt"));
-        TableColumn<Good,String> cDescription = new TableColumn("Description");
+        TableColumn<Good,String> cDescription = new TableColumn<>("Description");
         cDescription.setMinWidth(colw);
         cDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
-        tGood.getColumns().addAll(cId, cVolume, cQnt, cDescription);
+        tGood.getColumns().add(cId);
+        tGood.getColumns().add(cVolume);
+        tGood.getColumns().add(cQnt);
+        tGood.getColumns().add(cDescription);
         tGood.setTableMenuButtonVisible(true);
         tGood.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
         tableGood = createSetScrollPane(tGood);
@@ -459,7 +465,7 @@ public class Gui {
     private void initVehicleTable(){
         double offset = 0.003;
         double colw = prefWidth/4;
-        TableView<Vehicle> tVehicle = new TableView();
+        TableView<Vehicle> tVehicle = new TableView<>();
         try {
             Database database = new Database("test.db");
             ObservableList<Vehicle> vehicles = FXCollections.observableList(database.getAllVehicles());
@@ -469,19 +475,22 @@ public class Gui {
             e.printStackTrace();
         }
         tVehicle.setEditable(false);
-        TableColumn cNumberPlate = new TableColumn("NumberPlate");
+        TableColumn<Vehicle,String> cNumberPlate = new TableColumn<>("NumberPlate");
         cNumberPlate.setMinWidth(colw);
         cNumberPlate.setCellValueFactory(new PropertyValueFactory<>("numberPlate"));
-        TableColumn<Vehicle, Object> cChargeCurrent = new TableColumn("Charge Current");
+        TableColumn<Vehicle, Object> cChargeCurrent = new TableColumn<>("Charge Current");
         cChargeCurrent.setMinWidth(colw);
         cChargeCurrent.setCellValueFactory(new PropertyValueFactory<>("chargeCurrent"));
-        TableColumn<Vehicle,Object> cChargeMax = new TableColumn("Charge Max");
+        TableColumn<Vehicle,Object> cChargeMax = new TableColumn<>("Charge Max");
         cChargeMax.setMinWidth(colw);
         cChargeMax.setCellValueFactory(new PropertyValueFactory<>("chargeMax"));
-        TableColumn<Vehicle,Bin> cBin = new TableColumn("Bin");
+        TableColumn<Vehicle,Bin> cBin = new TableColumn<>("Bin");
         cBin.setMinWidth(colw);
         cBin.setCellValueFactory(new PropertyValueFactory<>("bin"));
-        tVehicle.getColumns().addAll(cNumberPlate,cChargeCurrent,cChargeMax,cBin);
+        tVehicle.getColumns().add(cNumberPlate);
+        tVehicle.getColumns().add(cChargeCurrent);
+        tVehicle.getColumns().add(cChargeMax);
+        tVehicle.getColumns().add(cBin);
         tVehicle.setTableMenuButtonVisible(true);
         tVehicle.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
         tableVehicle = createSetScrollPane(tVehicle);
