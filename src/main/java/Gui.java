@@ -71,7 +71,7 @@ public class Gui {
     private void initGraph() {
         System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
         Graph graph = new SingleGraph("Maps");
-        z = 2;
+        z = 1;
         if (adjacencyList != null){
             int n = adjacencyList.getNumNodes();
             System.out.println(n);
@@ -106,7 +106,7 @@ public class Gui {
                 int c = 0;
                 for(Integer j:list){
                     System.out.println(i + " " + j);
-                    Edge edge = graph.addEdge((i.toString() + j.toString()), i.toString(), j.toString(), true);
+                    Edge edge = graph.addEdge((i.toString() +"-"+ j.toString()), i.toString(), j.toString(), true);
                     edge.addAttribute("ui.label",adjacencyList.getDistance(i,c));
                     edge.addAttribute("ui.style", "shape: cubic-curve;");
                     c++;
@@ -117,7 +117,6 @@ public class Gui {
         Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
         viewer.enableAutoLayout();
         graphPanel = viewer.addDefaultView(false);
-        graphPanel.getCamera().setViewPercent(z);
         graphPanel.addKeyListener(new KeyListener() {
             @Override
             public void keyTyped(java.awt.event.KeyEvent e) {
@@ -138,6 +137,10 @@ public class Gui {
                         z += 0.01;
                         graphPanel.getCamera().setViewPercent(z);
                     }
+                }
+                if(ch =='0'){
+                    z = 1;
+                    graphPanel.getCamera().setViewPercent(z);
                 }
             }
 
