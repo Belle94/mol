@@ -11,8 +11,11 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.*;
+
+import java.awt.event.KeyListener;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Optional;
@@ -43,6 +46,7 @@ public class Gui {
     private double prefMenuHeight=30;
     private View graphPanel;
     private AdjacencyList adjacencyList;
+    private double z;
     /**
      * builder that calls methods for configuring the interface
      */
@@ -67,6 +71,7 @@ public class Gui {
     private void initGraph() {
         System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
         Graph graph = new SingleGraph("Maps");
+        z = 2;
         if (adjacencyList != null){
             int n = adjacencyList.getNumNodes();
             System.out.println(n);
@@ -112,9 +117,35 @@ public class Gui {
         Viewer viewer = new Viewer(graph, Viewer.ThreadingModel.GRAPH_IN_ANOTHER_THREAD);
         viewer.enableAutoLayout();
         graphPanel = viewer.addDefaultView(false);
-        //graphPanel.getCamera().setViewCenter(2,3,4);
-        graphPanel.getCamera().setViewPercent(2);
+        graphPanel.getCamera().setViewPercent(z);
+        graphPanel.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(java.awt.event.KeyEvent e) {
 
+            }
+
+            @Override
+            public void keyPressed(java.awt.event.KeyEvent e) {
+                char ch = e.getKeyChar();
+                if (ch == '+') {
+                    if (z - 0.01 > 0){
+                        z -= 0.01;
+                        graphPanel.getCamera().setViewPercent(z);
+                    }
+                }
+                if(ch == '-'){
+                    if (z + 0.01 < 3){
+                        z += 0.01;
+                        graphPanel.getCamera().setViewPercent(z);
+                    }
+                }
+            }
+
+            @Override
+            public void keyReleased(java.awt.event.KeyEvent e) {
+
+            }
+        });
     }
 
     /**
@@ -274,6 +305,7 @@ public class Gui {
         });
         generateInputPane.getChildren().add(container);
     }
+
     /**
      * set and initialize View section Menu
      */
@@ -320,6 +352,7 @@ public class Gui {
                 SwingNode graphPanelNode = new SwingNode();
                 createSwingContent(graphPanelNode);
                 borderPane.setCenter(graphPanelNode);
+
             }
         });
         view.getItems().addAll(orders, clients, goods, vehicles, maps);
