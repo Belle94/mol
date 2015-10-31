@@ -1,6 +1,4 @@
 import javafx.util.Pair;
-import sun.jvm.hotspot.oops.DefaultOopVisitor;
-
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -278,16 +276,13 @@ public class AdjacencyList {
         // graph's creation
         for(int i = 0; i<n; i++){
             if((prev[i] != -1)){
-                pg.addEdge(prev[i],i+1,dist[i]);
+                pg.addEdge(prev[i],i,dist[i]);
             }
         }
 
         HashMap<Integer, Double> ret = new HashMap<>();
-        for (Integer i : prev) {
-            ret.put(i, dist[i]);
-        }
 
-       return (new Pair<>(ret, pg));
+        return (new Pair<>(ret, pg));
     }
 
     @Override
