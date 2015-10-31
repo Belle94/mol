@@ -273,14 +273,15 @@ public class AdjacencyList {
             }
         }
 
+        HashMap<Integer, Double> ret = new HashMap<>();
+
         // graph's creation
         for(int i = 0; i<n; i++){
             if((prev[i] != -1)){
                 pg.addEdge(prev[i],i,dist[i]);
+                ret.put(i, dist[i]);
             }
         }
-
-        HashMap<Integer, Double> ret = new HashMap<>();
 
         return (new Pair<>(ret, pg));
     }
