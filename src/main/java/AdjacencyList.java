@@ -278,7 +278,7 @@ public class AdjacencyList {
         // graph's creation
         for(int i = 0; i<n; i++){
             if((prev[i] != -1)){
-                pg.addEdge(prev[i],i,dist[i]);
+                pg.addEdge(prev[i],i,dist[i] - dist[prev[i]]);
                 ret.put(i, dist[i]);
             }
         }

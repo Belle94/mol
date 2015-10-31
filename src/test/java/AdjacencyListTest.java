@@ -4,6 +4,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class AdjacencyListTest {
+
     @Test
     public void testDijkstra() throws Exception {
         AdjacencyList g = new AdjacencyList();
@@ -21,8 +22,8 @@ public class AdjacencyListTest {
         h.addEdge(0, 1, 7.0);
         h.addEdge(0, 2, 9.0);
         h.addEdge(0, 5, 14.0);
-        h.addEdge(2, 3, 20.0);
-        h.addEdge(5, 4, 23.0);
+        h.addEdge(2, 3, 11.0);
+        h.addEdge(5, 4, 9.0);
 
         g = new AdjacencyList(g.dijkstra(0).getValue().getGraph());
         printGraph(g);
@@ -31,6 +32,7 @@ public class AdjacencyListTest {
         assertEquals(h, g);
 
     }
+
     public static void printGraph(AdjacencyList g){
         for(Integer k : g.getNodes()){
             System.out.println("Node "+k+"\t hashCode: "+ g.getGraph().get(k).hashCode());
