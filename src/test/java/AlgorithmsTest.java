@@ -38,7 +38,7 @@ public class AlgorithmsTest{
 
     @Test
     public void testGenRndInputGraph(){
-        AdjacencyList g = Algorithms.generateRndGraph(10,10,10);
+        AdjacencyList g = Algorithms.generateRndGraph(3,100,10);
         AdjacencyListTest.printGraph(g);
     }
 }

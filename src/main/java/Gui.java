@@ -284,8 +284,11 @@ public class Gui {
         container.setStyle("-fx-hgap: 10px; -fx-vgap: 5px; -fx-padding: 0 0 0 40px; -fx-background-color: white;");
         gen.setOnAction(e -> {
             if (!textList.get(0).getText().isEmpty() && !textList.get(1).getText().isEmpty() && !textList.get(2).getText().isEmpty()) {
-                adjacencyList = Algorithms.generateRndGraph(Integer.parseInt(textList.get(0).getText())-1,
-                        Integer.parseInt(textList.get(1).getText()), Integer.parseInt(textList.get(2).getText()));
+                adjacencyList = Algorithms.generateRndGraph(
+                        Integer.parseInt(textList.get(0).getText()),
+                        Integer.parseInt(textList.get(1).getText()),
+                        Integer.parseInt(textList.get(2).getText())
+                );
                 initGraph();
             }
         });
