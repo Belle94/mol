@@ -63,16 +63,7 @@ public class DatabaseTest {
         }
     }
 
-    @Test
-    public void insertClientOrderGood(){
-
-    }
-
-    @Test
-    public void inputDatabaseTest() throws Exception{
-
-    }
-    @Test
+//    @Test
     public void outputDatabaseTest() {
         try {
             System.out.println("CLIENTS:");
@@ -103,14 +94,5 @@ public class DatabaseTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @Test
-    public void deleteDatabaseTest() throws Exception{
-
-    }
-    @Test
-    public void createDatabaseTest() throws Exception {
-
     }
 }
