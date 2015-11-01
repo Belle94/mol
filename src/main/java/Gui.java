@@ -36,10 +36,10 @@ public class Gui {
     private Pane generateInputPane;
     private HBox searchPane;
     private StackPane mainPane;
-    private ScrollPane tableClient;
-    private ScrollPane tableOrder;
-    private ScrollPane tableGood;
-    private ScrollPane tableVehicle;
+    private TableView<Order> tOrder;
+    private TableView<Client> tClient;
+    private TableView<Good> tGood;
+    private TableView<Vehicle> tVehicle;
     private TextField search;
     private HashMap<KeyCombination, Boolean> keyPressed;
     private double prefWidth = 800.0;
@@ -312,25 +312,25 @@ public class Gui {
         maps.setAccelerator(KeyCombination.keyCombination("Alt+M"));
         clients.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Alt+C"))) {
-                setMainPane(tableClient);
+                setMainPane(tClient);
                 setKeyPressed(KeyCombination.keyCombination("Alt+C"));
             }
         });
         orders.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Alt+O"))) {
-                setMainPane(tableOrder);
+                setMainPane(tOrder);
                 setKeyPressed(KeyCombination.keyCombination("Alt+O"));
             }
         });
         goods.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Alt+G"))) {
-                setMainPane(tableGood);
+                setMainPane(tGood);
                 setKeyPressed(KeyCombination.keyCombination("Alt+G"));
             }
         });
         vehicles.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Alt+V"))) {
-                setMainPane(tableVehicle);
+                setMainPane(tVehicle);
                 setKeyPressed(KeyCombination.keyCombination("Alt+V"));
             }
         });
@@ -355,7 +355,7 @@ public class Gui {
     private void initClientTable(){
         double offset = 0.003;
         double colw = prefWidth/3;
-        TableView<Client> tClient = new TableView<>();
+        tClient = new TableView<>();
         try {
             Database database = new Database("test.db");
             ObservableList<Client> clients = FXCollections.observableList(database.getAllClients());
@@ -379,7 +379,6 @@ public class Gui {
         tClient.getColumns().add(cCharge);
         tClient.setTableMenuButtonVisible(true);
         tClient.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
-        tableClient = createSetScrollPane(tClient);
     }
 
     /**
@@ -388,7 +387,7 @@ public class Gui {
     private void initOrderTable(){
         double offset = 0.003;
         double colw = prefWidth/5;
-        TableView<Order> tOrder = new TableView<>();
+        tOrder = new TableView<>();
         try {
             Database database = new Database("test.db");
             ObservableList<Order> orders = FXCollections.observableList(database.getAllOrders());
@@ -420,7 +419,6 @@ public class Gui {
         tOrder.getColumns().add(cBin);
         tOrder.setTableMenuButtonVisible(true);
         tOrder.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
-        tableOrder = createSetScrollPane(tOrder);
     }
 
     /**
@@ -430,7 +428,7 @@ public class Gui {
     private void initGoodTable(){
         double offset = 0.003;
         double colw = prefWidth/4;
-        TableView<Good> tGood = new TableView<>();
+        tGood = new TableView<>();
         try {
             Database database = new Database("test.db");
             ObservableList<Good> goods = FXCollections.observableList(database.getAllGoods());
@@ -458,7 +456,6 @@ public class Gui {
         tGood.getColumns().add(cDescription);
         tGood.setTableMenuButtonVisible(true);
         tGood.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
-        tableGood = createSetScrollPane(tGood);
     }
 
     /**
@@ -468,7 +465,7 @@ public class Gui {
     private void initVehicleTable(){
         double offset = 0.003;
         double colw = prefWidth/4;
-        TableView<Vehicle> tVehicle = new TableView<>();
+        tVehicle = new TableView<>();
         try {
             Database database = new Database("test.db");
             ObservableList<Vehicle> vehicles = FXCollections.observableList(database.getAllVehicles());
@@ -496,7 +493,6 @@ public class Gui {
         tVehicle.getColumns().add(cBin);
         tVehicle.setTableMenuButtonVisible(true);
         tVehicle.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
-        tableVehicle = createSetScrollPane(tVehicle);
     }
 
     /**
@@ -522,7 +518,7 @@ public class Gui {
         rootPane.setCenter(mainPane);
     }
 
-    private void setMainPane(ScrollPane tablePane){
+    private void setMainPane(TableView tablePane){
         mainPane.getChildren().clear();
         mainPane.getChildren().add(tablePane);
         mainPane.getChildren().add(searchPane);
