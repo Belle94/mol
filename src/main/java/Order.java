@@ -20,7 +20,7 @@ public class Order {
     private Client client;
     @DatabaseField (canBeNull = false, columnName = DATE_FIELD_NAME)
     private Date date;
-    @DatabaseField (canBeNull = false, columnName = POS_FIELD_NAME)
+    @DatabaseField (canBeNull = true, columnName = POS_FIELD_NAME)
     private Integer pos;
 
     public Order() {

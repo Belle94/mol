@@ -31,6 +31,12 @@ public class Database {
     public void addClient(Client client) throws SQLException, ClassNotFoundException {
         daoClient.createIfNotExists(client);
     }
+    public void addClients(List<Client> clients) throws SQLException, ClassNotFoundException {
+        TableUtils.clearTable(jdbcConnectionSource,Client.class);
+        for (Client client:clients) {
+            daoClient.create(client);
+        }
+    }
 
     public Client getClientByID(Integer id) throws SQLException {
         return daoClient.queryForId(id);
@@ -46,6 +52,12 @@ public class Database {
 
     public void addOrder(Order order) throws SQLException, ClassNotFoundException {
         daoOrder.createIfNotExists(order);
+    }
+    public void addOrders(List<Order> orders) throws SQLException, ClassNotFoundException {
+        TableUtils.clearTable(jdbcConnectionSource,Order.class);
+        for (Order order:orders) {
+            daoOrder.create(order);
+        }
     }
 
     public Order getOrderByID(Integer id) throws SQLException {
@@ -74,6 +86,12 @@ public class Database {
 
     public void addGood(Good good) throws SQLException, ClassNotFoundException {
         daoGood.createIfNotExists(good);
+    }
+    public void addGoods(List<Good> goods) throws SQLException, ClassNotFoundException {
+        TableUtils.clearTable(jdbcConnectionSource,Good.class);
+        for (Good good:goods) {
+            daoGood.create(good);
+        }
     }
 
     public Good getGoodByID(Integer id) throws SQLException {
@@ -110,9 +128,21 @@ public class Database {
     public void addGoodOrder(GoodOrder go) throws SQLException {
         daoGoodOrder.createIfNotExists(go);
     }
-
+    public void addGoodOrders(List<GoodOrder> gos) throws SQLException {
+        TableUtils.clearTable(jdbcConnectionSource,GoodOrder.class);
+        for (GoodOrder go:gos) {
+            daoGoodOrder.create(go);
+        }
+    }
     public void addVehicle(Vehicle vehicle) throws SQLException, ClassNotFoundException {
         daoVehicle.createIfNotExists(vehicle);
+    }
+
+    public void addVehicles(List<Vehicle> vehicles) throws SQLException, ClassNotFoundException {
+        TableUtils.clearTable(jdbcConnectionSource,Vehicle.class);
+        for(Vehicle vehicle:vehicles){
+            daoVehicle.create(vehicle);
+        }
     }
 
     public Vehicle getVehiclesByNumberPlate(String numberPlate) throws SQLException {
@@ -130,7 +160,12 @@ public class Database {
     public void addBin(Bin bin) throws SQLException {
         daoBin.createIfNotExists(bin);
     }
-
+    public void addBins(List<Bin> bins) throws SQLException {
+        TableUtils.clearTable(jdbcConnectionSource,Bin.class);
+        for (Bin bin:bins) {
+            daoBin.create(bin);
+        }
+    }
     public List<Bin> getAllBins() throws SQLException {
         return daoBin.queryForAll();
     }
@@ -142,6 +177,20 @@ public class Database {
     public void deleteBin(Bin b) throws SQLException {
         daoBin.delete(b);
     }
+
+    /*public void clearTables(){
+        try {
+            TableUtils.clearTable(jdbcConnectionSource,Client.class);
+            TableUtils.clearTable(jdbcConnectionSource,Order.class);
+            TableUtils.clearTable(jdbcConnectionSource,Good.class);
+            TableUtils.clearTable(jdbcConnectionSource,GoodOrder.class);
+            TableUtils.clearTable(jdbcConnectionSource,Vehicle.class);
+            TableUtils.clearTable(jdbcConnectionSource,Bin.class);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }*/
+
     /**
      * Setup our database and DAOs
      */
@@ -162,6 +211,7 @@ public class Database {
             TableUtils.createTableIfNotExists(jdbcConnectionSource, Bin.class);
             TableUtils.createTableIfNotExists(jdbcConnectionSource, Vehicle.class);
     }
+
 
     /**
      * Open a connection with the database

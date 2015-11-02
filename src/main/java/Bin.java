@@ -16,7 +16,6 @@ public class Bin {
     private double volumeCurrent;
     @DatabaseField(canBeNull = false)
     private double volumeMax;
-    @DatabaseField(canBeNull = true)
     private Vehicle vehicle;
     private List<Good> goods;
 

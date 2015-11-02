@@ -249,6 +249,27 @@ public class Gui {
             if (confirmMessage("Exit Confirmation", "Are u sure u want to exit?"))
                 System.exit(0);
         });
+        save.setOnAction(e -> {
+            if (!keyPressed.get(KeyCombination.keyCombination("Ctrl+L"))) {
+                try {
+                    Database db = new Database("database.db");
+                    //db.clearTables();
+                    db.addClients(clients);
+                    db.addOrders(orders);
+                    db.addGoods(goods);
+                    db.addGoodOrders(goodOrders);
+                    db.addVehicles(vehicles);
+                    db.addBins(bins);
+                    db.closeConnection();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                } catch (ClassNotFoundException e1) {
+                    e1.printStackTrace();
+                }
+                System.out.println("Saved!");
+                setKeyPressed(KeyCombination.keyCombination("Ctrl+L"));
+            }
+        });
         file.getItems().addAll(load, save, save_as, quit);
         return file;
     }
@@ -493,14 +514,14 @@ public class Gui {
         TableColumn<Order,Integer> cPos = new TableColumn<>("Pos");
         cPos.setMinWidth(colw);
         cPos.setCellValueFactory(new PropertyValueFactory<>("pos"));
-        TableColumn<Order,Bin> cBin = new TableColumn<>("Bin");
-        cBin.setMinWidth(colw);
-        cBin.setCellValueFactory(new PropertyValueFactory<>("bin"));
+        TableColumn<Order,Vehicle> cVehicle = new TableColumn<>("Vehicle");
+        cVehicle.setMinWidth(colw);
+        cVehicle.setCellValueFactory(new PropertyValueFactory<>("vehicle"));
         tOrder.getColumns().add(cId);
         tOrder.getColumns().add(cClient);
         tOrder.getColumns().add(cDate);
         tOrder.getColumns().add(cPos);
-        tOrder.getColumns().add(cBin);
+        tOrder.getColumns().add(cVehicle);
         tOrder.setTableMenuButtonVisible(true);
         tOrder.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
     }
