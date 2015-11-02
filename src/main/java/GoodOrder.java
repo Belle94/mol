@@ -23,13 +23,6 @@ public class GoodOrder {
         // all persisted classes must define a no-arg constructor with at least package visibility
     }
 
-    public GoodOrder (Integer id, Order o, Good g, Integer q) {
-        this.id = id;
-        this.order = o;
-        this.good = g;
-        this.qnt = q;
-    }
-
     public GoodOrder (Order o, Good g, Integer q) {
         this.order = o;
         this.good = g;
