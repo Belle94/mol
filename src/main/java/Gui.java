@@ -31,7 +31,7 @@ import javax.swing.*;
 public class Gui {
     private BorderPane rootPane;
     private MenuBar menuBar;
-    private Pane generateInputPane;
+    private Pane generateInputPane,addEdgePane,delEdgePane;
     private HBox searchPane;
     private StackPane mainPane;
     private TableView<Order> tOrder;
@@ -62,6 +62,8 @@ public class Gui {
             initData();
             initKeyPressed();
             initGenerateInputPane();
+            initAddEdgePane();
+            initdelEdgePane();
             initMenu();
             initSearch();
             initClientTable();
@@ -167,6 +169,7 @@ public class Gui {
         keyPressed.put(KeyCombination.keyCombination("Ctrl+G"), false);
         keyPressed.put(KeyCombination.keyCombination("Ctrl+D"), false);
         keyPressed.put(KeyCombination.keyCombination("Ctrl+F"), false);
+        keyPressed.put(KeyCombination.keyCombination("Ctrl+A"), false);
         keyPressed.put(KeyCombination.keyCombination("Alt+M"), false);
         keyPressed.put(KeyCombination.keyCombination("Alt+O"), false);
         keyPressed.put(KeyCombination.keyCombination("Alt+C"), false);
@@ -212,7 +215,7 @@ public class Gui {
         Menu file = new Menu("File");
         MenuItem load = new MenuItem("Load");
         MenuItem save = new MenuItem("Save");
-        MenuItem save_as = new MenuItem("Save as ");
+        MenuItem save_as = new MenuItem("Save as");
         MenuItem quit = new MenuItem("Quit");
         load.setAccelerator(KeyCombination.keyCombination("Ctrl+L"));
         save.setAccelerator(KeyCombination.keyCombination("Ctrl+S"));
@@ -251,16 +254,32 @@ public class Gui {
      */
     private Menu initMenuEdit(){
         Menu edit = new Menu("Edit");
+        MenuItem addEdge = new MenuItem("Add Edge");
+        MenuItem delEdge = new MenuItem("Delete Edge");
         MenuItem find = new MenuItem("Find");
-        MenuItem delete = new MenuItem("Delete");
         MenuItem genInputMap = new MenuItem("Generate Input");
-        delete.setAccelerator(KeyCombination.keyCombination("Ctrl+D"));
+        addEdge.setAccelerator(KeyCombination.keyCombination("Ctrl+A"));
+        delEdge.setAccelerator(KeyCombination.keyCombination("Ctrl+D"));
         genInputMap.setAccelerator(KeyCombination.keyCombination("Ctrl+G"));
         genInputMap.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Ctrl+G"))) {
                 setKeyPressed(KeyCombination.keyCombination("Ctrl+G"));
                 mainPane.getChildren().clear();
                 mainPane.getChildren().add(generateInputPane);
+            }
+        });
+        addEdge.setOnAction(e -> {
+            if (!keyPressed.get(KeyCombination.keyCombination("Ctrl+A"))) {
+                setKeyPressed(KeyCombination.keyCombination("Ctrl+A"));
+                mainPane.getChildren().clear();
+                mainPane.getChildren().add(addEdgePane);
+            }
+        });
+        delEdge.setOnAction(e -> {
+            if (!keyPressed.get(KeyCombination.keyCombination("Ctrl+D"))) {
+                setKeyPressed(KeyCombination.keyCombination("Ctrl+D"));
+                mainPane.getChildren().clear();
+                mainPane.getChildren().add(delEdgePane);
             }
         });
         find.setAccelerator(KeyCombination.keyCombination("Ctrl+F"));
@@ -274,10 +293,96 @@ public class Gui {
                 keyPressed.put(KeyCombination.keyCombination("Ctrl+F"), true);
             }
         });
-        edit.getItems().addAll(genInputMap,delete, find);
+        edit.getItems().addAll(genInputMap,addEdge,delEdge,find);
         return edit;
     }
 
+    /**
+     * set and Generate Add Edge Pane
+     */
+    private void initAddEdgePane(){
+        addEdgePane = new StackPane();
+        GridPane container = new GridPane();
+        List<Label> labels = new ArrayList<>();
+        List<TextInputControl> textList = new ArrayList<>();
+        HBox headerBox = new HBox();
+        Button add, cancel;
+        add = new Button("Add");
+        cancel = new Button("Cancel");
+        cancel.setOnAction(e -> textList.forEach(javafx.scene.control.TextInputControl::clear));
+        Label headerLabel = new Label("Add New Edge");
+        headerLabel.setFont(new Font("Goha-tibeb Zeman", 14));
+        headerLabel.setStyle("-fx-text-fill: coral;");
+        headerBox.setStyle("-fx-alignment: top-left; -fx-padding: 20 0 20 -20;");
+        headerBox.getChildren().add(headerLabel);
+        labels.add(new Label("Partenza:"));
+        labels.add(new Label("Destinatione:"));
+        labels.add(new Label("Peso:"));
+        for (int i=0;i<labels.size(); i++){
+            labels.get(i).setFont(new Font("Goha-tibeb Zeman",  14));
+            labels.get(i).setStyle("-fx-pref-height:25px; -fx-alignment: center-left; ");
+            TextField t = new TextField();
+            t.setStyle("-fx-max-width: 65px; -fx-alignment: center");
+            textList.add(i, t);
+            container.add(labels.get(i),0,i+1);
+            container.add(t,1,i+1);
+        }
+        container.add(headerBox, 0, 0, 2, 1);
+        container.add(add, 0, labels.size() + 1);
+        container.add(cancel, 1, labels.size() + 1);
+        container.setStyle("-fx-hgap: 10px; -fx-vgap: 5px; -fx-padding: 0 0 0 40px; -fx-background-color: white;");
+        add.setOnAction(e -> {
+            if (!textList.get(0).getText().isEmpty() && !textList.get(1).getText().isEmpty() && !textList.get(2).getText().isEmpty()) {
+                adjacencyList.addEdge(Integer.parseInt(textList.get(0).getText()), Integer.parseInt(textList.get(1).getText()), Double.valueOf(textList.get(2).getText()));
+                initGraph();
+                System.out.println("Added");
+            }
+        });
+        addEdgePane.getChildren().add(container);
+    }
+
+    /**
+     * set and Generate Delete Edge Pane
+     */
+    private void initdelEdgePane(){
+        delEdgePane = new StackPane();
+        GridPane container = new GridPane();
+        List<Label> labels = new ArrayList<>();
+        List<TextInputControl> textList = new ArrayList<>();
+        HBox headerBox = new HBox();
+        Button delete, cancel;
+        delete = new Button("Delete");
+        cancel = new Button("Cancel");
+        cancel.setOnAction(e -> textList.forEach(javafx.scene.control.TextInputControl::clear));
+        Label headerLabel = new Label("Delete Edge");
+        headerLabel.setFont(new Font("Goha-tibeb Zeman", 14));
+        headerLabel.setStyle("-fx-text-fill: coral;");
+        headerBox.setStyle("-fx-alignment: top-left; -fx-padding: 20 0 20 -20;");
+        headerBox.getChildren().add(headerLabel);
+        labels.add(new Label("Partenza:"));
+        labels.add(new Label("Destinatione:"));
+        for (int i=0;i<labels.size(); i++){
+            labels.get(i).setFont(new Font("Goha-tibeb Zeman",  14));
+            labels.get(i).setStyle("-fx-pref-height:25px; -fx-alignment: center-left; ");
+            TextField t = new TextField();
+            t.setStyle("-fx-max-width: 65px; -fx-alignment: center");
+            textList.add(i, t);
+            container.add(labels.get(i),0,i+1);
+            container.add(t,1,i+1);
+        }
+        container.add(headerBox, 0, 0, 2, 1);
+        container.add(delete, 0, labels.size() + 1);
+        container.add(cancel, 1, labels.size() + 1);
+        container.setStyle("-fx-hgap: 10px; -fx-vgap: 5px; -fx-padding: 0 0 0 40px; -fx-background-color: white;");
+        delete.setOnAction(e -> {
+            if (!textList.get(0).getText().isEmpty() && !textList.get(1).getText().isEmpty()) {
+                adjacencyList.deleteEdge(Integer.parseInt(textList.get(0).getText()), Integer.parseInt(textList.get(1).getText()));
+                initGraph();
+                System.out.println("Deleted");
+            }
+        });
+        delEdgePane.getChildren().add(container);
+    }
     /**
      * set and Generate Input Pane.
      */
