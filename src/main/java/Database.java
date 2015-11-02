@@ -32,10 +32,8 @@ public class Database {
         daoClient.createIfNotExists(client);
     }
     public void addClients(List<Client> clients) throws SQLException, ClassNotFoundException {
-        TableUtils.clearTable(jdbcConnectionSource,Client.class);
-        for (Client client:clients) {
+        for (Client client:clients)
             daoClient.create(client);
-        }
     }
 
     public Client getClientByID(Integer id) throws SQLException {
@@ -54,10 +52,8 @@ public class Database {
         daoOrder.createIfNotExists(order);
     }
     public void addOrders(List<Order> orders) throws SQLException, ClassNotFoundException {
-        TableUtils.clearTable(jdbcConnectionSource,Order.class);
-        for (Order order:orders) {
+        for (Order order:orders)
             daoOrder.create(order);
-        }
     }
 
     public Order getOrderByID(Integer id) throws SQLException {
@@ -88,10 +84,8 @@ public class Database {
         daoGood.createIfNotExists(good);
     }
     public void addGoods(List<Good> goods) throws SQLException, ClassNotFoundException {
-        TableUtils.clearTable(jdbcConnectionSource,Good.class);
-        for (Good good:goods) {
+        for (Good good:goods)
             daoGood.create(good);
-        }
     }
 
     public Good getGoodByID(Integer id) throws SQLException {
@@ -129,20 +123,16 @@ public class Database {
         daoGoodOrder.createIfNotExists(go);
     }
     public void addGoodOrders(List<GoodOrder> gos) throws SQLException {
-        TableUtils.clearTable(jdbcConnectionSource,GoodOrder.class);
-        for (GoodOrder go:gos) {
+        for (GoodOrder go:gos)
             daoGoodOrder.create(go);
-        }
     }
     public void addVehicle(Vehicle vehicle) throws SQLException, ClassNotFoundException {
         daoVehicle.createIfNotExists(vehicle);
     }
 
     public void addVehicles(List<Vehicle> vehicles) throws SQLException, ClassNotFoundException {
-        TableUtils.clearTable(jdbcConnectionSource,Vehicle.class);
-        for(Vehicle vehicle:vehicles){
+        for(Vehicle vehicle:vehicles)
             daoVehicle.create(vehicle);
-        }
     }
 
     public Vehicle getVehiclesByNumberPlate(String numberPlate) throws SQLException {
@@ -161,10 +151,8 @@ public class Database {
         daoBin.createIfNotExists(bin);
     }
     public void addBins(List<Bin> bins) throws SQLException {
-        TableUtils.clearTable(jdbcConnectionSource,Bin.class);
-        for (Bin bin:bins) {
+        for (Bin bin:bins)
             daoBin.create(bin);
-        }
     }
     public List<Bin> getAllBins() throws SQLException {
         return daoBin.queryForAll();
@@ -178,19 +166,32 @@ public class Database {
         daoBin.delete(b);
     }
 
-    /*public void clearTables(){
-        try {
-            TableUtils.clearTable(jdbcConnectionSource,Client.class);
-            TableUtils.clearTable(jdbcConnectionSource,Order.class);
-            TableUtils.clearTable(jdbcConnectionSource,Good.class);
-            TableUtils.clearTable(jdbcConnectionSource,GoodOrder.class);
-            TableUtils.clearTable(jdbcConnectionSource,Vehicle.class);
-            TableUtils.clearTable(jdbcConnectionSource,Bin.class);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }*/
-
+    public void clearClients() throws SQLException {
+        TableUtils.clearTable(jdbcConnectionSource,Client.class);
+    }
+    public void clearOrders() throws SQLException {
+        TableUtils.clearTable(jdbcConnectionSource,Order.class);
+    }
+    public void clearGoodOrders() throws SQLException {
+        TableUtils.clearTable(jdbcConnectionSource,GoodOrder.class);
+    }
+    public void clearGoods() throws SQLException {
+        TableUtils.clearTable(jdbcConnectionSource,Good.class);
+    }
+    public void clearVehicles() throws SQLException {
+        TableUtils.clearTable(jdbcConnectionSource,Vehicle.class);
+    }
+    public void clearBins() throws SQLException {
+        TableUtils.clearTable(jdbcConnectionSource,Bin.class);
+    }
+    public void clearTables() throws SQLException {
+        clearClients();
+        clearOrders();
+        clearGoodOrders();
+        clearGoods();
+        clearVehicles();
+        clearBins();
+    }
     /**
      * Setup our database and DAOs
      */

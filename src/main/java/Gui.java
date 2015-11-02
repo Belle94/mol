@@ -165,8 +165,8 @@ public class Gui {
     private void initKeyPressed(){
         keyPressed = new HashMap<>();
         keyPressed.put(KeyCombination.keyCombination("Ctrl+L"), false);
-        keyPressed.put(KeyCombination.keyCombination("Ctrl+S"), false);
-        keyPressed.put(KeyCombination.keyCombination("Ctrl+Shift+S"), false);
+        keyPressed.put(KeyCombination.keyCombination("Ctrl+S"), true);
+        keyPressed.put(KeyCombination.keyCombination("Ctrl+Shift+S"), true);
         keyPressed.put(KeyCombination.keyCombination("Ctrl+Q"), false);
         keyPressed.put(KeyCombination.keyCombination("Ctrl+G"), false);
         keyPressed.put(KeyCombination.keyCombination("Ctrl+D"), false);
@@ -250,26 +250,55 @@ public class Gui {
                 System.exit(0);
         });
         save.setOnAction(e -> {
-            if (!keyPressed.get(KeyCombination.keyCombination("Ctrl+L"))) {
+            if (! keyPressed.get(KeyCombination.keyCombination("Ctrl+S"))) {
                 try {
                     Database db = new Database("database.db");
-                    //db.clearTables();
+                    db.clearTables();
                     db.addClients(clients);
                     db.addOrders(orders);
                     db.addGoods(goods);
                     db.addGoodOrders(goodOrders);
-                    db.addVehicles(vehicles);
                     db.addBins(bins);
+                    db.addVehicles(vehicles);
                     db.closeConnection();
-                } catch (SQLException e1) {
-                    e1.printStackTrace();
-                } catch (ClassNotFoundException e1) {
+                    keyPressed.put(KeyCombination.keyCombination("Ctrl+S"), true);
+                } catch (SQLException | ClassNotFoundException e1) {
                     e1.printStackTrace();
                 }
-                System.out.println("Saved!");
-                setKeyPressed(KeyCombination.keyCombination("Ctrl+L"));
+            }else{
+                infoMessage("Info","nothing to save");
             }
         });
+        save_as.setOnAction(e -> {
+            if (! keyPressed.get(KeyCombination.keyCombination("Ctrl+Shift+S"))) {
+                try {
+                    FileChooser fs = new FileChooser();
+                    fs.setTitle("Save Database");
+                    fs.getExtensionFilters().add(new FileChooser.ExtensionFilter("Database", "*.db"));
+                    fs.getExtensionFilters().add(new FileChooser.ExtensionFilter("All Files", "*.*"));
+                    File f =fs.showSaveDialog(new Stage());
+                    if (f==null)
+                        return;
+                    String nameFile = (f.getAbsolutePath().endsWith(".db"))
+                                ? f.getAbsolutePath() : f.getAbsolutePath().concat(".db") ;
+                    Database db = new Database(nameFile);
+                    db.clearTables();
+                    db.addClients(clients);
+                    db.addOrders(orders);
+                    db.addGoods(goods);
+                    db.addGoodOrders(goodOrders);
+                    db.addBins(bins);
+                    db.addVehicles(vehicles);
+                    db.closeConnection();
+                    keyPressed.put(KeyCombination.keyCombination("Ctrl+Shift+S"), true);
+                } catch (SQLException | ClassNotFoundException e1) {
+                    e1.printStackTrace();
+                }
+            }else{
+                infoMessage("Info","nothing to save");
+            }
+        });
+        
         file.getItems().addAll(load, save, save_as, quit);
         return file;
     }
@@ -355,7 +384,9 @@ public class Gui {
                 initGoodOrderTable();
                 initOrderTable();
                 initVehicleTable();
-                System.out.println("Generate");
+                keyPressed.put(KeyCombination.keyCombination("Ctrl+S"), false);
+                keyPressed.put(KeyCombination.keyCombination("Ctrl+Shift+S"), false);
+                infoMessage("Info","graph generated");
             }
         });
         generateInputPane.getChildren().add(container);
@@ -682,6 +713,11 @@ public class Gui {
         alert.setHeaderText(title);
         alert.setContentText(content);
         return alert.showAndWait();
+    }
+
+    private void infoMessage(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        setupMessage(alert, title, content);
     }
     /**
      * Error alert with the given title and header
