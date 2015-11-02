@@ -1,4 +1,5 @@
 import javafx.util.Pair;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -123,15 +124,20 @@ public class AdjacencyList {
             }
         }
 
+        wMax += 1.0;
+
         for (Integer c : g.keySet()) {
+            List<Pair<Integer, Double>> l = new ArrayList<>();
             for (Pair<Integer, Double> p : g.get(c)) {
-                p = new Pair<>(p.getKey(), wMax - p.getValue());
+                 l.add(new Pair<>(p.getKey(), wMax - p.getValue()));
             }
+            g.put(c, l);
         }
     }
 
-    public HashMap<Vehicle, AdjacencyList> clark_wright
-            (Integer vehicles, Integer zero) {
+    public HashMap<Bin, AdjacencyList> clark_wright
+            (Database db, Integer vehicles, Integer zero, List<Bin> bins) {
+        HashMap<Bin, AdjacencyList> ret = new HashMap<>();
         DistanceMatrix matDistance = new DistanceMatrix(this);
         HashMap<Pair<Integer, Integer>, Double> savings = new HashMap<>();
         // initializing savings
@@ -149,20 +155,52 @@ public class AdjacencyList {
 
         // Merge route between nodes
         boolean decreased = true;
-        for (int i = nodes().size(); i < vehicles && decreased;) {
-            decreased = false;
+        Integer ib = 0;
+        try {
+            for (; decreased; ib++) {
+                decreased = false;
+                List<Integer> l = new LinkedList<>();
+                Pair<Integer, Integer> fp = orderedSavingsKey.get(0);
+                l.add(0);
+                l.add(fp.getKey());
+                l.add(fp.getValue());
+                orderedSavingsKey.remove(fp);
+                for (Pair<Integer, Integer> p : orderedSavingsKey) {
+                    // if clients involved have goods to be transported
+                    // for which the sum of the goods is <= than the
+                    // capacity of the vehicle, then merge the two routes
+                    // and decrease the number of vehicles used
+                    // and set decrease to true
 
-            for (Pair<Integer, Integer> p : orderedSavingsKey) {
-                // if clients involved have goods to be transported
-                // for which the sum of the goods is <= than the
-                // capacity of the vehicle, then merge the two routes
-                // and decrease the number of vehicles used
-                // and set decrease to true
+                    if (p.getKey().equals(l.get(l.size() - 1))) {
+                        List<Integer> clientsInvolved = new LinkedList<Integer>();
+                        List<Good> goods = new LinkedList<>();
+                        clientsInvolved.add(p.getKey());
+                        clientsInvolved.add(p.getValue());
+                        Double cap = .0;
+                        for (Integer client : clientsInvolved) {
+                            for (Order o : db.getOrderByClient(client)) {
+                                for (Good g : db.getGoodByOrder(o)) {
+                                    cap += g.getVolume();
+                                    goods.add(g);
+                                }
+                            }
+                        }
 
+                        // Merge routes
+                        if (bins.get(ib).getVolumeWasted() >= cap) {
+                            l.add(p.getValue());
+                            bins.get(ib).addGood(goods);
+                        }
+
+                        orderedSavingsKey.remove(p);
+                    }
+                }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-
-        return null;
+        return ret;
     }
 
     public static List<Pair<Integer, Integer>> orderByValue(HashMap<Pair<Integer, Integer>, Double> h) {
@@ -194,6 +232,7 @@ public class AdjacencyList {
     public Set<Integer> getNodes(){
         return g.keySet();
     }
+
     /**
      * Dijkstra run with a queue Q.
      * The queue as initialize only with Source node.
@@ -205,7 +244,7 @@ public class AdjacencyList {
      * @param source the node where Dijkstra start
      * @return the graph with the shortest path form the node source to each other nodes.
      */
-    public HashMap<Integer, List<Pair<Integer, Double>>> Dijkstra(Integer source){
+    public Pair<HashMap<Integer, Double>, AdjacencyList> dijkstra(Integer source){
         AdjacencyList pg = new AdjacencyList();
         int n = this.getNumNodes();
         Integer u;
@@ -217,44 +256,37 @@ public class AdjacencyList {
             prev[i] = -1;
         }
 
-        dist[source-1] = 0.0;
+        dist[source] = 0.0;
         List<Integer> Q = new ArrayList<>();
         Q.add(source);
         while (!Q.isEmpty()){
-            u = Q.get(0);                     // it takes first element on list
-            Q.remove(0);                        // and remove it
+            u = Q.get(0);                     // takes first element on list
+            Q.remove(0);                        // removes first element
 
-            if(dist[u-1] == -1){
-                break;
-            }
-
-            for (int i = 0; i < this.getNumNeighbor(u); i++){
-                Double alt = dist[u-1] + getDistance(u,i);
-                Integer nId = getIdNeighbor(u,i);
-                if((dist[nId-1] == -1) || (alt < dist[nId-1])){
-                    dist[nId-1] = alt;
-                    prev[nId-1] = u;
-                    Q.add(nId);
+            if(dist[u] != -1) {
+                for (int i = 0; i < this.getNumNeighbor(u); i++) {
+                    Double alt = dist[u] + getDistance(u, i);
+                    Integer nId = getIdNeighbor(u, i);
+                    if ((dist[nId] == -1) || (alt < dist[nId])) {
+                        dist[nId] = alt;
+                        prev[nId] = u;
+                        Q.add(nId);
+                    }
                 }
             }
         }
 
-        //creation of graph
+        HashMap<Integer, Double> ret = new HashMap<>();
+
+        // graph's creation
         for(int i = 0; i<n; i++){
-            /*boolean ctrl = false;
-            for (int j = i; j < n; j++) {
-                if (i + 1 == prev[j]) {
-                    ctrl = true;
-                }
-            }*/
             if((prev[i] != -1)){
-                pg.addEdge(prev[i],i+1,dist[i]);
+                pg.addEdge(prev[i],i,dist[i] - dist[prev[i]]);
+                ret.put(i, dist[i]);
             }
-            /*if (!ctrl) {
-                pg.put(i+1, new ArrayList<>());
-            }*/
         }
-        return pg.getGraph();
+
+        return (new Pair<>(ret, pg));
     }
 
     @Override

@@ -83,6 +83,16 @@ public class Bin {
         }
         return false;
     }
+
+    public boolean addGood(List<Good> goods) {
+        boolean retval = true;
+        for (Good g : goods) {
+            retval = retval && addGood(g);
+        }
+
+        return retval;
+    }
+
     /**
      * implement removeGood method, refresh the volumeCurrent
      * @param good will be remove
@@ -100,6 +110,7 @@ public class Bin {
         }
         return false;
     }
+
     /**
      * contains Id method looking for the id param in the bins, than return
      * the Good object if it is founded, null if it isn't.
