@@ -466,14 +466,14 @@ public class Gui {
         TableColumn<Order,Integer> cPos = new TableColumn<>("Pos");
         cPos.setMinWidth(colw);
         cPos.setCellValueFactory(new PropertyValueFactory<>("pos"));
-        TableColumn<Order,Bin> cBin = new TableColumn<>("Bin");
-        cBin.setMinWidth(colw);
-        cBin.setCellValueFactory(new PropertyValueFactory<>("bin"));
+        TableColumn<Order,Vehicle> cVehicle = new TableColumn<>("Vehicle");
+        cVehicle.setMinWidth(colw);
+        cVehicle.setCellValueFactory(new PropertyValueFactory<>("vehicle"));
         tOrder.getColumns().add(cId);
         tOrder.getColumns().add(cClient);
         tOrder.getColumns().add(cDate);
         tOrder.getColumns().add(cPos);
-        tOrder.getColumns().add(cBin);
+        tOrder.getColumns().add(cVehicle);
         tOrder.setTableMenuButtonVisible(true);
         tOrder.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
     }
