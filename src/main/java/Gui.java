@@ -284,6 +284,8 @@ public class Gui {
         labels.add(new Label("M. max vol:"));
         labels.add(new Label("Veicoli:"));
         labels.add(new Label("V. capienza:"));
+        labels.add(new Label("max ord in un clt:"));
+        labels.add(new Label("max goods in un ord:"));
         for (int i=0;i<labels.size(); i++){
             labels.get(i).setFont(new Font("Goha-tibeb Zeman",  14));
             labels.get(i).setStyle("-fx-pref-height:25px; -fx-alignment: center-left; ");
@@ -326,9 +328,15 @@ public class Gui {
                 Integer.parseInt(texts.get(0).getText()),
                 (int)maxDistance
         );
-        vehicles = Algorithms.generateVheicle(maxDistance, bins);
-        orders = null;
-        goodOrders = null;
+        vehicles = Algorithms.generateVehicle(maxDistance, bins);
+        orders = Algorithms.generateOrders(clients,
+                Integer.parseInt(texts.get(8).getText())
+        );
+        goodOrders = Algorithms.generateGoodOrder(
+                Integer.parseInt(texts.get(9).getText()),
+                orders,
+                goods
+        );
     }
 
     private void initData(){

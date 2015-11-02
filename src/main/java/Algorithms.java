@@ -106,7 +106,7 @@ public class Algorithms{
             bins.add(i,new Bin(volumeMax));
         return bins;
     }
-    public static List<Vehicle> generateVheicle(double minChargeMax, List<Bin> bins){
+    public static List<Vehicle> generateVehicle(double minChargeMax, List<Bin> bins){
         List<Vehicle> vehicles = new ArrayList<>(bins.size());
         String number_plate;
         double chargeMax;
