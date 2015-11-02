@@ -165,6 +165,7 @@ public class Gui {
      * init Keys structure, and set all keys to false.
      */
     private void initKeyPressed(){
+        //TODO il salva e salva con nome salvano anche se non è stato generato un input.
         keyPressed = new HashMap<>();
         keyPressed.put(KeyCombination.keyCombination("Ctrl+L"), false);
         keyPressed.put(KeyCombination.keyCombination("Ctrl+S"), true);
@@ -240,6 +241,12 @@ public class Gui {
                 bins = db.getAllBins();
                 goodOrders = db.getAllGoodOrders();
                 orders = db.getAllOrders();
+                initGoodOrderTable();
+                initVehicleTable();
+                initOrderTable();
+                initGoodTable();
+                initClientTable();
+                initGraph();
                 db.closeConnection();
             }catch (ClassNotFoundException | SQLException err) {
                 err.printStackTrace();
