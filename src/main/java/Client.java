@@ -9,7 +9,7 @@ public class Client {
     public static final String NAME_FIELD_NAME="name";
     public static final String CHARGE_FIELD_NAME="charge";
 
-    @DatabaseField(id = true)
+    @DatabaseField(generatedId = true)
     private Integer id;
     @DatabaseField(canBeNull = false, columnName = NAME_FIELD_NAME)
     private String name;

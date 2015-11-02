@@ -222,6 +222,27 @@ public class Gui {
             if (confirmMessage("Exit Confirmation", "Are u sure u want to exit?"))
                 System.exit(0);
         });
+        save.setOnAction(e -> {
+            if (!keyPressed.get(KeyCombination.keyCombination("Ctrl+L"))) {
+                try {
+                    Database db = new Database("database.db");
+                    //db.clearTables();
+                    db.addClients(clients);
+                    db.addOrders(orders);
+                    db.addGoods(goods);
+                    db.addGoodOrders(goodOrders);
+                    db.addVehicles(vehicles);
+                    db.addBins(bins);
+                    db.closeConnection();
+                } catch (SQLException e1) {
+                    e1.printStackTrace();
+                } catch (ClassNotFoundException e1) {
+                    e1.printStackTrace();
+                }
+                System.out.println("Saved!");
+                setKeyPressed(KeyCombination.keyCombination("Ctrl+L"));
+            }
+        });
         file.getItems().addAll(load, save, save_as, quit);
         return file;
     }
