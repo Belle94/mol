@@ -22,28 +22,24 @@ public class Order {
     private Date date;
     @DatabaseField (canBeNull = false, columnName = POS_FIELD_NAME)
     private Integer pos;
-    @DatabaseField (foreign = true, foreignAutoRefresh = true, canBeNull = true,
-            columnName = BIN_FIELD_NAME)
-    private Bin bin;
 
     public Order() {
         // all persisted classes must define a no-arg constructor with at least package visibility
     }
 
-    public Order (Integer id, Client client, Date date, Integer pos, Bin bin) {
+    public Order (Integer id, Client client, Date date, Integer pos) {
         this.id = id;
         this.client = client;
         this.pos = pos;
-        this.bin = bin;
         this.date = date;
     }
 
-    public Order (Client client, Date date, Integer pos, Bin bin) {
-        this(null, client, date, pos, bin);
+    public Order (Client client, Date date, Integer pos) {
+        this(null, client, date, pos);
     }
 
-    public Order (Client client, Date date, Bin bin) {
-        this(null, client, date, null, bin);
+    public Order (Client client, Date date) {
+        this(null, client, date, null);
     }
 
 
@@ -71,14 +67,6 @@ public class Order {
         this.date = date;
     }
 
-    public Bin getBin() {
-        return bin;
-    }
-
-    public void setBin(Bin bin) {
-        this.bin = bin;
-    }
-
     public Integer getPos() {
         return pos;
     }
@@ -92,7 +80,6 @@ public class Order {
         return "ID: " + id +
                 "\nClient ID: " + client.getId() +
                 "\nDate: " + date.toString() +
-                "\nPos: " + pos +
-                "\nBin: " + bin.getId();
+                "\nPos: " + pos;
     }
 }

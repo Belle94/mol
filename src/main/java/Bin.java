@@ -16,6 +16,8 @@ public class Bin {
     private double volumeCurrent;
     @DatabaseField(canBeNull = false)
     private double volumeMax;
+    @DatabaseField(canBeNull = true)
+    private Vehicle vehicle;
     private List<Good> goods;
 
     public Bin(){
@@ -62,6 +64,14 @@ public class Bin {
 
     public void setGoods(List<Good> goods) {
         this.goods = goods;
+    }
+
+    public Vehicle getVehicle() {
+        return vehicle;
+    }
+
+    public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
     }
 
     /**

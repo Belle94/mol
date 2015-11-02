@@ -45,7 +45,7 @@ public class DatabaseTest {
                 c.setId(db.getAllClients().get(i).getId());
 
                 for (int j = 0; j < 4; j++, pos++) {
-                    Order o = new Order(c, new Date(), pos, bin);
+                    Order o = new Order(c, new Date(), pos);
                     db.addOrder(o);
 
                     o.setId(db.getAllOrders().get(

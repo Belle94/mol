@@ -57,7 +57,6 @@ public class Algorithms{
         }
         return bins;
     }
-
     public static AdjacencyList generateRndGraph(int nodeMax, int edgeMax, double distanceMax){
         AdjacencyList g = new AdjacencyList();
         if(nodeMax>0 && edgeMax > 0 && distanceMax > 0)
@@ -73,15 +72,13 @@ public class Algorithms{
         }
         return g;
     }
-
-    public static List<Order> generateOrders(List<Client> clients, List<Bin> bins){
+    public static List<Order> generateOrders(List<Client> clients, int maxNumOrder){
         List<Order> orders = new ArrayList<>();
-        if (clients.size() > bins.size())
-            for (int i=0; i<bins.size(); i++)
-                orders.add(i,new Order(clients.get(i),new Date(),bins.get(i)));
-        else
-            for (int i=0; i<clients.size(); i++)
-                orders.add(i,new Order(clients.get(i),new Date(),bins.get(i)));
+        int numOrder = 1 + (int)Math.round(Math.random()*maxNumOrder);
+        int i=0;
+        for (Client client:clients)
+            for (int j=0; j<numOrder; j++, i++)
+                orders.add(i,new Order(client,new Date()));
         return orders;
     }
     public static List<Client> generateClients(int n, int minCharge){
