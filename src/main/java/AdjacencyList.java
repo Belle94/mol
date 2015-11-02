@@ -135,6 +135,18 @@ public class AdjacencyList {
         }
     }
 
+    public double getMaxDistance(){
+        double maxWeight = 0;
+        for (Integer node:nodes()) {
+            Pair<HashMap<Integer, Double>, AdjacencyList> ret = dijkstra(node);
+            HashMap<Integer,Double> listWeight = ret.getKey();
+            for (Integer n: listWeight.keySet()){
+                maxWeight = (listWeight.get(n)> maxWeight) ? listWeight.get(n) : maxWeight ;
+            }
+        }
+        return maxWeight;
+    }
+
     public HashMap<Bin, AdjacencyList> clark_wright
             (Database db, Integer vehicles, Integer zero, List<Bin> bins) {
         HashMap<Bin, AdjacencyList> ret = new HashMap<>();
@@ -240,7 +252,7 @@ public class AdjacencyList {
      * The algorithm take the last input node from the queue and
      * update the value distance with previous distance if there was.
      * The node is updated if the sum of the previous node plus the
-     * the wight of the edge is less of the current distance value in the node.
+     * the weight of the edge is less of the current distance value in the node.
      * @param source the node where Dijkstra start
      * @return the graph with the shortest path form the node source to each other nodes.
      */

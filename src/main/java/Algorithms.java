@@ -74,7 +74,7 @@ public class Algorithms{
         return g;
     }
 
-    public List<Order> generateOrders(List<Client> clients, List<Bin> bins){
+    public static List<Order> generateOrders(List<Client> clients, List<Bin> bins){
         List<Order> orders = new ArrayList<>();
         if (clients.size() > bins.size())
             for (int i=0; i<bins.size(); i++)
@@ -87,7 +87,9 @@ public class Algorithms{
     public static List<Client> generateClients(int n, int minCharge){
         List<Client> clients = new ArrayList<>(n);
         for (int i=0; i<n; i++){
-            int rndValue = minCharge + (int)Math.round(Math.random()*minCharge);
+            Random rnd = new Random();
+            boolean getCharge = rnd.nextBoolean();
+            int rndValue = (getCharge) ? ( minCharge + (int)Math.round(Math.random()*minCharge) ) : 0;
             clients.add(i, new Client("Client "+String.valueOf(i), rndValue));
         }
         return clients;

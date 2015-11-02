@@ -312,6 +312,7 @@ public class Gui {
                 Integer.parseInt(texts.get(1).getText()),
                 Integer.parseInt(texts.get(2).getText())
         );
+        double maxDistance = adjacencyList.getMaxDistance();
         goods = Algorithms.generateGoods(
                 Integer.parseInt(texts.get(3).getText()),
                 Integer.parseInt(texts.get(4).getText()),
@@ -321,6 +322,13 @@ public class Gui {
                 Integer.parseInt(texts.get(6).getText()),
                 Double.parseDouble(texts.get(7).getText())
         );
+        clients = Algorithms.generateClients(
+                Integer.parseInt(texts.get(0).getText()),
+                (int)maxDistance
+        );
+        vehicles = Algorithms.generateVheicle(maxDistance, bins);
+        orders = null;
+        goodOrders = null;
     }
 
     private void initData(){
