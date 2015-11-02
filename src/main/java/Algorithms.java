@@ -126,5 +126,21 @@ public class Algorithms{
         return vehicles;
     }
 
+    public static List<GoodOrder> generateGoodOrder(int maxqnt, List<Order> orders, List<Good> goods){
+        int n = orders.size();
+        int m = goods.size();
+        int count = 0;
+        List<GoodOrder> goodOrders = new ArrayList<>(n);
+        for(int i = 0; i < n; i++){
+            Random rnd = new Random();
+            int k = rnd.nextInt(m);
+            for(int j = 0; j < k; j++){
+                int indexGood = rnd.nextInt(m);
+                int qnt = rnd.nextInt(maxqnt);
+                goodOrders.add(count, new GoodOrder(orders.get(i),goods.get(indexGood),qnt));
+            }
+        }
+        return goodOrders;
+    }
 
 }
