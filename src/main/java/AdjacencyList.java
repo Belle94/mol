@@ -64,6 +64,37 @@ public class AdjacencyList {
         return false;
     }
 
+    /**
+     * Delete an edge
+     * @param source
+     * @param destination
+     */
+    public void deleteEdge(Integer source, Integer destination){
+        int index = this.getIndexNeighbor(source, destination);
+        boolean empty= false;
+        if (g.containsKey(source) && g.containsKey(destination) && index!=-1) {
+            g.get(source).remove(index);
+        }
+
+    }
+
+    /**
+     *
+     * @param source
+     * @param destination
+     * @return index of neighbor
+     */
+    public int getIndexNeighbor(Integer source, Integer destination) {
+        int index = -1;
+        int n = this.getNumNeighbor(source);
+        for(int i = 0; i < n; i ++){
+            if(destination==this.getIdNeighbor(source, i)){
+                index = i;
+            }
+        }
+        return index;
+    }
+
     public Set<Integer> nodes() {
         return g.keySet();
     }
