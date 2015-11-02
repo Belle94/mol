@@ -7,8 +7,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCombination;
@@ -36,10 +34,10 @@ public class Gui {
     private Pane generateInputPane;
     private HBox searchPane;
     private StackPane mainPane;
-    private ScrollPane tableClient;
-    private ScrollPane tableOrder;
-    private ScrollPane tableGood;
-    private ScrollPane tableVehicle;
+    private TableView<Order> tOrder;
+    private TableView<Client> tClient;
+    private TableView<Good> tGood;
+    private TableView<Vehicle> tVehicle;
     private TextField search;
     private HashMap<KeyCombination, Boolean> keyPressed;
     private double prefWidth = 800.0;
@@ -126,29 +124,33 @@ public class Gui {
         graphPanel = viewer.addDefaultView(false);
         graphPanel.addKeyListener(new KeyListener() {
             @Override
-            public void keyTyped(java.awt.event.KeyEvent e) {}
+            public void keyTyped(java.awt.event.KeyEvent e) {
+            }
+
             @Override
             public void keyPressed(java.awt.event.KeyEvent e) {
                 char ch = e.getKeyChar();
                 if (ch == '+') {
-                    if (zoom - 0.01 > 0){
+                    if (zoom - 0.01 > 0) {
                         zoom -= 0.01;
                         graphPanel.getCamera().setViewPercent(zoom);
                     }
                 }
-                if(ch == '-'){
-                    if (zoom + 0.01 < 3){
+                if (ch == '-') {
+                    if (zoom + 0.01 < 3) {
                         zoom += 0.01;
                         graphPanel.getCamera().setViewPercent(zoom);
                     }
                 }
-                if(ch =='0'){
+                if (ch == '0') {
                     zoom = 1;
                     graphPanel.getCamera().setViewPercent(zoom);
                 }
             }
+
             @Override
-            public void keyReleased(java.awt.event.KeyEvent e) {}
+            public void keyReleased(java.awt.event.KeyEvent e) {
+            }
         });
     }
 
@@ -348,25 +350,25 @@ public class Gui {
         maps.setAccelerator(KeyCombination.keyCombination("Alt+M"));
         clients.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Alt+C"))) {
-                setMainPane(tableClient);
+                setMainPane(tClient);
                 setKeyPressed(KeyCombination.keyCombination("Alt+C"));
             }
         });
         orders.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Alt+O"))) {
-                setMainPane(tableOrder);
+                setMainPane(tOrder);
                 setKeyPressed(KeyCombination.keyCombination("Alt+O"));
             }
         });
         goods.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Alt+G"))) {
-                setMainPane(tableGood);
+                setMainPane(tGood);
                 setKeyPressed(KeyCombination.keyCombination("Alt+G"));
             }
         });
         vehicles.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Alt+V"))) {
-                setMainPane(tableVehicle);
+                setMainPane(tVehicle);
                 setKeyPressed(KeyCombination.keyCombination("Alt+V"));
             }
         });
@@ -409,7 +411,6 @@ public class Gui {
         tClient.getColumns().add(cCharge);
         tClient.setTableMenuButtonVisible(true);
         tClient.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
-        tableClient = createSetScrollPane(tClient);
     }
 
     /**
@@ -418,7 +419,7 @@ public class Gui {
     private void initOrderTable(){
         double offset = 0.003;
         double colw = prefWidth/5;
-        TableView<Order> tOrder = new TableView<>();
+        tOrder = new TableView<>();
         try {
             Database database = new Database("test.db");
             ObservableList<Order> orders = FXCollections.observableList(database.getAllOrders());
@@ -450,7 +451,6 @@ public class Gui {
         tOrder.getColumns().add(cBin);
         tOrder.setTableMenuButtonVisible(true);
         tOrder.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
-        tableOrder = createSetScrollPane(tOrder);
     }
 
     /**
@@ -461,8 +461,8 @@ public class Gui {
         double offset = 0.003;
         double colw = prefWidth/4;
         TableView<Good> tGood = new TableView<>();
-        ObservableList<Good> goods = FXCollections.observableList(Algorithms.generateGoods(4,3,10));
-        tGood.setItems(goods);
+        ObservableList<Good> goodObservableList = FXCollections.observableList(goods);
+        tGood.setItems(goodObservableList);
         tGood.setEditable(false);
         TableColumn<Good,Integer> cId = new TableColumn<>("Id");
         cId.setMinWidth(colw);
@@ -482,7 +482,6 @@ public class Gui {
         tGood.getColumns().add(cDescription);
         tGood.setTableMenuButtonVisible(true);
         tGood.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
-        tableGood = createSetScrollPane(tGood);
     }
 
     /**
@@ -492,7 +491,7 @@ public class Gui {
     private void initVehicleTable(){
         double offset = 0.003;
         double colw = prefWidth/4;
-        TableView<Vehicle> tVehicle = new TableView<>();
+        tVehicle = new TableView<>();
         try {
             Database database = new Database("test.db");
             ObservableList<Vehicle> vehicles = FXCollections.observableList(database.getAllVehicles());
@@ -520,7 +519,6 @@ public class Gui {
         tVehicle.getColumns().add(cBin);
         tVehicle.setTableMenuButtonVisible(true);
         tVehicle.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
-        tableVehicle = createSetScrollPane(tVehicle);
     }
 
     /**
@@ -546,7 +544,7 @@ public class Gui {
         rootPane.setCenter(mainPane);
     }
 
-    private void setMainPane(ScrollPane tablePane){
+    private void setMainPane(TableView tablePane){
         mainPane.getChildren().clear();
         mainPane.getChildren().add(tablePane);
         mainPane.getChildren().add(searchPane);
@@ -561,13 +559,7 @@ public class Gui {
         searchPane.setVisible(false);
     }
 
-    private ScrollPane createSetScrollPane(TableView tableView){
-        ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        scrollPane.setContent(tableView);
-        return scrollPane;
-    }
+
 
     private void initMainPane(){
         mainPane = new StackPane();
