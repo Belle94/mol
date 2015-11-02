@@ -13,12 +13,16 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.*;
 import java.awt.event.KeyListener;
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Optional;
 import java.util.*;
 
 import javafx.scene.text.Font;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.*;
 import org.graphstream.ui.view.View;
@@ -218,6 +222,29 @@ public class Gui {
         save.setAccelerator(KeyCombination.keyCombination("Ctrl+S"));
         save_as.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+S"));
         quit.setAccelerator(KeyCombination.keyCombination("Ctrl+Q"));
+        load.setOnAction(e->{
+            FileChooser fs = new FileChooser();
+            fs.setTitle("Select Database");
+            fs.getExtensionFilters().add(new FileChooser.ExtensionFilter("Database", "*.db"));
+            fs.getExtensionFilters().add(new FileChooser.ExtensionFilter("All Files", "*.*"));
+            File f =fs.showOpenDialog(new Stage());
+            if (f != null)
+            try{
+                Database db = new Database(f.getAbsolutePath());
+                goods = db.getAllGoods();
+                clients = db.getAllClients();
+                vehicles = db.getAllVehicles();
+                bins = db.getAllBins();
+                goodOrders = db.getAllGoodOrders();
+                orders = db.getAllOrders();
+                db.closeConnection();
+            }catch (ClassNotFoundException | SQLException err) {
+                err.printStackTrace();
+                errorMessage("Something Wrong!", "Err: " + err.getMessage());
+            }catch (IllegalArgumentException e1){
+                errorMessage("Illegal File Format!", "Choose a valid file format (*.db)");
+            }
+        });
         quit.setOnAction(e -> {
             if (confirmMessage("Exit Confirmation", "Are u sure u want to exit?"))
                 System.exit(0);

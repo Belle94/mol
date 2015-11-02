@@ -1,9 +1,14 @@
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 import javafx.util.Pair;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@DatabaseTable(tableName = "graph")
 public class AdjacencyList {
+    @DatabaseField(dataType = DataType.SERIALIZABLE)
     private HashMap<Integer, List<Pair<Integer, Double>>> g;
 
     public AdjacencyList() {
