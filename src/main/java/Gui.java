@@ -242,7 +242,6 @@ public class Gui {
                 mainPane.getChildren().add(generateInputPane);
             }
         });
-
         find.setAccelerator(KeyCombination.keyCombination("Ctrl+F"));
         find.setOnAction(e -> {
             if (keyPressed.get(KeyCombination.keyCombination("Ctrl+F"))) {
@@ -269,8 +268,6 @@ public class Gui {
         HBox headerBox = new HBox();
         Button gen, cancel;
         gen = new Button("Generate");
-        gen.setOnAction(e -> {
-        });
         cancel = new Button("Cancel");
         cancel.setOnAction(e -> textList.forEach(javafx.scene.control.TextInputControl::clear));
         Label headerLabel = new Label("Generate Input");
@@ -305,6 +302,12 @@ public class Gui {
             if (!textList.get(0).getText().isEmpty() && !textList.get(1).getText().isEmpty() && !textList.get(2).getText().isEmpty()) {
                 generateData(textList);
                 initGraph();
+                initClientTable();
+                initGoodTable();
+                initGoodOrderTable();
+                initOrderTable();
+                initVehicleTable();
+                System.out.println("Generate");
             }
         });
         generateInputPane.getChildren().add(container);
@@ -386,7 +389,7 @@ public class Gui {
                 setKeyPressed(KeyCombination.keyCombination("Alt+G"));
             }
         });
-        goods.setOnAction(e -> {
+        goodOrder.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Alt+H"))) {
                 setMainPane(tGoodOrder);
                 setKeyPressed(KeyCombination.keyCombination("Alt+H"));
@@ -404,7 +407,7 @@ public class Gui {
                 setKeyPressed(KeyCombination.keyCombination("Alt+M"));
             }
         });
-        view.getItems().addAll(orders, clients, goods, vehicles, maps);
+        view.getItems().addAll(orders, clients, goods, goodOrder, vehicles, maps);
         return view;
     }
 
@@ -421,6 +424,7 @@ public class Gui {
         double colw = prefWidth/3;
         tClient = new TableView<>();
         ObservableList<Client> clientObservableList = FXCollections.observableList(clients);
+        tClient.getItems().clear();
         tClient.setItems(clientObservableList);
         tClient.setEditable(false);
         TableColumn<Client,Integer> cId = new TableColumn<>("Id");
@@ -447,6 +451,7 @@ public class Gui {
         double colw = prefWidth/5;
         tOrder = new TableView<>();
         ObservableList<Order> orderObservableList = FXCollections.observableList(orders);
+        tOrder.getItems().clear();
         tOrder.setItems(orderObservableList);
         tOrder.setEditable(false);
         TableColumn<Order,Integer> cId = new TableColumn<>("Id");
@@ -482,6 +487,7 @@ public class Gui {
         double colw = prefWidth/4;
         tGood = new TableView<>();
         ObservableList<Good> goodObservableList = FXCollections.observableList(goods);
+        tGood.getItems().clear();
         tGood.setItems(goodObservableList);
         tGood.setEditable(false);
         TableColumn<Good,Integer> cId = new TableColumn<>("Id");
@@ -512,6 +518,7 @@ public class Gui {
         double colw = prefWidth/4;
         tVehicle = new TableView<>();
         ObservableList<Vehicle> vehiclesObservableList  = FXCollections.observableList(vehicles);
+        tVehicle.getItems().clear();
         tVehicle.setItems(vehiclesObservableList);
         tVehicle.setEditable(false);
         TableColumn<Vehicle,String> cNumberPlate = new TableColumn<>("NumberPlate");
@@ -542,6 +549,7 @@ public class Gui {
         double colw = prefWidth/4;
         tGoodOrder = new TableView<>();
         ObservableList<GoodOrder> goodOrderObservableList  = FXCollections.observableList(goodOrders);
+        tGoodOrder.getItems().clear();
         tGoodOrder.setItems(goodOrderObservableList);
         tGoodOrder.setEditable(false);
         TableColumn<GoodOrder,Integer> cId = new TableColumn<>("Id");
@@ -587,7 +595,7 @@ public class Gui {
         rootPane.setCenter(mainPane);
     }
 
-    private void setMainPane(TableView tablePane){
+    private void setMainPane(TableView<?> tablePane){
         mainPane.getChildren().clear();
         mainPane.getChildren().add(tablePane);
         mainPane.getChildren().add(searchPane);
