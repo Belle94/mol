@@ -1,6 +1,4 @@
-import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 /**
  * Class that implement Vehicle. Each vehicle transport the goods
@@ -23,10 +21,17 @@ public class Vehicle{
         // all persisted classes must define a no-arg constructor with at least package visibility
     }
 
+    /**
+     *
+     * @param numberPlate numberPlate
+     * @param chargeMax max charge can get vehicle
+     * @param bin the bin of a vehicle
+     */
     public Vehicle(String numberPlate, double chargeMax, Bin bin) {
         this.numberPlate = numberPlate;
         this.chargeMax = chargeMax;
         this.bin = bin;
+        this.chargeCurrent = 0;
     }
 
     public String getNumberPlate() {

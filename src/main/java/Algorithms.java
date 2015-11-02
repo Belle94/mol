@@ -1,6 +1,4 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class Algorithms{
     /**
@@ -68,12 +66,63 @@ public class Algorithms{
             int rndEdge = 1 + (int)(Math.random()*edgeMax);
             for (int j=0; j < rndEdge; j++){
                 int destination = (int)(Math.random()*nodeMax);
-                double distance = Math.round( (Math.random()*distanceMax) * 100.0 ) / 100.0;
+                double distance = Math.round(Math.random()*distanceMax);
                 if (source != destination)
                     g.addEdge(source, destination, distance);
             }
         }
         return g;
     }
+
+    public List<Order> generateOrders(List<Client> clients, List<Bin> bins){
+        List<Order> orders = new ArrayList<>();
+        if (clients.size() > bins.size())
+            for (int i=0; i<bins.size(); i++)
+                orders.add(i,new Order(clients.get(i),new Date(),bins.get(i)));
+        else
+            for (int i=0; i<clients.size(); i++)
+                orders.add(i,new Order(clients.get(i),new Date(),bins.get(i)));
+        return orders;
+    }
+    public static List<Client> generateClients(int n, int minCharge){
+        List<Client> clients = new ArrayList<>(n);
+        for (int i=0; i<n; i++){
+            int rndValue = minCharge + (int)Math.round(Math.random()*minCharge);
+            clients.add(i, new Client("Client "+String.valueOf(i), rndValue));
+        }
+        return clients;
+    }
+    public static List<Good> generateGoods(int n, int maxQnt, double maxVolume){
+        List<Good> goods = new ArrayList<>(n);
+        for (int i=0; i<n; i++) {
+            int qnt = 1+ (int)Math.round(Math.random()*maxQnt);
+            int volume = 1+ (int)Math.round(Math.random()*maxVolume);
+            goods.add(i, new Good(volume,qnt,"Good "+String.valueOf(i)));
+        }
+        return goods;
+    }
+    public static List<Bin> generateBins(int n, double volumeMax){
+        List<Bin> bins = new ArrayList<>(n);
+        for (int i=0; i<n; i++)
+            bins.add(i,new Bin(volumeMax));
+        return bins;
+    }
+    public static List<Vehicle> generateVheicle(double minChargeMax, List<Bin> bins){
+        List<Vehicle> vehicles = new ArrayList<>(bins.size());
+        String number_plate;
+        double chargeMax;
+        for (int i=0; i<bins.size(); i++) {
+            Random rnd = new Random();
+            number_plate = String.valueOf(48+rnd.nextInt(47));
+            number_plate += String.valueOf(48+rnd.nextInt(47));
+            number_plate += String.valueOf(rnd.nextInt(999));
+            number_plate += String.valueOf(48+rnd.nextInt(47));
+            number_plate += String.valueOf(48+rnd.nextInt(47));
+            chargeMax = minChargeMax + Math.round(Math.random()*minChargeMax);
+            vehicles.add(i,new Vehicle(number_plate,chargeMax,bins.get(i)));
+        }
+        return vehicles;
+    }
+
 
 }

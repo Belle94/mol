@@ -21,7 +21,7 @@ public class Order {
     @DatabaseField (canBeNull = false, columnName = DATE_FIELD_NAME)
     private Date date;
     @DatabaseField (canBeNull = false, columnName = POS_FIELD_NAME)
-    Integer pos;
+    private Integer pos;
     @DatabaseField (foreign = true, foreignAutoRefresh = true, canBeNull = true,
             columnName = BIN_FIELD_NAME)
     private Bin bin;
@@ -41,6 +41,11 @@ public class Order {
     public Order (Client client, Date date, Integer pos, Bin bin) {
         this(null, client, date, pos, bin);
     }
+
+    public Order (Client client, Date date, Bin bin) {
+        this(null, client, date, null, bin);
+    }
+
 
     public Integer getId() {
         return id;

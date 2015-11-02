@@ -48,11 +48,19 @@ public class Gui {
     private View graphPanel;
     private double zoom;
     private AdjacencyList adjacencyList;
+    private List<Good> goods;
+    private List<Client> clients;
+    private List<Vehicle> vehicles;
+    private List<Bin> bins;
+    private List<GoodOrder> goodOrders;
+    private List<Order> orders;
+
     /**
      * builder that calls methods for configuring the interface
      */
     public Gui(){
         try {
+            initData();
             initKeyPressed();
             initGenerateInputPane();
             initMenu();
@@ -266,9 +274,14 @@ public class Gui {
         headerLabel.setStyle("-fx-text-fill: coral;");
         headerBox.setStyle("-fx-alignment: top-left; -fx-padding: 20 0 20 -20;");
         headerBox.getChildren().add(headerLabel);
-        labels.add(new Label("Numero Nodi Massimo: "));
-        labels.add(new Label("Numero Archi Massimo: "));
-        labels.add(new Label("Distanza Massima:"));
+        labels.add(new Label("Clienti:"));
+        labels.add(new Label("Collegamenti max:"));
+        labels.add(new Label("Distanza max:"));
+        labels.add(new Label("Merce:"));
+        labels.add(new Label("M. max qnt:"));
+        labels.add(new Label("M. max vol:"));
+        labels.add(new Label("Veicoli:"));
+        labels.add(new Label("V. capienza:"));
         for (int i=0;i<labels.size(); i++){
             labels.get(i).setFont(new Font("Goha-tibeb Zeman",  14));
             labels.get(i).setStyle("-fx-pref-height:25px; -fx-alignment: center-left; ");
@@ -284,15 +297,38 @@ public class Gui {
         container.setStyle("-fx-hgap: 10px; -fx-vgap: 5px; -fx-padding: 0 0 0 40px; -fx-background-color: white;");
         gen.setOnAction(e -> {
             if (!textList.get(0).getText().isEmpty() && !textList.get(1).getText().isEmpty() && !textList.get(2).getText().isEmpty()) {
-                adjacencyList = Algorithms.generateRndGraph(
-                        Integer.parseInt(textList.get(0).getText()),
-                        Integer.parseInt(textList.get(1).getText()),
-                        Integer.parseInt(textList.get(2).getText())
-                );
+                generateData(textList);
                 initGraph();
             }
         });
         generateInputPane.getChildren().add(container);
+    }
+
+    private void generateData(List<TextInputControl> texts){
+        adjacencyList = Algorithms.generateRndGraph(
+                Integer.parseInt(texts.get(0).getText()),
+                Integer.parseInt(texts.get(1).getText()),
+                Integer.parseInt(texts.get(2).getText())
+        );
+        goods = Algorithms.generateGoods(
+                Integer.parseInt(texts.get(3).getText()),
+                Integer.parseInt(texts.get(4).getText()),
+                Double.parseDouble(texts.get(5).getText())
+        );
+        bins = Algorithms.generateBins(
+                Integer.parseInt(texts.get(6).getText()),
+                Double.parseDouble(texts.get(7).getText())
+        );
+    }
+
+    private void initData(){
+        adjacencyList = new AdjacencyList();
+        goods = new ArrayList<>();
+        clients = new ArrayList<>();
+        vehicles = new ArrayList<>();
+        bins = new ArrayList<>();
+        goodOrders = new ArrayList<>();
+        orders = new ArrayList<>();
     }
 
     /**
@@ -356,14 +392,8 @@ public class Gui {
         double offset = 0.003;
         double colw = prefWidth/3;
         TableView<Client> tClient = new TableView<>();
-        try {
-            Database database = new Database("test.db");
-            ObservableList<Client> clients = FXCollections.observableList(database.getAllClients());
-            tClient.setItems(clients);
-            database.closeConnection();
-        } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        ObservableList<Client> clientObservableList = FXCollections.observableList(clients);
+        tClient.setItems(clientObservableList);
         tClient.setEditable(false);
         TableColumn<Client,Integer> cId = new TableColumn<>("Id");
         cId.setMinWidth(colw);
@@ -431,14 +461,8 @@ public class Gui {
         double offset = 0.003;
         double colw = prefWidth/4;
         TableView<Good> tGood = new TableView<>();
-        try {
-            Database database = new Database("test.db");
-            ObservableList<Good> goods = FXCollections.observableList(database.getAllGoods());
-            tGood.setItems(goods);
-            database.closeConnection();
-        } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        ObservableList<Good> goods = FXCollections.observableList(Algorithms.generateGoods(4,3,10));
+        tGood.setItems(goods);
         tGood.setEditable(false);
         TableColumn<Good,Integer> cId = new TableColumn<>("Id");
         cId.setMinWidth(colw);

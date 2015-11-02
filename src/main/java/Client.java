@@ -1,5 +1,8 @@
+import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
+
 
 @DatabaseTable(tableName = "client")
 public class Client {
@@ -12,6 +15,8 @@ public class Client {
     private String name;
     @DatabaseField(canBeNull = false, columnName = CHARGE_FIELD_NAME)
     private Integer charge;
+    @ForeignCollectionField
+    private ForeignCollection<Order> orders;
 
     public Client(){
         // all persisted classes must define a no-arg constructor with at least package visibility
@@ -21,7 +26,6 @@ public class Client {
         this.name = name;
         setCharge(charge);
     }
-
 
     public Integer getId() {
         return id;
@@ -46,6 +50,14 @@ public class Client {
     public void setCharge(Integer charge) {
         this.charge = charge != null ?
                 charge >= 0 ? charge : 0 : 0;
+    }
+
+    public ForeignCollection<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(ForeignCollection<Order> orders) {
+        this.orders = orders;
     }
 
     @Override

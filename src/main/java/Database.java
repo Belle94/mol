@@ -3,6 +3,7 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -133,7 +134,6 @@ public class Database {
     public void deleteBin(Bin b) throws SQLException {
         daoBin.delete(b);
     }
-
     /**
      * Setup our database and DAOs
      */

@@ -1,10 +1,6 @@
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
-import javafx.scene.control.Button;
 
 /**
  * Main class
@@ -23,11 +19,11 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage stage) throws Exception {
-
         Gui gui = new Gui();
         stage.setTitle("Progetto MOL");
         Scene scene = new Scene(gui.getRootElement());
         stage.setScene(scene);
+        stage.centerOnScreen();
         stage.show();
     }
 }
