@@ -36,6 +36,7 @@ public class Gui {
     private StackPane mainPane;
     private TableView<Order> tOrder;
     private TableView<Client> tClient;
+    private TableView<GoodOrder> tGoodOrder;
     private TableView<Good> tGood;
     private TableView<Vehicle> tVehicle;
     private TextField search;
@@ -170,6 +171,7 @@ public class Gui {
         keyPressed.put(KeyCombination.keyCombination("Alt+O"), false);
         keyPressed.put(KeyCombination.keyCombination("Alt+C"), false);
         keyPressed.put(KeyCombination.keyCombination("Alt+G"), false);
+        keyPressed.put(KeyCombination.keyCombination("Alt+H"), false);
         keyPressed.put(KeyCombination.keyCombination("Alt+V"), false);
     }
     /**
@@ -357,11 +359,13 @@ public class Gui {
         MenuItem orders = new MenuItem("Orders");
         MenuItem clients = new MenuItem("Clients");
         MenuItem goods = new MenuItem("Goods");
+        MenuItem goodOrder = new MenuItem("Good Order");
         MenuItem vehicles = new MenuItem("Vehicles");
         MenuItem maps = new MenuItem("Maps");
         orders.setAccelerator(KeyCombination.keyCombination("Alt+O"));
         clients.setAccelerator(KeyCombination.keyCombination("Alt+C"));
         goods.setAccelerator(KeyCombination.keyCombination("Alt+G"));
+        goodOrder.setAccelerator(KeyCombination.keyCombination("Alt+H"));
         vehicles.setAccelerator(KeyCombination.keyCombination("Alt+V"));
         maps.setAccelerator(KeyCombination.keyCombination("Alt+M"));
         clients.setOnAction(e -> {
@@ -380,6 +384,12 @@ public class Gui {
             if (!keyPressed.get(KeyCombination.keyCombination("Alt+G"))) {
                 setMainPane(tGood);
                 setKeyPressed(KeyCombination.keyCombination("Alt+G"));
+            }
+        });
+        goods.setOnAction(e -> {
+            if (!keyPressed.get(KeyCombination.keyCombination("Alt+H"))) {
+                setMainPane(tGoodOrder);
+                setKeyPressed(KeyCombination.keyCombination("Alt+H"));
             }
         });
         vehicles.setOnAction(e -> {
@@ -409,7 +419,7 @@ public class Gui {
     private void initClientTable(){
         double offset = 0.003;
         double colw = prefWidth/3;
-        TableView<Client> tClient = new TableView<>();
+        tClient = new TableView<>();
         ObservableList<Client> clientObservableList = FXCollections.observableList(clients);
         tClient.setItems(clientObservableList);
         tClient.setEditable(false);
@@ -436,14 +446,8 @@ public class Gui {
         double offset = 0.003;
         double colw = prefWidth/5;
         tOrder = new TableView<>();
-        try {
-            Database database = new Database("test.db");
-            ObservableList<Order> orders = FXCollections.observableList(database.getAllOrders());
-            tOrder.setItems(orders);
-            database.closeConnection();
-        } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        ObservableList<Order> orderObservableList = FXCollections.observableList(orders);
+        tOrder.setItems(orderObservableList);
         tOrder.setEditable(false);
         TableColumn<Order,Integer> cId = new TableColumn<>("Id");
         cId.setMinWidth(colw);
@@ -476,7 +480,7 @@ public class Gui {
     private void initGoodTable(){
         double offset = 0.003;
         double colw = prefWidth/4;
-        TableView<Good> tGood = new TableView<>();
+        tGood = new TableView<>();
         ObservableList<Good> goodObservableList = FXCollections.observableList(goods);
         tGood.setItems(goodObservableList);
         tGood.setEditable(false);
@@ -503,19 +507,12 @@ public class Gui {
     /**
      * Set and initialize Vehicle's table
      */
-
     private void initVehicleTable(){
         double offset = 0.003;
         double colw = prefWidth/4;
         tVehicle = new TableView<>();
-        try {
-            Database database = new Database("test.db");
-            ObservableList<Vehicle> vehicles = FXCollections.observableList(database.getAllVehicles());
-            tVehicle.setItems(vehicles);
-            database.closeConnection();
-        } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        ObservableList<Vehicle> vehiclesObservableList  = FXCollections.observableList(vehicles);
+        tVehicle.setItems(vehiclesObservableList);
         tVehicle.setEditable(false);
         TableColumn<Vehicle,String> cNumberPlate = new TableColumn<>("NumberPlate");
         cNumberPlate.setMinWidth(colw);
@@ -535,6 +532,36 @@ public class Gui {
         tVehicle.getColumns().add(cBin);
         tVehicle.setTableMenuButtonVisible(true);
         tVehicle.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
+    }
+
+    /**
+     * Set and initialize Vehicle's table
+     */
+    private void initGoodOrderTable(){
+        double offset = 0.003;
+        double colw = prefWidth/4;
+        tGoodOrder = new TableView<>();
+        ObservableList<GoodOrder> goodOrderObservableList  = FXCollections.observableList(goodOrders);
+        tGoodOrder.setItems(goodOrderObservableList);
+        tGoodOrder.setEditable(false);
+        TableColumn<GoodOrder,Integer> cId = new TableColumn<>("Id");
+        cId.setMinWidth(colw);
+        cId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        TableColumn<GoodOrder, Order> cOrder = new TableColumn<>("Order");
+        cOrder.setMinWidth(colw);
+        cOrder.setCellValueFactory(new PropertyValueFactory<>("order"));
+        TableColumn<GoodOrder, Good> cGood = new TableColumn<>("Good");
+        cGood.setMinWidth(colw);
+        cGood.setCellValueFactory(new PropertyValueFactory<>("good"));
+        TableColumn<GoodOrder,Integer> cQnt = new TableColumn<>("Qnt");
+        cQnt.setMinWidth(colw);
+        cQnt.setCellValueFactory(new PropertyValueFactory<>("qnt"));
+        tGoodOrder.getColumns().add(cId);
+        tGoodOrder.getColumns().add(cOrder);
+        tGoodOrder.getColumns().add(cGood);
+        tGoodOrder.getColumns().add(cQnt);
+        tGoodOrder.setTableMenuButtonVisible(true);
+        tGoodOrder.setMinSize(prefWidth - (prefWidth * offset), prefHeight - prefMenuHeight - (prefHeight * offset));
     }
 
     /**
