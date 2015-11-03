@@ -1,12 +1,13 @@
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
+import com.j256.ormlite.field.DataPersisterManager;
+import com.j256.ormlite.field.types.SerializableType;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.table.TableUtils;
+
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -35,19 +36,15 @@ public class Database {
         for (Client client:clients)
             daoClient.create(client);
     }
-
     public Client getClientByID(Integer id) throws SQLException {
         return daoClient.queryForId(id);
     }
-
     public List<Client> getAllClients() throws SQLException {
         return daoClient.queryForAll();
     }
-
     public void deleteClient(Client client) throws SQLException, ClassNotFoundException {
         daoClient.delete(client);
     }
-
     public void addOrder(Order order) throws SQLException, ClassNotFoundException {
         daoOrder.createIfNotExists(order);
     }
@@ -55,31 +52,24 @@ public class Database {
         for (Order order:orders)
             daoOrder.create(order);
     }
-
     public Order getOrderByID(Integer id) throws SQLException {
         return daoOrder.queryForId(id);
     }
-
     public List<Order> getOrdersInBin(Bin bin) throws SQLException {
         return daoOrder.queryForEq(Order.BIN_FIELD_NAME, bin.getId());
     }
-
     public List<Order> getOrderByClient(Client c) throws SQLException {
         return daoOrder.queryForEq(Order.CLIENT_FIELD_NAME, c.getId());
     }
-
     public List<Order> getOrderByClient(Integer id) throws SQLException {
         return daoOrder.queryForEq(Order.CLIENT_FIELD_NAME, id);
     }
-
     public List<Order> getAllOrders() throws SQLException {
         return daoOrder.queryForAll();
     }
-
     public void deleteOrder(Order order) throws SQLException, ClassNotFoundException {
         daoOrder.delete(order);
     }
-
     public void addGood(Good good) throws SQLException, ClassNotFoundException {
         daoGood.createIfNotExists(good);
     }
@@ -87,11 +77,9 @@ public class Database {
         for (Good good:goods)
             daoGood.create(good);
     }
-
     public Good getGoodByID(Integer id) throws SQLException {
         return daoGood.queryForId(id);
     }
-
     public List<Good> getGoodsInBin(Bin bin) throws SQLException {
         LinkedList<Good> l = new LinkedList<>();
         for (Order o : getOrdersInBin(bin))
@@ -99,26 +87,21 @@ public class Database {
 
         return l;
     }
-
     public List<Good> getGoodByOrder(Order order) throws SQLException {
         return daoGoodOrder.queryForEq(
                 GoodOrder.ORDER_FIELD_NAME,
                 order.getId()).stream().map(GoodOrder::getGood)
                 .collect(Collectors.toCollection(LinkedList::new));
     }
-
     public List<Good> getAllGoods() throws SQLException {
         return daoGood.queryForAll();
     }
-
     public void deleteGood(Good good) throws SQLException, ClassNotFoundException {
         daoGood.delete(good);
     }
-
     public List<GoodOrder> getAllGoodOrders() throws SQLException {
         return daoGoodOrder.queryForAll();
     }
-
     public void addGoodOrder(GoodOrder go) throws SQLException {
         daoGoodOrder.createIfNotExists(go);
     }
@@ -129,24 +112,19 @@ public class Database {
     public void addVehicle(Vehicle vehicle) throws SQLException, ClassNotFoundException {
         daoVehicle.createIfNotExists(vehicle);
     }
-
     public void addVehicles(List<Vehicle> vehicles) throws SQLException, ClassNotFoundException {
         for(Vehicle vehicle:vehicles)
             daoVehicle.create(vehicle);
     }
-
     public Vehicle getVehiclesByNumberPlate(String numberPlate) throws SQLException {
         return daoVehicle.queryForId(numberPlate);
     }
-
     public List<Vehicle> getAllVehicles() throws SQLException {
         return daoVehicle.queryForAll();
     }
-
     public void deleteVehicle(Vehicle vehicle) throws SQLException, ClassNotFoundException {
         daoVehicle.delete(vehicle);
     }
-
     public void addBin(Bin bin) throws SQLException {
         daoBin.createIfNotExists(bin);
     }
@@ -157,15 +135,24 @@ public class Database {
     public List<Bin> getAllBins() throws SQLException {
         return daoBin.queryForAll();
     }
-
     public Bin getBinById(Integer id) throws SQLException {
         return daoBin.queryForId(id);
     }
-
     public void deleteBin(Bin b) throws SQLException {
         daoBin.delete(b);
     }
+    //TODO follow functions
+/*
+    public void addGraph(AdjacencyList adj) throws SQLException {
 
+    }
+    public AdjacencyList getGraph() throws SQLException {
+
+    }
+    public void deleteGraph(AdjacencyList adj) throws SQLException {
+
+    }
+*/
     public void clearClients() throws SQLException {
         TableUtils.clearTable(jdbcConnectionSource,Client.class);
     }
@@ -184,6 +171,9 @@ public class Database {
     public void clearBins() throws SQLException {
         TableUtils.clearTable(jdbcConnectionSource,Bin.class);
     }
+    public void clearGraph() throws SQLException {
+        TableUtils.clearTable(jdbcConnectionSource,AdjacencyList.class);
+    }
     public void clearTables() throws SQLException {
         clearClients();
         clearOrders();
@@ -191,6 +181,7 @@ public class Database {
         clearGoods();
         clearVehicles();
         clearBins();
+        clearGraph();
     }
     /**
      * Setup our database and DAOs

@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 @DatabaseTable(tableName = "graph")
 public class AdjacencyList {
-    @DatabaseField(dataType = DataType.SERIALIZABLE)
+    @DatabaseField(id = true, dataType = DataType.SERIALIZABLE)
     private HashMap<Integer, List<Pair<Integer, Double>>> g;
 
     public AdjacencyList() {

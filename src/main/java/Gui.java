@@ -241,6 +241,8 @@ public class Gui {
                 bins = db.getAllBins();
                 goodOrders = db.getAllGoodOrders();
                 orders = db.getAllOrders();
+                //TODO load db
+                // adjacencyList = db.getGraph();
                 initGoodOrderTable();
                 initVehicleTable();
                 initOrderTable();
@@ -250,7 +252,7 @@ public class Gui {
                 db.closeConnection();
             }catch (ClassNotFoundException | SQLException err) {
                 err.printStackTrace();
-                errorMessage("Something Wrong!", "Err: " + err.getMessage());
+                errorMessage("Error", "msg:" + err.getMessage());
             }catch (IllegalArgumentException e1){
                 errorMessage("Illegal File Format!", "Choose a valid file format (*.db)");
             }
@@ -270,9 +272,12 @@ public class Gui {
                     db.addGoodOrders(goodOrders);
                     db.addBins(bins);
                     db.addVehicles(vehicles);
+                    //TODO add graph
+                    //db.addGraph(adjacencyList);
                     db.closeConnection();
                     keyPressed.put(KeyCombination.keyCombination("Ctrl+S"), true);
                 } catch (SQLException | ClassNotFoundException e1) {
+                    errorMessage("Error", "msg:"+e1.getMessage());
                     e1.printStackTrace();
                 }
             }else{
@@ -299,9 +304,12 @@ public class Gui {
                     db.addGoodOrders(goodOrders);
                     db.addBins(bins);
                     db.addVehicles(vehicles);
+                    //TODO add graph
+                    //db.addGraph(adjacencyList);
                     db.closeConnection();
                     keyPressed.put(KeyCombination.keyCombination("Ctrl+Shift+S"), true);
                 } catch (SQLException | ClassNotFoundException e1) {
+                    errorMessage("Error", "msg:"+e1.getMessage());
                     e1.printStackTrace();
                 }
             }else{
