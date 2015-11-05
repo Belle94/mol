@@ -1,6 +1,4 @@
 import javafx.util.Pair;
-import sun.jvm.hotspot.oops.DefaultOopVisitor;
-
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -275,41 +273,37 @@ public class AdjacencyList {
             prev[i] = -1;
         }
 
-        dist[source-1] = 0.0;
+        dist[source] = 0.0;
         List<Integer> Q = new ArrayList<>();
         Q.add(source);
         while (!Q.isEmpty()){
             u = Q.get(0);                     // takes first element on list
             Q.remove(0);                        // removes first element
 
-            if(dist[u-1] == -1){
-                break;
-            }
-
-            for (int i = 0; i < this.getNumNeighbor(u); i++){
-                Double alt = dist[u-1] + getDistance(u,i);
-                Integer nId = getIdNeighbor(u,i);
-                if((dist[nId-1] == -1) || (alt < dist[nId-1])){
-                    dist[nId-1] = alt;
-                    prev[nId-1] = u;
-                    Q.add(nId);
+            if(dist[u] != -1) {
+                for (int i = 0; i < this.getNumNeighbor(u); i++) {
+                    Double alt = dist[u] + getDistance(u, i);
+                    Integer nId = getIdNeighbor(u, i);
+                    if ((dist[nId] == -1) || (alt < dist[nId])) {
+                        dist[nId] = alt;
+                        prev[nId] = u;
+                        Q.add(nId);
+                    }
                 }
             }
         }
 
+        HashMap<Integer, Double> ret = new HashMap<>();
+
         // graph's creation
         for(int i = 0; i<n; i++){
             if((prev[i] != -1)){
-                pg.addEdge(prev[i],i+1,dist[i]);
+                pg.addEdge(prev[i],i,dist[i] - dist[prev[i]]);
+                ret.put(i, dist[i]);
             }
         }
 
-        HashMap<Integer, Double> ret = new HashMap<>();
-        for (Integer i : prev) {
-            ret.put(i, dist[i]);
-        }
-
-       return (new Pair<>(ret, pg));
+        return (new Pair<>(ret, pg));
     }
 
     @Override
