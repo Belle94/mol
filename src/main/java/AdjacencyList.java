@@ -134,6 +134,22 @@ public class AdjacencyList {
         }
     }
 
+    public AdjacencyList getMinGraphFromSource(Integer source, Integer destination) {
+        Pair<HashMap<Integer, Double>, AdjacencyList> retDijkstra =
+                dijkstra(source);
+
+        boolean found = false;
+        double distance = Double.MAX_VALUE;
+        for (Integer n : retDijkstra.getKey().keySet()) {
+            if (n == destination) {
+                found = true;
+                distance = retDijkstra.getKey().get(n);
+            }
+        }
+
+
+    }
+
     public HashMap<Bin, AdjacencyList> clark_wright
             (Database db, Integer vehicles, Integer zero, List<Bin> bins) {
         HashMap<Bin, AdjacencyList> ret = new HashMap<>();
@@ -154,7 +170,7 @@ public class AdjacencyList {
 
         // Merge route between nodes
         boolean decreased = true;
-        Integer ib = 0;
+        int ib = 0;
         try {
             for (; decreased; ib++) {
                 decreased = false;
@@ -199,6 +215,10 @@ public class AdjacencyList {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        // Build solution
+
+
         return ret;
     }
 
