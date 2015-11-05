@@ -132,20 +132,28 @@ public class AdjacencyList {
         }
     }
 
+    public List<Integer> nodesToDestination(Integer source, Integer destination, Set<Integer> ks) {
+        List<Integer> retNodes = new LinkedList<>();
+
+        while (destination != source) {
+            int i = 0;
+            for (Integer n : ks) {
+                if (n == destination) {
+                    retNodes.add(i);
+                    break;
+                }
+                i++;
+            }
+        }
+
+        return retNodes;
+    }
+
     public AdjacencyList getMinGraphFromSource(Integer source, Integer destination) {
         Pair<HashMap<Integer, Double>, AdjacencyList> retDijkstra =
                 dijkstra(source);
 
-        boolean found = false;
-        double distance = Double.MAX_VALUE;
-        for (Integer n : retDijkstra.getKey().keySet()) {
-            if (n == destination) {
-                found = true;
-                distance = retDijkstra.getKey().get(n);
-            }
-        }
-
-
+        List<Integer> nts = nodesToDestination(source, destination, retDijkstra.getKey().keySet());
     }
 
     public HashMap<Bin, AdjacencyList> clark_wright
