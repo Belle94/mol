@@ -26,6 +26,11 @@ public class Client {
         this.name = name;
         setCharge(charge);
     }
+    public Client(Integer id, String name, Integer charge) {
+        this.id = id;
+        this.name = name;
+        setCharge(charge);
+    }
 
     public Integer getId() {
         return id;

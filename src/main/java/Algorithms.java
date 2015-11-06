@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.util.*;
 
 public class Algorithms{
@@ -57,11 +59,13 @@ public class Algorithms{
         }
         return bins;
     }
-    public static AdjacencyList generateRndGraph(int nodeMax, int edgeMax, double distanceMax){
+    public static Pair<List<Client>,AdjacencyList> generateRndGraph(int nodeMax, int edgeMax, double distanceMax){
         AdjacencyList g = new AdjacencyList();
+        List<Client> clients = new ArrayList<>(nodeMax);
         if(nodeMax>0 && edgeMax > 0 && distanceMax > 0)
         for (int source=0; source < nodeMax; source++) {
             g.addNode(source);
+            clients.add(source, new Client(source,"Client "+String.valueOf(source), null));
             int rndEdge = 1 + (int)(Math.random()*edgeMax);
             for (int j=0; j < rndEdge; j++){
                 int destination = (int)(Math.random()*nodeMax);
@@ -70,26 +74,24 @@ public class Algorithms{
                     g.addEdge(source, destination, distance);
             }
         }
-        return g;
+        return new Pair<>(clients,g);
+    }
+    public static void generateRndCharge(List<Client> clients, int minCharge) {
+        for (Client c : clients) {
+            Random rnd = new Random();
+            boolean getCharge = rnd.nextBoolean();
+            int rndValue = (getCharge) ? (minCharge + (int) Math.round(Math.random() * minCharge)) : 0;
+            c.setCharge(rndValue);
+        }
     }
     public static List<Order> generateOrders(List<Client> clients, int maxNumOrder){
         List<Order> orders = new ArrayList<>();
-        int numOrder = 1 + (int)Math.round(Math.random()*maxNumOrder);
-        int i=0;
-        for (Client client:clients)
-            for (int j=0; j<numOrder; j++, i++)
-                orders.add(i,new Order(client,new Date()));
+        int numOrder = (int)Math.round(Math.random()*maxNumOrder);
+        for (int i = 0; i< clients.size();)
+            for (int j=0; j<numOrder; j++, i++) {
+                orders.add(i, new Order(clients.get(i), new Date()));
+            }
         return orders;
-    }
-    public static List<Client> generateClients(int n, int minCharge){
-        List<Client> clients = new ArrayList<>(n);
-        for (int i=0; i<n; i++){
-            Random rnd = new Random();
-            boolean getCharge = rnd.nextBoolean();
-            int rndValue = (getCharge) ? ( minCharge + (int)Math.round(Math.random()*minCharge) ) : 0;
-            clients.add(i, new Client("Client "+String.valueOf(i), rndValue));
-        }
-        return clients;
     }
     public static List<Good> generateGoods(int n, int maxQnt, double maxVolume){
         List<Good> goods = new ArrayList<>(n);
@@ -128,13 +130,13 @@ public class Algorithms{
         int m = goods.size();
         int count = 0;
         List<GoodOrder> goodOrders = new ArrayList<>(n);
-        for(int i = 0; i < n; i++){
+        for (Order order : orders) {
             Random rnd = new Random();
             int k = rnd.nextInt(m);
-            for(int j = 0; j < k; j++){
+            for (int j = 0; j < k; j++) {
                 int indexGood = rnd.nextInt(m);
                 int qnt = rnd.nextInt(maxqnt);
-                goodOrders.add(count, new GoodOrder(orders.get(i),goods.get(indexGood),qnt));
+                goodOrders.add(count, new GoodOrder(order, goods.get(indexGood), qnt));
             }
         }
         return goodOrders;

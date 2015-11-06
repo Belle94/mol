@@ -1,14 +1,9 @@
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
 import javafx.util.Pair;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@DatabaseTable(tableName = "graph")
 public class AdjacencyList {
-    @DatabaseField(id = true, dataType = DataType.SERIALIZABLE)
     private HashMap<Integer, List<Pair<Integer, Double>>> g;
 
     public AdjacencyList() {
@@ -75,7 +70,6 @@ public class AdjacencyList {
         if (g.containsKey(source) && g.containsKey(destination) && index!=-1) {
             g.get(source).remove(index);
         }
-
     }
 
     /**
@@ -116,6 +110,13 @@ public class AdjacencyList {
             return null;
 
         return g.get(v).stream().map(Pair::getKey).collect(Collectors.toList());
+    }
+
+
+    public List<Pair<Integer,Double>> getPairNeighbors(Integer v) {
+        if (!g.containsKey(v))
+            return null;
+        return g.get(v);
     }
     /**
      * @param v the input node

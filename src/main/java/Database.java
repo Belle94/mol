@@ -1,9 +1,8 @@
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
-import com.j256.ormlite.field.DataPersisterManager;
-import com.j256.ormlite.field.types.SerializableType;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.table.TableUtils;
+import javafx.util.Pair;
 
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -23,6 +22,7 @@ public class Database {
     private Dao<Good,Integer> daoGood;
     private Dao<Vehicle,String> daoVehicle;
     private Dao<Bin,Integer> daoBin;
+    private Dao<Neighbor, Integer> daoNeighbor;
 
     public Database(String databaseUrl) throws SQLException, ClassNotFoundException {
         this.databaseUrl = databaseUrl;
@@ -52,11 +52,18 @@ public class Database {
         for (Order order:orders)
             daoOrder.create(order);
     }
+    public void addNeighbor(Neighbor neighbor) throws SQLException {
+           daoNeighbor.createIfNotExists(neighbor);
+    }
+    public void addNeighbors(List<Neighbor> neighbors) throws SQLException {
+        for (Neighbor n:neighbors)
+            daoNeighbor.createIfNotExists(n);
+    }
     public Order getOrderByID(Integer id) throws SQLException {
         return daoOrder.queryForId(id);
     }
-    public List<Order> getOrdersInBin(Bin bin) throws SQLException {
-        return daoOrder.queryForEq(Order.BIN_FIELD_NAME, bin.getId());
+    public List<Order> getOrdersInVehicle(Vehicle vehicle) throws SQLException {
+        return daoOrder.queryForEq(Order.VEHICLE_FIELD_NAME, vehicle.getNumberPlate());
     }
     public List<Order> getOrderByClient(Client c) throws SQLException {
         return daoOrder.queryForEq(Order.CLIENT_FIELD_NAME, c.getId());
@@ -79,13 +86,6 @@ public class Database {
     }
     public Good getGoodByID(Integer id) throws SQLException {
         return daoGood.queryForId(id);
-    }
-    public List<Good> getGoodsInBin(Bin bin) throws SQLException {
-        LinkedList<Good> l = new LinkedList<>();
-        for (Order o : getOrdersInBin(bin))
-            l.addAll(getGoodByOrder(o).stream().collect(Collectors.toList()));
-
-        return l;
     }
     public List<Good> getGoodByOrder(Order order) throws SQLException {
         return daoGoodOrder.queryForEq(
@@ -141,18 +141,23 @@ public class Database {
     public void deleteBin(Bin b) throws SQLException {
         daoBin.delete(b);
     }
-    //TODO follow functions
-/*
-    public void addGraph(AdjacencyList adj) throws SQLException {
-
+    public void addAdjacencyList(AdjacencyList adj) throws SQLException {
+        for (Integer node: adj.getNodes())
+            for(Pair<Integer,Double> neighbor : adj.getPairNeighbors(node))
+                daoNeighbor.createIfNotExists(
+                        new Neighbor(
+                            new Client(node,node.toString(),null),
+                            new Client(neighbor.getKey(),neighbor.getKey().toString(),null),
+                            neighbor.getValue())
+                );
     }
-    public AdjacencyList getGraph() throws SQLException {
-
+    public AdjacencyList getAdjacencyList() throws SQLException {
+        AdjacencyList adj = new AdjacencyList();
+        List<Neighbor> neighbors = daoNeighbor.queryForAll();
+        for (Neighbor n : neighbors)
+            adj.addEdge(n.getFrom().getId(),n.getTo().getId(),n.getWeight());
+        return adj;
     }
-    public void deleteGraph(AdjacencyList adj) throws SQLException {
-
-    }
-*/
     public void clearClients() throws SQLException {
         TableUtils.clearTable(jdbcConnectionSource,Client.class);
     }
@@ -171,8 +176,8 @@ public class Database {
     public void clearBins() throws SQLException {
         TableUtils.clearTable(jdbcConnectionSource,Bin.class);
     }
-    public void clearGraph() throws SQLException {
-        TableUtils.clearTable(jdbcConnectionSource,AdjacencyList.class);
+    public void clearNeighbor() throws SQLException {
+        TableUtils.clearTable(jdbcConnectionSource,Neighbor.class);
     }
     public void clearTables() throws SQLException {
         clearClients();
@@ -181,7 +186,7 @@ public class Database {
         clearGoods();
         clearVehicles();
         clearBins();
-        clearGraph();
+        clearNeighbor();
     }
     /**
      * Setup our database and DAOs
@@ -191,19 +196,21 @@ public class Database {
          * Create our DAOs. One for each class and associated table.
          */
             daoClient = DaoManager.createDao(jdbcConnectionSource, Client.class);
-            daoOrder = DaoManager.createDao(jdbcConnectionSource, Order.class);
             daoGoodOrder = DaoManager.createDao(jdbcConnectionSource, GoodOrder.class);
             daoGood = DaoManager.createDao(jdbcConnectionSource, Good.class);
             daoBin = DaoManager.createDao(jdbcConnectionSource, Bin.class);
             daoVehicle = DaoManager.createDao(jdbcConnectionSource, Vehicle.class);
+            daoNeighbor = DaoManager.createDao(jdbcConnectionSource, Neighbor.class);
+            daoOrder = DaoManager.createDao(jdbcConnectionSource, Order.class);
+
             TableUtils.createTableIfNotExists(jdbcConnectionSource, Client.class);
             TableUtils.createTableIfNotExists(jdbcConnectionSource, Order.class);
             TableUtils.createTableIfNotExists(jdbcConnectionSource, Good.class);
             TableUtils.createTableIfNotExists(jdbcConnectionSource, GoodOrder.class);
             TableUtils.createTableIfNotExists(jdbcConnectionSource, Bin.class);
             TableUtils.createTableIfNotExists(jdbcConnectionSource, Vehicle.class);
+            TableUtils.createTableIfNotExists(jdbcConnectionSource, Neighbor.class);
     }
-
 
     /**
      * Open a connection with the database

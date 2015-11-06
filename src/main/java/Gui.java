@@ -14,7 +14,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.*;
 import java.awt.event.KeyListener;
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Optional;
@@ -23,6 +22,7 @@ import java.util.*;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.*;
 import org.graphstream.ui.view.View;
@@ -165,7 +165,6 @@ public class Gui {
      * init Keys structure, and set all keys to false.
      */
     private void initKeyPressed(){
-        //TODO il salva e salva con nome salvano anche se non è stato generato un input.
         keyPressed = new HashMap<>();
         keyPressed.put(KeyCombination.keyCombination("Ctrl+L"), false);
         keyPressed.put(KeyCombination.keyCombination("Ctrl+S"), true);
@@ -241,8 +240,7 @@ public class Gui {
                 bins = db.getAllBins();
                 goodOrders = db.getAllGoodOrders();
                 orders = db.getAllOrders();
-                //TODO load db
-                // adjacencyList = db.getGraph();
+                adjacencyList = db.getAdjacencyList();
                 initGoodOrderTable();
                 initVehicleTable();
                 initOrderTable();
@@ -266,17 +264,15 @@ public class Gui {
                 try {
                     Database db = new Database("database.db");
                     db.clearTables();
-                    db.addClients(clients);
                     db.addOrders(orders);
                     db.addGoods(goods);
                     db.addGoodOrders(goodOrders);
                     db.addBins(bins);
                     db.addVehicles(vehicles);
-                    //TODO add graph
-                    //db.addGraph(adjacencyList);
+                    db.addAdjacencyList(adjacencyList);
                     db.closeConnection();
                     keyPressed.put(KeyCombination.keyCombination("Ctrl+S"), true);
-                } catch (SQLException | ClassNotFoundException e1) {
+                } catch (SQLException | IllegalArgumentException | ClassNotFoundException e1) {
                     errorMessage("Error", "msg:"+e1.getMessage());
                     e1.printStackTrace();
                 }
@@ -304,11 +300,10 @@ public class Gui {
                     db.addGoodOrders(goodOrders);
                     db.addBins(bins);
                     db.addVehicles(vehicles);
-                    //TODO add graph
-                    //db.addGraph(adjacencyList);
+                    db.addAdjacencyList(adjacencyList);
                     db.closeConnection();
                     keyPressed.put(KeyCombination.keyCombination("Ctrl+Shift+S"), true);
-                } catch (SQLException | ClassNotFoundException e1) {
+                } catch (SQLException | IllegalArgumentException | ClassNotFoundException e1) {
                     errorMessage("Error", "msg:"+e1.getMessage());
                     e1.printStackTrace();
                 }
@@ -496,7 +491,7 @@ public class Gui {
         container.add(cancel, 1, labels.size() + 1);
         container.setStyle("-fx-hgap: 10px; -fx-vgap: 5px; -fx-padding: 0 0 0 40px; -fx-background-color: white;");
         gen.setOnAction(e -> {
-            if (!textList.get(0).getText().isEmpty() && !textList.get(1).getText().isEmpty() && !textList.get(2).getText().isEmpty()) {
+            if (!textList.isEmpty()) {
                 generateData(textList);
                 initGraph();
                 initClientTable();
@@ -508,17 +503,22 @@ public class Gui {
                 keyPressed.put(KeyCombination.keyCombination("Ctrl+Shift+S"), false);
                 infoMessage("Info","graph generated");
             }
+            else
+                infoMessage("Not Generated","please let complete the blanks");
         });
         generateInputPane.getChildren().add(container);
     }
 
     private void generateData(List<TextInputControl> texts){
-        adjacencyList = Algorithms.generateRndGraph(
+        Pair<List<Client>,AdjacencyList> pair = Algorithms.generateRndGraph(
                 Integer.parseInt(texts.get(0).getText()),
                 Integer.parseInt(texts.get(1).getText()),
                 Integer.parseInt(texts.get(2).getText())
         );
-        double maxDistance = adjacencyList.getMaxDistance();
+        adjacencyList = pair.getValue();
+        clients = pair.getKey();
+        int maxDistance = (int)adjacencyList.getMaxDistance();
+        Algorithms.generateRndCharge(clients,maxDistance);
         goods = Algorithms.generateGoods(
                 Integer.parseInt(texts.get(3).getText()),
                 Integer.parseInt(texts.get(4).getText()),
@@ -527,10 +527,6 @@ public class Gui {
         bins = Algorithms.generateBins(
                 Integer.parseInt(texts.get(6).getText()),
                 Double.parseDouble(texts.get(7).getText())
-        );
-        clients = Algorithms.generateClients(
-                Integer.parseInt(texts.get(0).getText()),
-                (int)maxDistance
         );
         vehicles = Algorithms.generateVehicle(maxDistance, bins);
         orders = Algorithms.generateOrders(clients,

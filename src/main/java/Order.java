@@ -10,7 +10,7 @@ import java.util.Date;
 public class Order {
     public final static String CLIENT_FIELD_NAME = "client_id";
     public final static String DATE_FIELD_NAME = "date";
-    public final static String BIN_FIELD_NAME = "bin_id";
+    public final static String VEHICLE_FIELD_NAME = "vehicle_id";
     public final static String POS_FIELD_NAME = "pos";
 
     @DatabaseField (generatedId = true)
@@ -22,6 +22,8 @@ public class Order {
     private Date date;
     @DatabaseField (canBeNull = true, columnName = POS_FIELD_NAME)
     private Integer pos;
+    @DatabaseField (canBeNull = true, foreign = true, columnName = VEHICLE_FIELD_NAME)
+    private Vehicle vehicle;
 
     public Order() {
         // all persisted classes must define a no-arg constructor with at least package visibility
@@ -32,6 +34,7 @@ public class Order {
         this.client = client;
         this.pos = pos;
         this.date = date;
+        this.vehicle = null;
     }
 
     public Order (Client client, Date date, Integer pos) {
@@ -73,6 +76,14 @@ public class Order {
 
     public void setPos(Integer pos) {
         this.pos = pos;
+    }
+
+    public Vehicle getVehicle() {
+        return vehicle;
+    }
+
+    public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
     }
 
     @Override
