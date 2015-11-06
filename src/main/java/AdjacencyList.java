@@ -132,6 +132,19 @@ public class AdjacencyList {
         }
     }
 
+    public void removeEdge(Integer node, Integer neighbour) {
+        for (Pair<Integer, Double> p : g.get(node)) {
+            if (p.getKey() == neighbour)
+                g.get(node).remove(p);
+        }
+    }
+
+    public void removeNode(Integer node) {
+        g.remove(node);
+        for (Integer n : g.keySet())
+            removeEdge(n, node);
+    }
+
     public List<Integer> nodesToDestination(Integer source, Integer destination, Set<Integer> ks) {
         List<Integer> retNodes = new LinkedList<>();
 
@@ -154,6 +167,8 @@ public class AdjacencyList {
                 dijkstra(source);
 
         List<Integer> nts = nodesToDestination(source, destination, retDijkstra.getKey().keySet());
+
+
     }
 
     public HashMap<Bin, AdjacencyList> clark_wright
