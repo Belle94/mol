@@ -166,9 +166,15 @@ public class AdjacencyList {
         Pair<HashMap<Integer, Double>, AdjacencyList> retDijkstra =
                 dijkstra(source);
 
-        List<Integer> nts = nodesToDestination(source, destination, retDijkstra.getKey().keySet());
+        AdjacencyList ret = retDijkstra.getValue();
+        List<Integer> nts = nodesToDestination(source, destination, ret.getNodes());
+        List<Integer> unwantedNodes = (List<Integer>) ret.getNodes();
+        unwantedNodes.removeAll(nts);
 
+        for (Integer n : unwantedNodes)
+            ret.removeNode(n);
 
+        return ret;
     }
 
     public HashMap<Bin, AdjacencyList> clark_wright
