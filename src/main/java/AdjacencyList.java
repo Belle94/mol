@@ -44,6 +44,22 @@ public class AdjacencyList {
             addNode(destination);
     }
 
+    public void addEdge(Integer source, List<Pair<Integer, Double>> adj) {
+        for (Pair<Integer, Double> p : adj) {
+            if (!g.containsKey(p.getKey()))
+                addNode(p.getKey());
+        }
+
+        if (g.containsKey(source)) {
+            for (Pair<Integer, Double> p : g.get(source)) {
+                if (!adj.contains(p))
+                    adj.add(p);
+            }
+        }
+
+        g.put(source, adj);
+    }
+
     /**
      * Add new node with an empty List.
      * @param source the value of the node
@@ -100,6 +116,10 @@ public class AdjacencyList {
         Integer id = nodep.getKey();
         return id;
     }
+
+    public List<Pair<Integer, Double>> getNeighbors(Integer source) {
+        return g.get(source);
+    }
     /**
      * @param v input node
      * @return numbers of neighbor form the input node.
@@ -143,6 +163,14 @@ public class AdjacencyList {
         g.remove(node);
         for (Integer n : g.keySet())
             removeEdge(n, node);
+    }
+
+    public static AdjacencyList mergeAdjcencyList(AdjacencyList a, AdjacencyList b) {
+        AdjacencyList ret = new AdjacencyList(a.get());
+        for (Integer n : b.getNodes())
+            ret.addEdge(n, b.getNeighbors(n));
+
+        return ret;
     }
 
     public List<Integer> nodesToDestination(Integer source, Integer destination, Set<Integer> ks) {
