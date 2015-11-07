@@ -248,6 +248,8 @@ public class Gui {
                 initClientTable();
                 initGraph();
                 db.closeConnection();
+                keyPressed.put(KeyCombination.keyCombination("Ctrl+S"), false);
+                infoMessage("Load", "Done!");
             }catch (ClassNotFoundException | SQLException err) {
                 err.printStackTrace();
                 errorMessage("Error", "msg:" + err.getMessage());
@@ -272,6 +274,7 @@ public class Gui {
                     db.addAdjacencyList(adjacencyList);
                     db.closeConnection();
                     keyPressed.put(KeyCombination.keyCombination("Ctrl+S"), true);
+                    infoMessage("Save", "Done!");
                 } catch (SQLException | IllegalArgumentException | ClassNotFoundException e1) {
                     errorMessage("Error", "msg:"+e1.getMessage());
                     e1.printStackTrace();
@@ -302,7 +305,7 @@ public class Gui {
                     db.addVehicles(vehicles);
                     db.addAdjacencyList(adjacencyList);
                     db.closeConnection();
-                    keyPressed.put(KeyCombination.keyCombination("Ctrl+Shift+S"), true);
+                    infoMessage("Save", "Done!");
                 } catch (SQLException | IllegalArgumentException | ClassNotFoundException e1) {
                     errorMessage("Error", "msg:"+e1.getMessage());
                     e1.printStackTrace();
@@ -401,7 +404,7 @@ public class Gui {
             if (!textList.get(0).getText().isEmpty() && !textList.get(1).getText().isEmpty() && !textList.get(2).getText().isEmpty()) {
                 adjacencyList.addEdge(Integer.parseInt(textList.get(0).getText()), Integer.parseInt(textList.get(1).getText()), Double.valueOf(textList.get(2).getText()));
                 initGraph();
-                System.out.println("Added");
+                infoMessage("Node","added");
             }
         });
         addEdgePane.getChildren().add(container);
@@ -444,7 +447,7 @@ public class Gui {
             if (!textList.get(0).getText().isEmpty() && !textList.get(1).getText().isEmpty()) {
                 adjacencyList.deleteEdge(Integer.parseInt(textList.get(0).getText()), Integer.parseInt(textList.get(1).getText()));
                 initGraph();
-                System.out.println("Deleted");
+                infoMessage("Node","Deleted");
             }
         });
         delEdgePane.getChildren().add(container);
@@ -492,7 +495,8 @@ public class Gui {
         container.setStyle("-fx-hgap: 10px; -fx-vgap: 5px; -fx-padding: 0 0 0 40px; -fx-background-color: white;");
         gen.setOnAction(e -> {
             if (!textList.isEmpty()) {
-                generateData(textList);
+                if (!generateData(textList))
+                    return;
                 initGraph();
                 initClientTable();
                 initGoodTable();
@@ -509,34 +513,40 @@ public class Gui {
         generateInputPane.getChildren().add(container);
     }
 
-    private void generateData(List<TextInputControl> texts){
-        Pair<List<Client>,AdjacencyList> pair = Algorithms.generateRndGraph(
-                Integer.parseInt(texts.get(0).getText()),
-                Integer.parseInt(texts.get(1).getText()),
-                Integer.parseInt(texts.get(2).getText())
-        );
-        adjacencyList = pair.getValue();
-        clients = pair.getKey();
-        int maxDistance = (int)adjacencyList.getMaxDistance();
-        Algorithms.generateRndCharge(clients,maxDistance);
-        goods = Algorithms.generateGoods(
-                Integer.parseInt(texts.get(3).getText()),
-                Integer.parseInt(texts.get(4).getText()),
-                Double.parseDouble(texts.get(5).getText())
-        );
-        bins = Algorithms.generateBins(
-                Integer.parseInt(texts.get(6).getText()),
-                Double.parseDouble(texts.get(7).getText())
-        );
-        vehicles = Algorithms.generateVehicle(maxDistance, bins);
-        orders = Algorithms.generateOrders(clients,
-                Integer.parseInt(texts.get(8).getText())
-        );
-        goodOrders = Algorithms.generateGoodOrder(
-                Integer.parseInt(texts.get(9).getText()),
-                orders,
-                goods
-        );
+    private boolean generateData(List<TextInputControl> texts){
+        try {
+            Pair<List<Client>, AdjacencyList> pair = Algorithms.generateRndGraph(
+                    Integer.parseInt(texts.get(0).getText()),
+                    Integer.parseInt(texts.get(1).getText()),
+                    Integer.parseInt(texts.get(2).getText())
+            );
+            adjacencyList = pair.getValue();
+            clients = pair.getKey();
+            int maxDistance = (int) adjacencyList.getMaxDistance();
+            Algorithms.generateRndCharge(clients, maxDistance);
+            goods = Algorithms.generateGoods(
+                    Integer.parseInt(texts.get(3).getText()),
+                    Integer.parseInt(texts.get(4).getText()),
+                    Double.parseDouble(texts.get(5).getText())
+            );
+            bins = Algorithms.generateBins(
+                    Integer.parseInt(texts.get(6).getText()),
+                    Double.parseDouble(texts.get(7).getText())
+            );
+            vehicles = Algorithms.generateVehicle(maxDistance, bins);
+            orders = Algorithms.generateOrders(clients,
+                    Integer.parseInt(texts.get(8).getText())
+            );
+            goodOrders = Algorithms.generateGoodOrder(
+                    Integer.parseInt(texts.get(9).getText()),
+                    orders,
+                    goods
+            );
+            return true;
+        }catch (Exception e){
+            errorMessage("Not Generated", e.getMessage());
+            return false;
+        }
     }
 
     private void initData(){
@@ -785,7 +795,7 @@ public class Gui {
         rootPane.setPrefSize(prefWidth, prefHeight);
         rootPane.setTop(menuBar);
         mainPane.setAlignment(Pos.TOP_LEFT);
-        setKeyPressed(KeyCombination.keyCombination("Ctrl+G"));
+        keyPressed.put(KeyCombination.keyCombination("Ctrl+G"), true);
         mainPane.getChildren().addAll(generateInputPane);
         rootPane.setCenter(mainPane);
     }

@@ -91,6 +91,6 @@ public class Order {
         return "ID: " + id +
                 "\nClient ID: " + client.getId() +
                 "\nDate: " + date.toString() +
-                "\nPos: " + pos;
+                "\nPos: " + pos+"\n";
     }
 }

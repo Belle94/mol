@@ -59,7 +59,7 @@ public class Algorithms{
         }
         return bins;
     }
-    public static Pair<List<Client>,AdjacencyList> generateRndGraph(int nodeMax, int edgeMax, double distanceMax){
+    public static Pair<List<Client>,AdjacencyList> generateRndGraph(int nodeMax, int edgeMax, double distanceMax) throws  Exception{
         AdjacencyList g = new AdjacencyList();
         List<Client> clients = new ArrayList<>(nodeMax);
         if(nodeMax>0 && edgeMax > 0 && distanceMax > 0)
@@ -76,7 +76,7 @@ public class Algorithms{
         }
         return new Pair<>(clients,g);
     }
-    public static void generateRndCharge(List<Client> clients, int minCharge) {
+    public static void generateRndCharge(List<Client> clients, int minCharge) throws  Exception {
         for (Client c : clients) {
             Random rnd = new Random();
             boolean getCharge = rnd.nextBoolean();
@@ -84,16 +84,17 @@ public class Algorithms{
             c.setCharge(rndValue);
         }
     }
-    public static List<Order> generateOrders(List<Client> clients, int maxNumOrder){
+    public static List<Order> generateOrders(List<Client> clients, int maxNumOrder) throws  Exception{
         List<Order> orders = new ArrayList<>();
-        int numOrder = (int)Math.round(Math.random()*maxNumOrder);
-        for (int i = 0; i< clients.size();)
-            for (int j=0; j<numOrder; j++, i++) {
-                orders.add(i, new Order(clients.get(i), new Date()));
-            }
+
+        for (int i = 1; i< clients.size(); i++){
+            int numOrder = (int)Math.round(Math.random()*maxNumOrder);
+            for (int j=0; j<numOrder; j++)
+                    orders.add(new Order(clients.get(i), new Date()));
+        }
         return orders;
     }
-    public static List<Good> generateGoods(int n, int maxQnt, double maxVolume){
+    public static List<Good> generateGoods(int n, int maxQnt, double maxVolume) throws  Exception{
         List<Good> goods = new ArrayList<>(n);
         for (int i=0; i<n; i++) {
             int qnt = 1+ (int)Math.round(Math.random()*maxQnt);
@@ -102,13 +103,13 @@ public class Algorithms{
         }
         return goods;
     }
-    public static List<Bin> generateBins(int n, double volumeMax){
+    public static List<Bin> generateBins(int n, double volumeMax) throws  Exception{
         List<Bin> bins = new ArrayList<>(n);
         for (int i=0; i<n; i++)
             bins.add(i,new Bin(volumeMax));
         return bins;
     }
-    public static List<Vehicle> generateVehicle(double minChargeMax, List<Bin> bins){
+    public static List<Vehicle> generateVehicle(double minChargeMax, List<Bin> bins) throws  Exception{
         List<Vehicle> vehicles = new ArrayList<>(bins.size());
         String number_plate;
         double chargeMax;
@@ -125,7 +126,7 @@ public class Algorithms{
         return vehicles;
     }
 
-    public static List<GoodOrder> generateGoodOrder(int maxqnt, List<Order> orders, List<Good> goods){
+    public static List<GoodOrder> generateGoodOrder(int maxQnt, List<Order> orders, List<Good> goods) throws  Exception{
         int n = orders.size();
         int m = goods.size();
         int count = 0;
@@ -135,7 +136,7 @@ public class Algorithms{
             int k = rnd.nextInt(m);
             for (int j = 0; j < k; j++) {
                 int indexGood = rnd.nextInt(m);
-                int qnt = rnd.nextInt(maxqnt);
+                int qnt = rnd.nextInt(maxQnt);
                 goodOrders.add(count, new GoodOrder(order, goods.get(indexGood), qnt));
             }
         }
