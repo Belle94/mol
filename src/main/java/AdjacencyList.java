@@ -20,8 +20,7 @@ public class AdjacencyList {
      * @return the numbers of nodes in the Graph (the size of the graph).
      */
     public int getNumNodes(){
-        int n = g.size();
-        return n;
+        return g.size();
     }
 
     /**
@@ -66,7 +65,6 @@ public class AdjacencyList {
      */
     public void deleteEdge(Integer source, Integer destination){
         int index = this.getIndexNeighbor(source, destination);
-        boolean empty= false;
         if (g.containsKey(source) && g.containsKey(destination) && index!=-1) {
             g.get(source).remove(index);
         }
@@ -82,7 +80,7 @@ public class AdjacencyList {
         int index = -1;
         int n = this.getNumNeighbor(source);
         for(int i = 0; i < n; i ++){
-            if(destination==this.getIdNeighbor(source, i)){
+            if(Objects.equals(destination, this.getIdNeighbor(source, i))){
                 index = i;
             }
         }
@@ -126,8 +124,7 @@ public class AdjacencyList {
     public Double getDistance(Integer v, int index ){
         List<Pair<Integer, Double>> node = g.get(v);
         Pair<Integer, Double> nodep = node.get(index);
-        Double distance = nodep.getValue();
-        return distance;
+        return nodep.getValue();
     }
     /**
      * @param v the input node
@@ -137,8 +134,7 @@ public class AdjacencyList {
     public Integer getIdNeighbor(Integer v, int index ){
         List<Pair<Integer, Double>> node = g.get(v);
         Pair<Integer, Double> nodep = node.get(index);
-        Integer id = nodep.getKey();
-        return id;
+        return nodep.getKey();
     }
     /**
      * @param v input node

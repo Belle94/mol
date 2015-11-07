@@ -67,7 +67,7 @@ public class Gui {
             initKeyPressed();
             initGenerateInputPane();
             initAddEdgePane();
-            initdelEdgePane();
+            initDelEdgePane();
             initMenu();
             initSearch();
             initClientTable();
@@ -188,6 +188,10 @@ public class Gui {
     private void setKeyPressed(KeyCombination k){
         for(Map.Entry<KeyCombination, Boolean> entry : keyPressed.entrySet()) {
             KeyCombination key = entry.getKey();
+            if (!(key.equals(KeyCombination.keyCombination("Ctrl+S"))
+                    ||
+                  key.equals(KeyCombination.keyCombination("Ctrl+Shift+S"))
+            ))
             keyPressed.put(key,false);
         }
         keyPressed.put(k, true);
@@ -402,11 +406,12 @@ public class Gui {
         container.add(cancel, 1, labels.size() + 1);
         container.setStyle("-fx-hgap: 10px; -fx-vgap: 5px; -fx-padding: 0 0 0 40px; -fx-background-color: white;");
         add.setOnAction(e -> {
-            if (!textList.get(0).getText().isEmpty() && !textList.get(1).getText().isEmpty() && !textList.get(2).getText().isEmpty()) {
+            if (!isListEmpty(textList)) {
                 adjacencyList.addEdge(Integer.parseInt(textList.get(0).getText()), Integer.parseInt(textList.get(1).getText()), Double.valueOf(textList.get(2).getText()));
                 initGraph();
                 infoMessage("Node","added");
-            }
+            }else
+                infoMessage("Not Generated","please let complete the blanks");
         });
         addEdgePane.getChildren().add(container);
     }
@@ -414,7 +419,7 @@ public class Gui {
     /**
      * set and Generate Delete Edge Pane
      */
-    private void initdelEdgePane(){
+    private void initDelEdgePane(){
         delEdgePane = new StackPane();
         GridPane container = new GridPane();
         List<Label> labels = new ArrayList<>();
@@ -445,11 +450,12 @@ public class Gui {
         container.add(cancel, 1, labels.size() + 1);
         container.setStyle("-fx-hgap: 10px; -fx-vgap: 5px; -fx-padding: 0 0 0 40px; -fx-background-color: white;");
         delete.setOnAction(e -> {
-            if (!textList.get(0).getText().isEmpty() && !textList.get(1).getText().isEmpty()) {
+            if (! isListEmpty(textList)) {
                 adjacencyList.deleteEdge(Integer.parseInt(textList.get(0).getText()), Integer.parseInt(textList.get(1).getText()));
                 initGraph();
                 infoMessage("Node","Deleted");
-            }
+            }else
+                infoMessage("Not Generated","please let complete the blanks");
         });
         delEdgePane.getChildren().add(container);
     }
@@ -495,7 +501,7 @@ public class Gui {
         container.add(cancel, 1, labels.size() + 1);
         container.setStyle("-fx-hgap: 10px; -fx-vgap: 5px; -fx-padding: 0 0 0 40px; -fx-background-color: white;");
         gen.setOnAction(e -> {
-            if (!textList.isEmpty()) {
+            if (!isListEmpty(textList)) {
                 if (!generateData(textList))
                     return;
                 initGraph();
@@ -512,6 +518,14 @@ public class Gui {
                 infoMessage("Not Generated","please let complete the blanks");
         });
         generateInputPane.getChildren().add(container);
+    }
+
+
+    private boolean isListEmpty(List<TextInputControl> list){
+        for (TextInputControl text : list)
+            if (text.getText().isEmpty())
+                return true;
+        return false;
     }
 
     private boolean generateData(List<TextInputControl> texts){
@@ -816,8 +830,6 @@ public class Gui {
         mainPane.getChildren().add(graphPanelNode);
         searchPane.setVisible(false);
     }
-
-
 
     private void initMainPane(){
         mainPane = new StackPane();
