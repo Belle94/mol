@@ -35,3 +35,4 @@ public class AlgorithmsTest{
 
         assertEquals(Algorithms.firstFitDecreasing(testGoodList,max),binsExpected);
     }
+}

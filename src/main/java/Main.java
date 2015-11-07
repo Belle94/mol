@@ -26,7 +26,5 @@ public class Main extends Application {
         stage.centerOnScreen();
         stage.show();
     }
-    //List Bug...
-    //TODO il salva e salva con nome salvano anche se non è stato generato un input.
     //TODO gli archi non devano avere pesi uguale a 0 e possono avere valori decimali
 }

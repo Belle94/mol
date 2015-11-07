@@ -1,5 +1,6 @@
 import javafx.util.Pair;
 
+import java.text.DecimalFormat;
 import java.util.*;
 
 public class Algorithms{
@@ -62,16 +63,29 @@ public class Algorithms{
     public static Pair<List<Client>,AdjacencyList> generateRndGraph(int nodeMax, int edgeMax, double distanceMax) throws  Exception{
         AdjacencyList g = new AdjacencyList();
         List<Client> clients = new ArrayList<>(nodeMax);
-        if(nodeMax>0 && edgeMax > 0 && distanceMax > 0)
+
+        if (!(nodeMax>0 && edgeMax > 0 && distanceMax > 0))throw new IllegalArgumentException();
+
         for (int source=0; source < nodeMax; source++) {
             g.addNode(source);
             clients.add(source, new Client(source,"Client "+String.valueOf(source), null));
-            int rndEdge = 1 + (int)(Math.random()*edgeMax);
-            for (int j=0; j < rndEdge; j++){
+            int rndOutEdge = 1 + (int)(Math.random()*edgeMax/2);
+            int rndInEdge = 1 + (int)(Math.random()*edgeMax/2);
+            for (int j=0; j < rndOutEdge; j++){
                 int destination = (int)(Math.random()*nodeMax);
-                double distance = Math.round(Math.random()*distanceMax);
+                double distance = Math.round((1+Math.random()*distanceMax)*100)/100;
                 if (source != destination)
                     g.addEdge(source, destination, distance);
+                else if (j==0)
+                    j--;
+            }
+            for (int j=0; j < rndInEdge; j++){
+                int destination = (int)(Math.random()*nodeMax);
+                double distance = Math.round((1+Math.random()*distanceMax)*100)/100;
+                if (source != destination)
+                    g.addEdge(destination, source, distance);
+                else if (j==0)
+                    j--;
             }
         }
         return new Pair<>(clients,g);
@@ -142,5 +156,4 @@ public class Algorithms{
         }
         return goodOrders;
     }
-
 }

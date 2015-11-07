@@ -254,6 +254,7 @@ public class Gui {
                 err.printStackTrace();
                 errorMessage("Error", "msg:" + err.getMessage());
             }catch (IllegalArgumentException e1){
+                e1.printStackTrace();
                 errorMessage("Illegal File Format!", "Choose a valid file format (*.db)");
             }
         });
@@ -545,6 +546,7 @@ public class Gui {
             return true;
         }catch (Exception e){
             errorMessage("Not Generated", e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
