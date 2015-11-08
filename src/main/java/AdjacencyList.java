@@ -165,6 +165,11 @@ public class AdjacencyList {
             removeEdge(n, node);
     }
 
+    public void removeNodes(List<Integer> nodes) {
+        for (Integer n : nodes)
+            removeNode(n);
+    }
+
     public static AdjacencyList mergeAdjcencyList(AdjacencyList a, AdjacencyList b) {
         AdjacencyList ret = new AdjacencyList(a.get());
         for (Integer n : b.getNodes())
@@ -199,8 +204,7 @@ public class AdjacencyList {
         List<Integer> unwantedNodes = (List<Integer>) ret.getNodes();
         unwantedNodes.removeAll(nts);
 
-        for (Integer n : unwantedNodes)
-            ret.removeNode(n);
+        ret.removeNodes(unwantedNodes);
 
         return ret;
     }
