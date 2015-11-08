@@ -35,7 +35,7 @@ import javax.swing.*;
 public class Gui {
     private BorderPane rootPane;
     private MenuBar menuBar;
-    private Pane generateInputPane,addEdgePane,delEdgePane;
+    private Pane generateInputPane,addEdgePane,delEdgePane, pathPane;
     private HBox searchPane;
     private StackPane mainPane;
     private TableView<Order> tOrder;
@@ -48,6 +48,7 @@ public class Gui {
     private double prefWidth = 800.0;
     private double prefHeight = 600.0;
     private double prefMenuHeight=30;
+    private Graph graph;
     private View graphPanel;
     private double zoom;
     private AdjacencyList adjacencyList;
@@ -68,6 +69,7 @@ public class Gui {
             initGenerateInputPane();
             initAddEdgePane();
             initDelEdgePane();
+            initPathPane();
             initMenu();
             initSearch();
             initClientTable();
@@ -84,7 +86,7 @@ public class Gui {
 
     private void initGraph() {
         System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
-        Graph graph = new SingleGraph("Maps");
+        graph = new SingleGraph("Maps");
         zoom = 1;
         if (adjacencyList != null){
             int n = adjacencyList.getNumNodes();
@@ -179,6 +181,7 @@ public class Gui {
         keyPressed.put(KeyCombination.keyCombination("Alt+C"), false);
         keyPressed.put(KeyCombination.keyCombination("Alt+G"), false);
         keyPressed.put(KeyCombination.keyCombination("Alt+H"), false);
+        keyPressed.put(KeyCombination.keyCombination("Alt+P"), false);
         keyPressed.put(KeyCombination.keyCombination("Alt+V"), false);
     }
     /**
@@ -450,12 +453,12 @@ public class Gui {
         container.add(cancel, 1, labels.size() + 1);
         container.setStyle("-fx-hgap: 10px; -fx-vgap: 5px; -fx-padding: 0 0 0 40px; -fx-background-color: white;");
         delete.setOnAction(e -> {
-            if (! isListEmpty(textList)) {
+            if (!isListEmpty(textList)) {
                 adjacencyList.deleteEdge(Integer.parseInt(textList.get(0).getText()), Integer.parseInt(textList.get(1).getText()));
                 initGraph();
-                infoMessage("Node","Deleted");
-            }else
-                infoMessage("Not Generated","please let complete the blanks");
+                infoMessage("Node", "Deleted");
+            } else
+                infoMessage("Not Generated", "please let complete the blanks");
         });
         delEdgePane.getChildren().add(container);
     }
@@ -586,12 +589,14 @@ public class Gui {
         MenuItem goodOrder = new MenuItem("Good Order");
         MenuItem vehicles = new MenuItem("Vehicles");
         MenuItem maps = new MenuItem("Maps");
+        MenuItem path = new MenuItem("Path Vehicles");
         orders.setAccelerator(KeyCombination.keyCombination("Alt+O"));
         clients.setAccelerator(KeyCombination.keyCombination("Alt+C"));
         goods.setAccelerator(KeyCombination.keyCombination("Alt+G"));
         goodOrder.setAccelerator(KeyCombination.keyCombination("Alt+H"));
         vehicles.setAccelerator(KeyCombination.keyCombination("Alt+V"));
         maps.setAccelerator(KeyCombination.keyCombination("Alt+M"));
+        path.setAccelerator(KeyCombination.keyCombination("Alt+P"));
         clients.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Alt+C"))) {
                 setMainPane(tClient);
@@ -628,7 +633,16 @@ public class Gui {
                 setKeyPressed(KeyCombination.keyCombination("Alt+M"));
             }
         });
-        view.getItems().addAll(orders, clients, goods, goodOrder, vehicles, maps);
+
+        path.setOnAction(e -> {
+            if (!keyPressed.get(KeyCombination.keyCombination("Alt+P"))) {
+                setKeyPressed(KeyCombination.keyCombination("Alt+P"));
+                mainPane.getChildren().clear();
+                mainPane.getChildren().add(pathPane);
+
+            }
+        });
+        view.getItems().addAll(orders, clients, goods, goodOrder, vehicles, maps,path);
         return view;
     }
 
@@ -829,6 +843,54 @@ public class Gui {
         createSwingContent(graphPanelNode);
         mainPane.getChildren().add(graphPanelNode);
         searchPane.setVisible(false);
+    }
+
+    /**
+     * that function design the path of vehicles on graph changing the color of edges
+     */
+    private void pathOnGraph(){
+        Edge e1 = graph.getEdge(0);
+        e1.addAttribute("ui.style",
+                "fill-color: red;");
+    }
+
+    private void initPathPane(){
+        pathPane = new StackPane();
+        GridPane container = new GridPane();
+        List<Label> labels = new ArrayList<>();
+        List<TextInputControl> textList = new ArrayList<>();
+        HBox headerBox = new HBox();
+        Button show, cancel;
+        show = new Button("Show");
+        cancel = new Button("Cancel");
+        cancel.setOnAction(e -> textList.forEach(javafx.scene.control.TextInputControl::clear));
+        Label headerLabel = new Label("Path Vehicles");
+        headerLabel.setFont(new Font("Goha-tibeb Zeman", 14));
+        headerLabel.setStyle("-fx-text-fill: coral;");
+        headerBox.setStyle("-fx-alignment: top-left; -fx-padding: 20 0 20 -20;");
+        headerBox.getChildren().add(headerLabel);
+        labels.add(new Label("Bin:"));
+        for (int i=0;i<labels.size(); i++){
+            labels.get(i).setFont(new Font("Goha-tibeb Zeman",  14));
+            labels.get(i).setStyle("-fx-pref-height:25px; -fx-alignment: center-left; ");
+            TextField t = new TextField();
+            t.setStyle("-fx-max-width: 65px; -fx-alignment: center");
+            textList.add(i, t);
+            container.add(labels.get(i),0,i+1);
+            container.add(t,1,i+1);
+        }
+        container.add(headerBox, 0, 0, 2, 1);
+        container.add(show, 0, labels.size() + 1);
+        container.add(cancel, 1, labels.size() + 1);
+        container.setStyle("-fx-hgap: 10px; -fx-vgap: 5px; -fx-padding: 0 0 0 40px; -fx-background-color: white;");
+        show.setOnAction(e -> {
+            if (!isListEmpty(textList)) {
+                pathOnGraph();
+                setMainPaneGraph();
+            }else
+                infoMessage("Not Generated","please let complete the blanks");
+        });
+        pathPane.getChildren().add(container);
     }
 
     private void initMainPane(){
