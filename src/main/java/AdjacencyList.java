@@ -212,7 +212,7 @@ public class AdjacencyList {
     }
 
     public HashMap<Bin, AdjacencyList> clark_wright
-            (Database db, Integer vehicles, Integer zero, List<Bin> bins) {
+            (Database db, Integer zero, List<Bin> bins) {
         HashMap<Bin, AdjacencyList> ret = new HashMap<>();
         DistanceMatrix matDistance = new DistanceMatrix(this);
         HashMap<Pair<Integer, Integer>, Double> savings = new HashMap<>();
