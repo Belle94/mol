@@ -94,6 +94,7 @@ public class AdjacencyList {
 
         return g.get(v).stream().map(Pair::getKey).collect(Collectors.toList());
     }
+
     /**
      * @param v the input node
      * @param index of a neighbor list.
@@ -105,6 +106,7 @@ public class AdjacencyList {
         Double distance = nodep.getValue();
         return distance;
     }
+
     /**
      * @param v the input node
      * @param index of a neighbor list that will know the ID
@@ -120,6 +122,7 @@ public class AdjacencyList {
     public List<Pair<Integer, Double>> getNeighbors(Integer source) {
         return g.get(source);
     }
+
     /**
      * @param v input node
      * @return numbers of neighbor form the input node.
@@ -269,13 +272,22 @@ public class AdjacencyList {
                         orderedSavingsKey.remove(p);
                     }
                 }
+
+                // Block that associates Nodes' list to Bin
+                AdjacencyList adj = new AdjacencyList();
+
+                // Build the adjacency list correlated to the bin
+                for (int i = 1; i < l.size(); i++)
+                    adj = AdjacencyList.mergeAdjcencyList(
+                            adj, getMinGraphFromSource(l.get(i-1), l.get(i)));
+
+                // Associates adjacency list to bin
+                ret.put(bins.get(ib), adj);
+
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        // Build solution
-
 
         return ret;
     }
