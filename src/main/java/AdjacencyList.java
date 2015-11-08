@@ -166,8 +166,7 @@ public class AdjacencyList {
     }
 
     public void removeNodes(List<Integer> nodes) {
-        for (Integer n : nodes)
-            removeNode(n);
+        nodes.forEach(this::removeNode);
     }
 
     public static AdjacencyList mergeAdjcencyList(AdjacencyList a, AdjacencyList b) {
