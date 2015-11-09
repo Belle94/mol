@@ -58,6 +58,7 @@ public class Gui {
     private List<Bin> bins;
     private List<GoodOrder> goodOrders;
     private List<Order> orders;
+    private HashMap<Bin,AdjacencyList> clark;
 
     /**
      * builder that calls methods for configuring the interface
@@ -513,6 +514,7 @@ public class Gui {
                 initGoodOrderTable();
                 initOrderTable();
                 initVehicleTable();
+                //clark = adjacencyList.clark_wright(,);
                 keyPressed.put(KeyCombination.keyCombination("Ctrl+S"), false);
                 keyPressed.put(KeyCombination.keyCombination("Ctrl+Shift+S"), false);
                 infoMessage("Info","graph generated");
@@ -629,6 +631,7 @@ public class Gui {
         });
         maps.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Alt+M"))) {
+                initGraph();
                 setMainPaneGraph();
                 setKeyPressed(KeyCombination.keyCombination("Alt+M"));
             }
