@@ -175,7 +175,7 @@ public class Gui {
         keyPressed.put(KeyCombination.keyCombination("Ctrl+G"), false);
         keyPressed.put(KeyCombination.keyCombination("Ctrl+D"), false);
         keyPressed.put(KeyCombination.keyCombination("Ctrl+F"), false);
-        keyPressed.put(KeyCombination.keyCombination("Ctrl+A"), false);
+        keyPressed.put(KeyCombination.keyCombination("Ctrl+B"), false);
         keyPressed.put(KeyCombination.keyCombination("Alt+M"), false);
         keyPressed.put(KeyCombination.keyCombination("Alt+O"), false);
         keyPressed.put(KeyCombination.keyCombination("Alt+C"), false);
@@ -335,7 +335,7 @@ public class Gui {
         MenuItem delEdge = new MenuItem("Delete Edge");
         MenuItem find = new MenuItem("Find");
         MenuItem genInputMap = new MenuItem("Generate Input");
-        addEdge.setAccelerator(KeyCombination.keyCombination("Ctrl+A"));
+        addEdge.setAccelerator(KeyCombination.keyCombination("Ctrl+B"));
         delEdge.setAccelerator(KeyCombination.keyCombination("Ctrl+D"));
         genInputMap.setAccelerator(KeyCombination.keyCombination("Ctrl+G"));
         genInputMap.setOnAction(e -> {
@@ -346,8 +346,8 @@ public class Gui {
             }
         });
         addEdge.setOnAction(e -> {
-            if (!keyPressed.get(KeyCombination.keyCombination("Ctrl+A"))) {
-                setKeyPressed(KeyCombination.keyCombination("Ctrl+A"));
+            if (!keyPressed.get(KeyCombination.keyCombination("Ctrl+B"))) {
+                setKeyPressed(KeyCombination.keyCombination("Ctrl+B"));
                 mainPane.getChildren().clear();
                 mainPane.getChildren().add(addEdgePane);
             }
