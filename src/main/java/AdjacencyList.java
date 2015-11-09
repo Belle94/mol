@@ -44,6 +44,22 @@ public class AdjacencyList {
             addNode(destination);
     }
 
+    public void addEdge(Integer source, List<Pair<Integer, Double>> adj) {
+        for (Pair<Integer, Double> p : adj) {
+            if (!g.containsKey(p.getKey()))
+                addNode(p.getKey());
+        }
+
+        if (g.containsKey(source)) {
+            for (Pair<Integer, Double> p : g.get(source)) {
+                if (!adj.contains(p))
+                    adj.add(p);
+            }
+        }
+
+        g.put(source, adj);
+    }
+
     /**
      * Add new node with an empty List.
      * @param source the value of the node
@@ -78,6 +94,7 @@ public class AdjacencyList {
 
         return g.get(v).stream().map(Pair::getKey).collect(Collectors.toList());
     }
+
     /**
      * @param v the input node
      * @param index of a neighbor list.
@@ -89,6 +106,7 @@ public class AdjacencyList {
         Double distance = nodep.getValue();
         return distance;
     }
+
     /**
      * @param v the input node
      * @param index of a neighbor list that will know the ID
@@ -100,6 +118,11 @@ public class AdjacencyList {
         Integer id = nodep.getKey();
         return id;
     }
+
+    public List<Pair<Integer, Double>> getNeighbors(Integer source) {
+        return g.get(source);
+    }
+
     /**
      * @param v input node
      * @return numbers of neighbor form the input node.
@@ -132,8 +155,64 @@ public class AdjacencyList {
         }
     }
 
+    public void removeEdge(Integer node, Integer neighbour) {
+        for (Pair<Integer, Double> p : g.get(node)) {
+            if (p.getKey() == neighbour)
+                g.get(node).remove(p);
+        }
+    }
+
+    public void removeNode(Integer node) {
+        g.remove(node);
+        for (Integer n : g.keySet())
+            removeEdge(n, node);
+    }
+
+    public void removeNodes(List<Integer> nodes) {
+        nodes.forEach(this::removeNode);
+    }
+
+    public static AdjacencyList mergeAdjcencyList(AdjacencyList a, AdjacencyList b) {
+        AdjacencyList ret = new AdjacencyList(a.get());
+        for (Integer n : b.getNodes())
+            ret.addEdge(n, b.getNeighbors(n));
+
+        return ret;
+    }
+
+    public List<Integer> nodesToDestination(Integer source, Integer destination, Set<Integer> ks) {
+        List<Integer> retNodes = new LinkedList<>();
+
+        while (destination != source) {
+            int i = 0;
+            for (Integer n : ks) {
+                if (n == destination) {
+                    retNodes.add(i);
+                    break;
+                }
+                i++;
+            }
+        }
+
+        return retNodes;
+    }
+
+    public AdjacencyList getMinGraphFromSource(Integer source, Integer destination) {
+        Pair<HashMap<Integer, Double>, AdjacencyList> retDijkstra =
+                dijkstra(source);
+
+        AdjacencyList ret = retDijkstra.getValue();
+        List<Integer> nts = nodesToDestination(source, destination, ret.getNodes());
+        List<Integer> unwantedNodes = (List<Integer>) ret.getNodes();
+        unwantedNodes.removeAll(nts);
+
+        ret.removeNodes(unwantedNodes);
+
+        return ret;
+    }
+
     public HashMap<Bin, AdjacencyList> clark_wright
-            (Database db, Integer vehicles, Integer zero, List<Bin> bins) {
+            (Database db, Integer zero, List<Bin> bins) {
         HashMap<Bin, AdjacencyList> ret = new HashMap<>();
         DistanceMatrix matDistance = new DistanceMatrix(this);
         HashMap<Pair<Integer, Integer>, Double> savings = new HashMap<>();
@@ -152,7 +231,7 @@ public class AdjacencyList {
 
         // Merge route between nodes
         boolean decreased = true;
-        Integer ib = 0;
+        int ib = 0;
         try {
             for (; decreased; ib++) {
                 decreased = false;
@@ -193,10 +272,23 @@ public class AdjacencyList {
                         orderedSavingsKey.remove(p);
                     }
                 }
+
+                // Block that associates Nodes' list to Bin
+                AdjacencyList adj = new AdjacencyList();
+
+                // Build the adjacency list correlated to the bin
+                for (int i = 1; i < l.size(); i++)
+                    adj = AdjacencyList.mergeAdjcencyList(
+                            adj, getMinGraphFromSource(l.get(i-1), l.get(i)));
+
+                // Associates adjacency list to bin
+                ret.put(bins.get(ib), adj);
+
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return ret;
     }
 

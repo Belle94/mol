@@ -1,5 +1,6 @@
 import javafx.util.Pair;
 
+import java.util.DoubleSummaryStatistics;
 import java.util.HashMap;
 
 public class DistanceMatrix {
@@ -11,8 +12,13 @@ public class DistanceMatrix {
         minGraph = new HashMap<>();
 
         for (Integer i : adjacencyList.nodes()) {
-            minGraph.put(i, adjacencyList.dijkstra(i).getValue());
+            Pair<HashMap<Integer, Double>, AdjacencyList> p =
+                    adjacencyList.dijkstra(i);
+            minGraph.put(i, p.getValue());
 
+            for (Integer k : p.getKey().keySet()) {
+                mat.put(new Pair<>(i, k), p.getKey().get(k));
+            }
         }
     }
 
