@@ -58,6 +58,7 @@ public class Gui {
     private List<Bin> bins;
     private List<GoodOrder> goodOrders;
     private List<Order> orders;
+    private HashMap<Bin,AdjacencyList> clark;
 
     /**
      * builder that calls methods for configuring the interface
@@ -69,7 +70,6 @@ public class Gui {
             initGenerateInputPane();
             initAddEdgePane();
             initDelEdgePane();
-            initPathPane();
             initMenu();
             initSearch();
             initClientTable();
@@ -232,47 +232,48 @@ public class Gui {
         save.setAccelerator(KeyCombination.keyCombination("Ctrl+S"));
         save_as.setAccelerator(KeyCombination.keyCombination("Ctrl+Shift+S"));
         quit.setAccelerator(KeyCombination.keyCombination("Ctrl+Q"));
-        load.setOnAction(e->{
+        load.setOnAction(e -> {
             FileChooser fs = new FileChooser();
             fs.setTitle("Select Database");
             fs.getExtensionFilters().add(new FileChooser.ExtensionFilter("Database", "*.db"));
             fs.getExtensionFilters().add(new FileChooser.ExtensionFilter("All Files", "*.*"));
-            File f =fs.showOpenDialog(new Stage());
+            File f = fs.showOpenDialog(new Stage());
             if (f != null)
-            try{
-                Database db = new Database(f.getAbsolutePath());
-                goods = db.getAllGoods();
-                clients = db.getAllClients();
-                vehicles = db.getAllVehicles();
-                bins = db.getAllBins();
-                goodOrders = db.getAllGoodOrders();
-                orders = db.getAllOrders();
-                adjacencyList = db.getAdjacencyList();
-                initGoodOrderTable();
-                initVehicleTable();
-                initOrderTable();
-                initGoodTable();
-                initClientTable();
-                initGraph();
-                db.closeConnection();
-                keyPressed.put(KeyCombination.keyCombination("Ctrl+S"), false);
-                infoMessage("Load", "Done!");
-            }catch (ClassNotFoundException | SQLException err) {
-                err.printStackTrace();
-                errorMessage("Error", "msg:" + err.getMessage());
-            }catch (IllegalArgumentException e1){
-                e1.printStackTrace();
-                errorMessage("Illegal File Format!", "Choose a valid file format (*.db)");
-            }
+                try {
+                    Database db = new Database(f.getAbsolutePath());
+                    goods = db.getAllGoods();
+                    clients = db.getAllClients();
+                    vehicles = db.getAllVehicles();
+                    bins = db.getAllBins();
+                    goodOrders = db.getAllGoodOrders();
+                    orders = db.getAllOrders();
+                    adjacencyList = db.getAdjacencyList();
+                    initGoodOrderTable();
+                    initVehicleTable();
+                    initOrderTable();
+                    initGoodTable();
+                    initClientTable();
+                    //clark = adjacencyList.clark_wright(db,0,bins);
+                    initGraph();
+                    db.closeConnection();
+                    keyPressed.put(KeyCombination.keyCombination("Ctrl+S"), false);
+                    infoMessage("Load", "Done!");
+                } catch (ClassNotFoundException | SQLException err) {
+                    err.printStackTrace();
+                    errorMessage("Error", "msg:" + err.getMessage());
+                } catch (IllegalArgumentException e1) {
+                    e1.printStackTrace();
+                    errorMessage("Illegal File Format!", "Choose a valid file format (*.db)");
+                }
         });
         quit.setOnAction(e -> {
             if (confirmMessage("Exit Confirmation", "Are u sure u want to exit?"))
                 System.exit(0);
         });
         save.setOnAction(e -> {
-            if (! keyPressed.get(KeyCombination.keyCombination("Ctrl+S"))) {
+            if (!keyPressed.get(KeyCombination.keyCombination("Ctrl+S"))) {
                 try {
-                    Database db = new Database("database.db");
+                    Database db = new Database("bruce.db");
                     db.clearTables();
                     db.addOrders(orders);
                     db.addGoods(goods);
@@ -281,14 +282,15 @@ public class Gui {
                     db.addVehicles(vehicles);
                     db.addAdjacencyList(adjacencyList);
                     db.closeConnection();
+                    //clark = adjacencyList.clark_wright(db,0,bins);
                     keyPressed.put(KeyCombination.keyCombination("Ctrl+S"), true);
                     infoMessage("Save", "Done!");
                 } catch (SQLException | IllegalArgumentException | ClassNotFoundException e1) {
-                    errorMessage("Error", "msg:"+e1.getMessage());
+                    errorMessage("Error", "msg:" + e1.getMessage());
                     e1.printStackTrace();
                 }
-            }else{
-                infoMessage("Info","nothing to save");
+            } else {
+                infoMessage("Info", "nothing to save");
             }
         });
         save_as.setOnAction(e -> {
@@ -312,6 +314,7 @@ public class Gui {
                     db.addBins(bins);
                     db.addVehicles(vehicles);
                     db.addAdjacencyList(adjacencyList);
+                    //clark = adjacencyList.clark_wright(db,0,bins);
                     db.closeConnection();
                     infoMessage("Save", "Done!");
                 } catch (SQLException | IllegalArgumentException | ClassNotFoundException e1) {
@@ -319,7 +322,7 @@ public class Gui {
                     e1.printStackTrace();
                 }
             }else{
-                infoMessage("Info","nothing to save");
+                infoMessage("Info", "nothing to save");
             }
         });
         
@@ -370,7 +373,7 @@ public class Gui {
                 keyPressed.put(KeyCombination.keyCombination("Ctrl+F"), true);
             }
         });
-        edit.getItems().addAll(genInputMap,addEdge,delEdge,find);
+        edit.getItems().addAll(genInputMap, addEdge, delEdge, find);
         return edit;
     }
 
@@ -629,6 +632,7 @@ public class Gui {
         });
         maps.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Alt+M"))) {
+                initGraph();
                 setMainPaneGraph();
                 setKeyPressed(KeyCombination.keyCombination("Alt+M"));
             }
@@ -638,6 +642,7 @@ public class Gui {
             if (!keyPressed.get(KeyCombination.keyCombination("Alt+P"))) {
                 setKeyPressed(KeyCombination.keyCombination("Alt+P"));
                 mainPane.getChildren().clear();
+                initPathPane();
                 mainPane.getChildren().add(pathPane);
 
             }
@@ -857,38 +862,29 @@ public class Gui {
     private void initPathPane(){
         pathPane = new StackPane();
         GridPane container = new GridPane();
-        List<Label> labels = new ArrayList<>();
-        List<TextInputControl> textList = new ArrayList<>();
+        Label lbin = new Label("Bin:");
+        ComboBox<Integer> comboBin = new ComboBox<>();
+        for(Bin bin:bins){
+            comboBin.getItems().add(bin.getId());
+        }
         HBox headerBox = new HBox();
-        Button show, cancel;
+        Button show;
         show = new Button("Show");
-        cancel = new Button("Cancel");
-        cancel.setOnAction(e -> textList.forEach(javafx.scene.control.TextInputControl::clear));
         Label headerLabel = new Label("Path Vehicles");
         headerLabel.setFont(new Font("Goha-tibeb Zeman", 14));
         headerLabel.setStyle("-fx-text-fill: coral;");
         headerBox.setStyle("-fx-alignment: top-left; -fx-padding: 20 0 20 -20;");
         headerBox.getChildren().add(headerLabel);
-        labels.add(new Label("Bin:"));
-        for (int i=0;i<labels.size(); i++){
-            labels.get(i).setFont(new Font("Goha-tibeb Zeman",  14));
-            labels.get(i).setStyle("-fx-pref-height:25px; -fx-alignment: center-left; ");
-            TextField t = new TextField();
-            t.setStyle("-fx-max-width: 65px; -fx-alignment: center");
-            textList.add(i, t);
-            container.add(labels.get(i),0,i+1);
-            container.add(t,1,i+1);
-        }
+        lbin.setFont(new Font("Goha-tibeb Zeman", 14));
+        lbin.setStyle("-fx-pref-height:25px; -fx-alignment: center-left; ");
+        container.add(lbin,0,1);
+        container.add(comboBin,1,1);
         container.add(headerBox, 0, 0, 2, 1);
-        container.add(show, 0, labels.size() + 1);
-        container.add(cancel, 1, labels.size() + 1);
+        container.add(show, 0, 2);
         container.setStyle("-fx-hgap: 10px; -fx-vgap: 5px; -fx-padding: 0 0 0 40px; -fx-background-color: white;");
         show.setOnAction(e -> {
-            if (!isListEmpty(textList)) {
                 pathOnGraph();
                 setMainPaneGraph();
-            }else
-                infoMessage("Not Generated","please let complete the blanks");
         });
         pathPane.getChildren().add(container);
     }
