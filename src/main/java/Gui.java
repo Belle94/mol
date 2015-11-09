@@ -84,7 +84,7 @@ public class Gui {
         }
     }
 
-    private void initGraph() {
+    private void initGraph(){
         System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
         graph = new SingleGraph("Maps");
         zoom = 1;
@@ -253,7 +253,7 @@ public class Gui {
                     initOrderTable();
                     initGoodTable();
                     initClientTable();
-                    //clark = adjacencyList.clark_wright(db,0,bins);
+                    clark = adjacencyList.clark_wright(db,0,bins);
                     initGraph();
                     db.closeConnection();
                     keyPressed.put(KeyCombination.keyCombination("Ctrl+S"), false);
@@ -282,7 +282,7 @@ public class Gui {
                     db.addVehicles(vehicles);
                     db.addAdjacencyList(adjacencyList);
                     db.closeConnection();
-                    //clark = adjacencyList.clark_wright(db,0,bins);
+                    clark = adjacencyList.clark_wright(db,0,bins);
                     keyPressed.put(KeyCombination.keyCombination("Ctrl+S"), true);
                     infoMessage("Save", "Done!");
                 } catch (SQLException | IllegalArgumentException | ClassNotFoundException e1) {
@@ -314,7 +314,7 @@ public class Gui {
                     db.addBins(bins);
                     db.addVehicles(vehicles);
                     db.addAdjacencyList(adjacencyList);
-                    //clark = adjacencyList.clark_wright(db,0,bins);
+                    clark = adjacencyList.clark_wright(db,0,bins);
                     db.closeConnection();
                     infoMessage("Save", "Done!");
                 } catch (SQLException | IllegalArgumentException | ClassNotFoundException e1) {
@@ -853,10 +853,17 @@ public class Gui {
     /**
      * that function design the path of vehicles on graph changing the color of edges
      */
-    private void pathOnGraph(){
-        Edge e1 = graph.getEdge(0);
-        e1.addAttribute("ui.style",
-                "fill-color: red;");
+    private void pathOnGraph(Integer idBin){
+        AdjacencyList aL = clark.get(idBin);
+        int n = aL.getGraph().size();
+        for(Integer i = 0; i < n; i++){
+            List<Integer> list = aL.getNeighbor(i);
+            for(Integer j:list){
+                Edge e1 = graph.getEdge(i.toString()+"-"+j.toString());
+                e1.addAttribute("ui.style",
+                        "fill-color: red;");
+            }
+        }
     }
 
     private void initPathPane(){
@@ -883,7 +890,8 @@ public class Gui {
         container.add(show, 0, 2);
         container.setStyle("-fx-hgap: 10px; -fx-vgap: 5px; -fx-padding: 0 0 0 40px; -fx-background-color: white;");
         show.setOnAction(e -> {
-                pathOnGraph();
+                Integer idBin = comboBin.getValue();
+                pathOnGraph(idBin);
                 setMainPaneGraph();
         });
         pathPane.getChildren().add(container);

@@ -85,7 +85,6 @@ public class AdjacencyList {
             g.get(source).remove(index);
         }
     }
-
     /**
      *
      * @param source
@@ -151,7 +150,6 @@ public class AdjacencyList {
         Pair<Integer, Double> nodep = node.get(index);
         return nodep.getKey();
     }
-
     public List<Pair<Integer, Double>> getNeighbors(Integer source) {
         return g.get(source);
     }
