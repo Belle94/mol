@@ -22,12 +22,6 @@ public class DistanceMatrix {
         }
     }
 
-    public AdjacencyList subAdjacencyList(Integer source, Integer destination) {
-        AdjacencyList ret = new AdjacencyList();
-
-        return ret;
-    }
-
     public HashMap<Pair<Integer, Integer>, Double> get() {
         return mat;
     }
