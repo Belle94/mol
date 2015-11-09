@@ -413,6 +413,7 @@ public class Gui {
                 adjacencyList.addEdge(Integer.parseInt(textList.get(0).getText()), Integer.parseInt(textList.get(1).getText()), Double.valueOf(textList.get(2).getText()));
                 initGraph();
                 infoMessage("Node","added");
+                keyPressed.put(KeyCombination.keyCombination("Ctrl+S"),false);
             }else
                 infoMessage("Not Generated","please let complete the blanks");
         });
@@ -457,6 +458,7 @@ public class Gui {
                 adjacencyList.deleteEdge(Integer.parseInt(textList.get(0).getText()), Integer.parseInt(textList.get(1).getText()));
                 initGraph();
                 infoMessage("Node", "Deleted");
+                keyPressed.put(KeyCombination.keyCombination("Ctrl+S"),false);
             } else
                 infoMessage("Not Generated", "please let complete the blanks");
         });
