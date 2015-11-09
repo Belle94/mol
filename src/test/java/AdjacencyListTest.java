@@ -59,4 +59,8 @@ public class AdjacencyListTest {
 
         assertEquals(exp.getGraph(), adj.getGraph());
     }
+
+    @Test public void testClarkWright() {
+
+    }
 }
