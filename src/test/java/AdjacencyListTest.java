@@ -202,6 +202,17 @@ public class AdjacencyListTest {
         bins.add(b1);
         bins.add(b2);
 
-        assertEquals(correct, adj.clark_wright(db, 0, bins));
+        System.out.println("Correct:");
+        for (Bin b : correct.keySet()) {
+            printGraph(correct.get(b));
+        }
+
+        System.out.println();
+        System.out.println("Calculated:");
+        HashMap<Bin, AdjacencyList> calculated = adj.clark_wright(db, 0, bins);
+        for (Bin b : calculated.keySet()) {
+            printGraph(calculated.get(b));
+        }
+        assertEquals(correct, calculated);
     }
 }
