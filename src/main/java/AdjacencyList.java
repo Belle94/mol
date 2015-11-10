@@ -219,11 +219,15 @@ public class AdjacencyList {
         // initializing savings
         for (Integer i : g.keySet()) {
             for (Integer j : g.keySet()) {
-                if (!Objects.equals(i, j))
-                savings.put(new Pair<>(i, j),
-                        matDistance.get(zero, i) +
-                                matDistance.get(zero, j) -
-                                matDistance.get(i,j));
+                if (!Objects.equals(i, j) &&
+                        !Objects.equals(zero, i) &&
+                        !Objects.equals(zero, j)) {
+                    Pair<Integer, Integer> p = new Pair<Integer, Integer>(i, j);
+                    savings.put(p,
+                            matDistance.get(zero, i) +
+                                    matDistance.get(zero, j) -
+                                    matDistance.get(i, j));
+                }
             }
         }
 
