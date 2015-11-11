@@ -27,13 +27,17 @@ import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.*;
 import org.graphstream.ui.view.View;
 import org.graphstream.ui.view.Viewer;
+import org.graphstream.ui.view.ViewerListener;
+import org.graphstream.ui.view.ViewerPipe;
+import org.graphstream.util.GraphListeners;
+
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 
 /**
  * Class of graphic interface
  */
-public class Gui {
+public class Gui{
     private BorderPane rootPane;
     private MenuBar menuBar;
     private Pane generateInputPane,addEdgePane,delEdgePane, pathPane;
@@ -60,7 +64,8 @@ public class Gui {
     private List<GoodOrder> goodOrders;
     private List<Order> orders;
     private HashMap<Bin,AdjacencyList> clark;
-
+    private Database database;
+    protected boolean loop = true;
     /**
      * builder that calls methods for configuring the interface
      */
@@ -114,9 +119,9 @@ public class Gui {
                             " shadow-width: 0px;" +
                             " shadow-color: #999;" +
                             " shadow-offset: 3px, -3px;");
-
                 }
             }
+            graph.addAttribute("ui.stylesheet","node:clicked{ fill-color: red;}");
             for(i = 0; i < n; i++){
                 List<Integer> list = adjacencyList.getNeighbor(i);
                 int c = 0;
@@ -162,6 +167,7 @@ public class Gui {
             public void keyReleased(java.awt.event.KeyEvent e) {
             }
         });
+
     }
 
     /**
@@ -242,6 +248,7 @@ public class Gui {
             if (f != null)
                 try {
                     Database db = new Database(f.getAbsolutePath());
+                    database = db;
                     goods = db.getAllGoods();
                     clients = db.getAllClients();
                     vehicles = db.getAllVehicles();
@@ -256,7 +263,6 @@ public class Gui {
                     initClientTable();
                     initGraph();
                     db.closeConnection();
-                    //clark = adjacencyList.clark_wright(db, 0, bins);
                     keyPressed.put(KeyCombination.keyCombination("Ctrl+S"), false);
                     infoMessage("Load", "Done!");
                 } catch (ClassNotFoundException | SQLException err) {
@@ -275,6 +281,7 @@ public class Gui {
             if (!keyPressed.get(KeyCombination.keyCombination("Ctrl+S"))) {
                 try {
                     Database db = new Database("bruce.db");
+                    database = db;
                     db.clearTables();
                     db.addOrders(orders);
                     db.addGoods(goods);
@@ -294,7 +301,7 @@ public class Gui {
             }
         });
         save_as.setOnAction(e -> {
-            if (! keyPressed.get(KeyCombination.keyCombination("Ctrl+Shift+S"))) {
+            if (!keyPressed.get(KeyCombination.keyCombination("Ctrl+Shift+S"))) {
                 try {
                     FileChooser fs = new FileChooser();
                     fs.setTitle("Save Database");
@@ -306,6 +313,7 @@ public class Gui {
                     String nameFile = (f.getAbsolutePath().endsWith(".db"))
                                 ? f.getAbsolutePath() : f.getAbsolutePath().concat(".db") ;
                     Database db = new Database(nameFile);
+                    database = db;
                     db.clearTables();
                     db.addClients(clients);
                     db.addOrders(orders);
@@ -323,7 +331,7 @@ public class Gui {
                 infoMessage("Info", "nothing to save");
             }
         });
-        
+
         file.getItems().addAll(load, save, save_as, quit);
         return file;
     }
@@ -577,6 +585,7 @@ public class Gui {
         bins = new ArrayList<>();
         goodOrders = new ArrayList<>();
         orders = new ArrayList<>();
+        database = null;
     }
 
     /**
@@ -910,7 +919,8 @@ public class Gui {
         container.add(show, 0, 2);
         container.setStyle("-fx-hgap: 10px; -fx-vgap: 5px; -fx-padding: 0 0 0 40px; -fx-background-color: white;");
         show.setOnAction(e -> {
-            test_clark();
+            //test_clark();
+            clark = adjacencyList.clark_wright(database, 0, bins);
             Bin b = null;
             for (Bin bin : clark.keySet()) {
                 if (bin.getId() == comboBin.getValue())
@@ -969,4 +979,5 @@ public class Gui {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         return setupMessage(alert, title, content).get() != ButtonType.CANCEL;
     }
+
 }
