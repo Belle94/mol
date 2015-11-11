@@ -66,7 +66,7 @@ public class AdjacencyListTest {
         assertEquals(exp.getGraph(), adj.getGraph());
     }
 
-    @Test
+    /*@Test
     public void testClarkWright() throws SQLException, ClassNotFoundException {
         AdjacencyList adj = new AdjacencyList();
         adj.addEdge(0, 1, 28.0);
@@ -213,5 +213,5 @@ public class AdjacencyListTest {
             printGraph(calculated.get(b));
         }
         assertEquals(correct, calculated);
-    }
+    }*/
 }
