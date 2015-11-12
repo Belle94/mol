@@ -190,7 +190,8 @@ public class AdjacencyList {
 
     public double getMaxDistance() {
         double maxWeight = 0;
-        for (Integer node : nodes()) {
+        AdjacencyList reversed = new AdjacencyList(this.get());
+        for (Integer node : reversed.getNodes()) {
             Pair<HashMap<Integer, Double>, AdjacencyList> ret = dijkstra(node);
             HashMap<Integer, Double> listWeight = ret.getKey();
             for (Integer n : listWeight.keySet()) {
