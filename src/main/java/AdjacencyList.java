@@ -297,7 +297,8 @@ public class AdjacencyList {
                     // and decrease the number of vehicles used
                     // and set decrease to true
                     Pair<Integer, Integer> p = i.next();
-                    if (p.getKey().equals(l.get(l.size() - 1))) {
+                    if (p.getKey().equals(l.get(l.size() - 1)) &&
+                            !l.contains(p.getValue())) {
                         List<Integer> clientsInvolved = new LinkedList<Integer>();
                         List<Good> goods = new LinkedList<>();
                         clientsInvolved.add(p.getKey());
