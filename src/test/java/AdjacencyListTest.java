@@ -67,6 +67,7 @@ public class AdjacencyListTest {
         assertEquals(exp.getGraph(), adj.getGraph());
     }
 
+<<<<<<< HEAD
     @Test
     public void testClarkWright2() throws Exception {
         Pair<List<Client>, AdjacencyList> p = Algorithms.generateRndGraph(4, 4, 100);
@@ -93,6 +94,8 @@ public class AdjacencyListTest {
         }
     }
 
+=======
+>>>>>>> 5728fa86ad22c73088a7369d3c995488b617db9a
     /*@Test
     public void testClarkWright() throws SQLException, ClassNotFoundException {
         AdjacencyList adj = new AdjacencyList();
