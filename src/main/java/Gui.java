@@ -27,12 +27,17 @@ import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.*;
 import org.graphstream.ui.view.View;
 import org.graphstream.ui.view.Viewer;
+import org.graphstream.ui.view.ViewerListener;
+import org.graphstream.ui.view.ViewerPipe;
+import org.graphstream.util.GraphListeners;
+
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 
 /**
  * Class of graphic interface
  */
-public class Gui {
+public class Gui{
     private BorderPane rootPane;
     private MenuBar menuBar;
     private Pane generateInputPane,addEdgePane,delEdgePane, pathPane;
@@ -59,7 +64,8 @@ public class Gui {
     private List<GoodOrder> goodOrders;
     private List<Order> orders;
     private HashMap<Bin,AdjacencyList> clark;
-
+    private Database database;
+    protected boolean loop = true;
     /**
      * builder that calls methods for configuring the interface
      */
@@ -113,9 +119,9 @@ public class Gui {
                             " shadow-width: 0px;" +
                             " shadow-color: #999;" +
                             " shadow-offset: 3px, -3px;");
-
                 }
             }
+            graph.addAttribute("ui.stylesheet","node:clicked{ fill-color: red;}");
             for(i = 0; i < n; i++){
                 List<Integer> list = adjacencyList.getNeighbor(i);
                 int c = 0;
@@ -161,6 +167,7 @@ public class Gui {
             public void keyReleased(java.awt.event.KeyEvent e) {
             }
         });
+
     }
 
     /**
@@ -241,6 +248,7 @@ public class Gui {
             if (f != null)
                 try {
                     Database db = new Database(f.getAbsolutePath());
+                    database = db;
                     goods = db.getAllGoods();
                     clients = db.getAllClients();
                     vehicles = db.getAllVehicles();
@@ -253,7 +261,6 @@ public class Gui {
                     initOrderTable();
                     initGoodTable();
                     initClientTable();
-                    clark = adjacencyList.clark_wright(db,0,bins);
                     initGraph();
                     db.closeConnection();
                     keyPressed.put(KeyCombination.keyCombination("Ctrl+S"), false);
@@ -274,6 +281,7 @@ public class Gui {
             if (!keyPressed.get(KeyCombination.keyCombination("Ctrl+S"))) {
                 try {
                     Database db = new Database("bruce.db");
+                    database = db;
                     db.clearTables();
                     db.addOrders(orders);
                     db.addGoods(goods);
@@ -282,7 +290,6 @@ public class Gui {
                     db.addVehicles(vehicles);
                     db.addAdjacencyList(adjacencyList);
                     db.closeConnection();
-                    clark = adjacencyList.clark_wright(db,0,bins);
                     keyPressed.put(KeyCombination.keyCombination("Ctrl+S"), true);
                     infoMessage("Save", "Done!");
                 } catch (SQLException | IllegalArgumentException | ClassNotFoundException e1) {
@@ -294,7 +301,7 @@ public class Gui {
             }
         });
         save_as.setOnAction(e -> {
-            if (! keyPressed.get(KeyCombination.keyCombination("Ctrl+Shift+S"))) {
+            if (!keyPressed.get(KeyCombination.keyCombination("Ctrl+Shift+S"))) {
                 try {
                     FileChooser fs = new FileChooser();
                     fs.setTitle("Save Database");
@@ -306,6 +313,7 @@ public class Gui {
                     String nameFile = (f.getAbsolutePath().endsWith(".db"))
                                 ? f.getAbsolutePath() : f.getAbsolutePath().concat(".db") ;
                     Database db = new Database(nameFile);
+                    database = db;
                     db.clearTables();
                     db.addClients(clients);
                     db.addOrders(orders);
@@ -314,8 +322,6 @@ public class Gui {
                     db.addBins(bins);
                     db.addVehicles(vehicles);
                     db.addAdjacencyList(adjacencyList);
-                    clark = adjacencyList.clark_wright(db,0,bins);
-                    db.closeConnection();
                     infoMessage("Save", "Done!");
                 } catch (SQLException | IllegalArgumentException | ClassNotFoundException e1) {
                     errorMessage("Error", "msg:"+e1.getMessage());
@@ -325,7 +331,7 @@ public class Gui {
                 infoMessage("Info", "nothing to save");
             }
         });
-        
+
         file.getItems().addAll(load, save, save_as, quit);
         return file;
     }
@@ -582,6 +588,7 @@ public class Gui {
         bins = new ArrayList<>();
         goodOrders = new ArrayList<>();
         orders = new ArrayList<>();
+        database = null;
     }
 
     /**
@@ -853,18 +860,40 @@ public class Gui {
         searchPane.setVisible(false);
     }
 
+    private void test_clark(){
+        Bin b1 = bins.get(0);
+        AdjacencyList a1 = new AdjacencyList();
+        a1.addEdge(0, 2, 3.0);
+        a1.addEdge(2, 4, 5.0);
+        a1.addEdge(4, 0, 1.0);
+        Bin b2 = bins.get(1);
+        AdjacencyList a2 = new AdjacencyList();
+        a2.addEdge(0, 4, 1.0);
+        a2.addEdge(4, 3, 4.0);
+        a2.addEdge(3, 1, 4.0);
+        a2.addEdge(1, 4, 2.0);
+        a2.addEdge(4, 0, 1.0);
+        clark = new HashMap<>();
+        clark.put(b1, a1);
+        clark.put(b2, a2);
+    }
     /**
      * that function design the path of vehicles on graph changing the color of edges
      */
-    private void pathOnGraph(Integer idBin){
-        AdjacencyList aL = clark.get(idBin);
-        int n = aL.getGraph().size();
-        for(Integer i = 0; i < n; i++){
-            List<Integer> list = aL.getNeighbor(i);
-            for(Integer j:list){
-                Edge e1 = graph.getEdge(i.toString()+"-"+j.toString());
-                e1.addAttribute("ui.style",
-                        "fill-color: red;");
+    private void pathOnGraph(Bin b) {
+        AdjacencyList aL = clark.get(b);
+        if (aL != null) {
+            int n = adjacencyList.getNumNodes();
+            for (Integer i = 0; i < n; i++) {
+                List<Integer> list = aL.getNeighbor(i);
+                System.out.println(list);
+                if (list != null) {
+                    for (Integer j : list) {
+                        Edge e1 = graph.getEdge(i.toString() + "-" + j.toString());
+                        e1.addAttribute("ui.style",
+                                "fill-color: red;");
+                    }
+                }
             }
         }
     }
@@ -887,15 +916,21 @@ public class Gui {
         headerBox.getChildren().add(headerLabel);
         lbin.setFont(new Font("Goha-tibeb Zeman", 14));
         lbin.setStyle("-fx-pref-height:25px; -fx-alignment: center-left; ");
-        container.add(lbin,0,1);
-        container.add(comboBin,1,1);
+        container.add(lbin, 0, 1);
+        container.add(comboBin, 1, 1);
         container.add(headerBox, 0, 0, 2, 1);
         container.add(show, 0, 2);
         container.setStyle("-fx-hgap: 10px; -fx-vgap: 5px; -fx-padding: 0 0 0 40px; -fx-background-color: white;");
         show.setOnAction(e -> {
-                Integer idBin = comboBin.getValue();
-                pathOnGraph(idBin);
-                setMainPaneGraph();
+            //test_clark();
+            clark = adjacencyList.clark_wright(database, 0, bins);
+            Bin b = null;
+            for (Bin bin : clark.keySet()) {
+                if (bin.getId() == comboBin.getValue())
+                    b = bin;
+            }
+            pathOnGraph(b);
+            setMainPaneGraph();
         });
         pathPane.getChildren().add(container);
     }
@@ -947,4 +982,5 @@ public class Gui {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         return setupMessage(alert, title, content).get() != ButtonType.CANCEL;
     }
+
 }

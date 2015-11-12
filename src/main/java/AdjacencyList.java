@@ -245,7 +245,8 @@ public class AdjacencyList {
 
         AdjacencyList ret = retDijkstra.getValue();
         List<Integer> nts = nodesToDestination(source, destination, ret.getNodes());
-        List<Integer> unwantedNodes = (List<Integer>) ret.getNodes();
+        List<Integer> unwantedNodes = new LinkedList<>();
+        unwantedNodes.addAll(ret.getNodes());
         unwantedNodes.removeAll(nts);
 
         ret.removeNodes(unwantedNodes);
@@ -261,11 +262,14 @@ public class AdjacencyList {
         // initializing savings
         for (Integer i : g.keySet()) {
             for (Integer j : g.keySet()) {
-                if (!Objects.equals(i, j))
-                savings.put(new Pair<>(i, j),
-                        matDistance.get(zero, i) +
-                                matDistance.get(zero, j) -
-                                matDistance.get(i,j));
+                if (!Objects.equals(i, j) &&
+                        !Objects.equals(zero, i) &&
+                        !Objects.equals(zero, j)) {
+                    savings.put(new Pair<>(i,j),
+                            matDistance.get(zero, i) +
+                                    matDistance.get(zero, j) -
+                                    matDistance.get(i, j));
+                }
             }
         }
 
@@ -283,13 +287,14 @@ public class AdjacencyList {
                 l.add(fp.getKey());
                 l.add(fp.getValue());
                 orderedSavingsKey.remove(fp);
-                for (Pair<Integer, Integer> p : orderedSavingsKey) {
+                for (Iterator<Pair<Integer, Integer>> i = orderedSavingsKey.iterator();
+                        i.hasNext();) {
                     // if clients involved have goods to be transported
                     // for which the sum of the goods is <= than the
                     // capacity of the vehicle, then merge the two routes
                     // and decrease the number of vehicles used
                     // and set decrease to true
-
+                    Pair<Integer, Integer> p = i.next();
                     if (p.getKey().equals(l.get(l.size() - 1))) {
                         List<Integer> clientsInvolved = new LinkedList<Integer>();
                         List<Good> goods = new LinkedList<>();
@@ -300,6 +305,7 @@ public class AdjacencyList {
                             for (Order o : db.getOrderByClient(client)) {
                                 for (Good g : db.getGoodByOrder(o)) {
                                     cap += g.getVolume();
+                                    g.setQnt(1);
                                     goods.add(g);
                                 }
                             }
@@ -311,7 +317,7 @@ public class AdjacencyList {
                             bins.get(ib).addGood(goods);
                         }
 
-                        orderedSavingsKey.remove(p);
+                        i.remove();
                     }
                 }
 
