@@ -1,4 +1,5 @@
 import javafx.util.Pair;
+import javafx.util.converter.IntegerStringConverter;
 
 import java.util.DoubleSummaryStatistics;
 import java.util.HashMap;
@@ -40,5 +41,18 @@ public class DistanceMatrix {
 
     public HashMap<Integer, AdjacencyList> minDijkstraTree() {
         return minGraph;
+    }
+
+    public Pair<Pair<Integer, Integer>, Double> max() {
+        Pair<Integer, Integer> k = new Pair<>(0,0);
+        Double max = Double.MIN_VALUE;
+        for (Pair<Integer, Integer> p : mat.keySet()) {
+            if (mat.get(p) > max) {
+                max = mat.get(p);
+                k = p;
+            }
+        }
+
+        return new Pair<Pair<Integer, Integer>, Double>(k, max);
     }
 }

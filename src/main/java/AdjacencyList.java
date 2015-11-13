@@ -186,18 +186,14 @@ public class AdjacencyList {
         }
     }
 
-    public double getMaxDistance() {
-        double maxWeight = 0;
-        AdjacencyList reversed = new AdjacencyList(this.get());
-        for (Integer node : reversed.getNodes()) {
-            Pair<HashMap<Integer, Double>, AdjacencyList> ret = dijkstra(node);
-            HashMap<Integer, Double> listWeight = ret.getKey();
-            for (Integer n : listWeight.keySet()) {
-                maxWeight = (listWeight.get(n) > maxWeight) ? listWeight.get(n) : maxWeight;
-            }
-        }
-        return maxWeight;
+    public Pair<Pair<Integer, Integer>, Double> getMaxDistance() {
+        AdjacencyList adj = new AdjacencyList(this.get());
+        adj.reverseEdgeWeight();
+
+        DistanceMatrix dm = new DistanceMatrix(adj);
+        return dm.max();
     }
+
     public void removeEdge(Integer node, Integer neighbour) {
         for (Pair<Integer, Double> p : g.get(node)) {
             if (p.getKey() == neighbour)
