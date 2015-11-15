@@ -1,4 +1,3 @@
-import javafx.scene.chart.PieChart;
 import javafx.util.Pair;
 import org.junit.Test;
 
@@ -242,7 +241,7 @@ public class AdjacencyListTest {
         //assertEquals(correct, calculated);
     }
 
-    //@Test
+    @Test
     public void maxDistanceTest(){
         System.out.println("Test MaxDistance");
         AdjacencyList adj = new AdjacencyList();
@@ -251,7 +250,6 @@ public class AdjacencyListTest {
         adj.addEdge(1, 3, 1.0);
         adj.addEdge(2, 3, 3.0);
         adj.addEdge(3, 1, 4.0);
-        Double rtn = adj.getMaxDistance();
-        System.out.println(rtn);
+        assertEquals(new Double(7), adj.getMaxDistance());
     }
 }

@@ -166,7 +166,7 @@ public class AdjacencyList {
         return neighbor.size();
     }
 
-    public void reverseEdgeWeight() {
+    public Double reverseEdgeWeight() {
         Double wMax = 0.0;
         for (Integer c : g.keySet()) {
             for (Pair<Integer, Double> p : g.get(c)) {
@@ -184,21 +184,58 @@ public class AdjacencyList {
             }
             g.put(c, l);
         }
+
+        return (wMax-1);
+    }
+
+    public void reverseEdgeWeight(Double wMax) {
+        ++wMax;
+        for (Integer c : g.keySet()) {
+            List<Pair<Integer, Double>> l = new ArrayList<>();
+            for (Pair<Integer, Double> p : g.get(c)) {
+                l.add(new Pair<>(p.getKey(), wMax - p.getValue()));
+            }
+            g.put(c, l);
+        }
+    }
+
+    public static void printGraph(AdjacencyList g){
+        System.out.println("\n - Grafo -\n");
+        for(Integer k : g.getNodes()){
+            System.out.println("Node "+k+"\t hashCode: "+ g.getGraph().get(k).hashCode());
+            for (Pair<Integer,Double> c : g.getGraph().get(k)){
+                System.out.print("(" + c.getKey() + "," + c.getValue() + ") ");
+            }
+            System.out.println();
+        }
+        System.out.println("- - - - - - - -\n");
+    }
+
+    public double sum(int n, double s){
+        ArrayList<Double> list = new ArrayList<>();
+        if (this.getNeighbor(n).isEmpty())
+            return s;
+        for (Pair<Integer,Double> i : this.getGraph().get(n)) {
+                System.out.println("chiamo nodo " + i.getKey() + " della lista di " + n);
+                System.out.println("valore: " + sum(i.getKey(), this.getNeighbors(n).get(i.getKey()).getValue() + s));
+                System.out.println("nodo aggnt.");
+        }
+        /*
+        Double rtn = -1.0;
+        for (Double weight:list)
+            rtn = (weight > rtn) ? weight : rtn;
+        return rtn;
+        */
+        return 0;
     }
 
     public Double getMaxDistance() {
         AdjacencyList adj = new AdjacencyList(this.get());
-        adj.reverseEdgeWeight();
-        Pair<Pair<Integer,Integer>,Double> k;
-        Double max = Double.MIN_VALUE;
-        for (Integer node: adj.getNodes()){
-            Double cMax=0.0;
-            for (Pair<Integer,Double> n : adj.getNeighbors(node)){
-                cMax += n.getValue();
-            }
-            max = (cMax > max) ? (cMax) : max;
-        }
-        return max;
+        Double maxR = adj.reverseEdgeWeight();
+        adj = adj.dijkstra(0).getValue();
+        adj.reverseEdgeWeight(maxR);
+        printGraph(adj);
+        return adj.sum(0, 0);
     }
 
     public void removeEdge(Integer node, Integer neighbour) {
