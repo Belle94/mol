@@ -212,7 +212,7 @@ public class AdjacencyList {
         nodes.forEach(this::removeNode);
     }
 
-    public static AdjacencyList mergeAdjecencyList(AdjacencyList a, AdjacencyList b) {
+    public static AdjacencyList mergeAdjacencyList(AdjacencyList a, AdjacencyList b) {
         AdjacencyList ret = new AdjacencyList(a.get());
         for (Integer n : b.getNodes())
             ret.addEdge(n, b.getNeighbors(n));
@@ -323,7 +323,7 @@ public class AdjacencyList {
 
                 // Build the adjacency list correlated to the bin
                 for (int i = 1; i < l.size(); i++)
-                    adj = AdjacencyList.mergeAdjecencyList(
+                    adj = AdjacencyList.mergeAdjacencyList(
                             adj, getMinGraphFromSource(l.get(i-1), l.get(i)));
 
                 // Associates adjacency list to bin
