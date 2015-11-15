@@ -195,10 +195,10 @@ public class AdjacencyList {
     }
 
     public void removeEdge(Integer node, Integer neighbour) {
-        for (Iterator<Pair<Integer, Double>> i = g.get(node).iterator(); i.hasNext();) {
-            Pair<Integer, Double> p = i.next();
+        for (Integer i = 0; i < g.get(node).size(); i++) {
+            Pair<Integer, Double> p = g.get(node).get(i);
             if ( p.getKey() == neighbour)
-                i.remove();
+                g.get(node).remove(i);
         }
     }
 
@@ -212,7 +212,7 @@ public class AdjacencyList {
         nodes.forEach(this::removeNode);
     }
 
-    public static AdjacencyList mergeAdjcencyList(AdjacencyList a, AdjacencyList b) {
+    public static AdjacencyList mergeAdjecencyList(AdjacencyList a, AdjacencyList b) {
         AdjacencyList ret = new AdjacencyList(a.get());
         for (Integer n : b.getNodes())
             ret.addEdge(n, b.getNeighbors(n));
@@ -285,14 +285,13 @@ public class AdjacencyList {
                 l.add(fp.getKey());
                 l.add(fp.getValue());
                 orderedSavingsKey.remove(fp);
-                for (Iterator<Pair<Integer, Integer>> i = orderedSavingsKey.iterator();
-                        i.hasNext();) {
+                for (Integer i = 0; i < orderedSavingsKey.size(); i++) {
                     // if clients involved have goods to be transported
                     // for which the sum of the goods is <= than the
                     // capacity of the vehicle, then merge the two routes
                     // and decrease the number of vehicles used
                     // and set decrease to true
-                    Pair<Integer, Integer> p = i.next();
+                    Pair<Integer, Integer> p = orderedSavingsKey.get(i);
                     if (p.getKey().equals(l.get(l.size() - 1)) &&
                             !l.contains(p.getValue())) {
                         List<Integer> clientsInvolved = new LinkedList<Integer>();
@@ -314,9 +313,8 @@ public class AdjacencyList {
                         if (bins.get(ib).getVolumeWasted() >= cap) {
                             l.add(p.getValue());
                             bins.get(ib).addGood(goods);
+                            orderedSavingsKey.remove(i);
                         }
-
-                        i.remove();
                     }
                 }
 
@@ -325,7 +323,7 @@ public class AdjacencyList {
 
                 // Build the adjacency list correlated to the bin
                 for (int i = 1; i < l.size(); i++)
-                    adj = AdjacencyList.mergeAdjcencyList(
+                    adj = AdjacencyList.mergeAdjecencyList(
                             adj, getMinGraphFromSource(l.get(i-1), l.get(i)));
 
                 // Associates adjacency list to bin
