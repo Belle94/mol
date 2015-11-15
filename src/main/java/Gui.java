@@ -552,7 +552,7 @@ public class Gui{
             );
             adjacencyList = pair.getValue();
             clients = pair.getKey();
-            Double maxDistance = adjacencyList.getMaxDistance().getValue();
+            Double maxDistance = adjacencyList.getMaxDistance();
             Algorithms.generateRndCharge(clients, maxDistance.intValue());
             goods = Algorithms.generateGoods(
                     Integer.parseInt(texts.get(3).getText()),

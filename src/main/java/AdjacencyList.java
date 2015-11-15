@@ -186,12 +186,19 @@ public class AdjacencyList {
         }
     }
 
-    public Pair<Pair<Integer, Integer>, Double> getMaxDistance() {
+    public Double getMaxDistance() {
         AdjacencyList adj = new AdjacencyList(this.get());
         adj.reverseEdgeWeight();
-
-        DistanceMatrix dm = new DistanceMatrix(adj);
-        return dm.max();
+        Pair<Pair<Integer,Integer>,Double> k;
+        Double max = Double.MIN_VALUE;
+        for (Integer node: adj.getNodes()){
+            Double cMax=0.0;
+            for (Pair<Integer,Double> n : adj.getNeighbors(node)){
+                cMax += n.getValue();
+            }
+            max = (cMax > max) ? (cMax) : max;
+        }
+        return max;
     }
 
     public void removeEdge(Integer node, Integer neighbour) {
