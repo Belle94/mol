@@ -187,10 +187,7 @@ public class AdjacencyList {
     }
 
     public Pair<Pair<Integer, Integer>, Double> getMaxDistance() {
-        AdjacencyList adj = new AdjacencyList(this.get());
-        adj.reverseEdgeWeight();
-
-        DistanceMatrix dm = new DistanceMatrix(adj);
+        DistanceMatrix dm = new DistanceMatrix(this);
         return dm.max();
     }
 

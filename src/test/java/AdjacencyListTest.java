@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.atomic.DoubleAccumulator;
 
 import static org.junit.Assert.assertEquals;
@@ -251,7 +252,11 @@ public class AdjacencyListTest {
         adj.addEdge(1, 3, 1.0);
         adj.addEdge(2, 3, 3.0);
         adj.addEdge(3, 1, 4.0);
+        System.out.println("Before reversing");
+        System.out.println(new DistanceMatrix(adj));
         Pair<Pair<Integer, Integer>, Double> ret = adj.getMaxDistance();
+        System.out.println("After reversing");
+        System.out.println(new DistanceMatrix(adj));
         System.out.println(ret.getKey());
         System.out.println(ret.getValue());
         //assertEquals((Double) 7d, adj.getMaxDistance().getValue());
