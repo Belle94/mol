@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.atomic.DoubleAccumulator;
 
 import static org.junit.Assert.assertEquals;
 
@@ -229,7 +231,7 @@ public class AdjacencyListTest {
     }
 
     @Test
-    public void maxDistanceTest(){
+    public void testMaxEdgeWeight() {
         AdjacencyList adj = new AdjacencyList();
         adj.addEdge(0, 1, 5.0);
         adj.addEdge(0, 2, 4.0);
