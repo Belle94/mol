@@ -31,21 +31,8 @@ public class AdjacencyListTest {
         h.addEdge(5, 4, 9.0);
 
         g = new AdjacencyList(g.dijkstra(0).getValue().getGraph());
-        printGraph(g);
-        System.out.println();
-        printGraph(h);
         assertEquals(h, g);
 
-    }
-
-    public static void printGraph(AdjacencyList g){
-        for(Integer k : g.getNodes()){
-            System.out.println("Node "+k+"\t hashCode: "+ g.getGraph().get(k).hashCode());
-            for (Pair<Integer,Double> c : g.getGraph().get(k)){
-                System.out.print("(" + c.getKey() + "," + c.getValue() + ") ");
-            }
-            System.out.println();
-        }
     }
 
     //@Test
@@ -83,12 +70,12 @@ public class AdjacencyListTest {
         db.addVehicles(vs);
         db.addOrders(os);
         db.addGoodOrders(gos);
-
-        printGraph(p.getValue());
         System.out.println("CW CW CW CW");
+
+        System.out.println(p.getValue());
         HashMap<Bin, AdjacencyList> hm = p.getValue().clark_wright(db, 0, bs);
         for (Bin b : hm.keySet()) {
-            printGraph(hm.get(b));
+            System.out.println(hm.get(b));
         }
     }
 
@@ -229,27 +216,26 @@ public class AdjacencyListTest {
 
         System.out.println("Correct:");
         for (Bin b : correct.keySet()) {
-            printGraph(correct.get(b));
+            System.out.println(correct.get(b));
         }
 
         System.out.println();
         System.out.println("Calculated:");
         HashMap<Bin, AdjacencyList> calculated = adj.clark_wright(db, 0, bins);
         for (Bin b : calculated.keySet()) {
-            printGraph(calculated.get(b));
+            System.out.println(calculated.get(b));
         }
         //assertEquals(correct, calculated);
     }
 
     @Test
     public void maxDistanceTest(){
-        System.out.println("Test MaxDistance");
         AdjacencyList adj = new AdjacencyList();
         adj.addEdge(0, 1, 5.0);
         adj.addEdge(0, 2, 4.0);
         adj.addEdge(1, 3, 1.0);
         adj.addEdge(2, 3, 3.0);
         adj.addEdge(3, 1, 4.0);
-        assertEquals(new Double(7), adj.getMaxDistance());
+        assertEquals((Double) 7.0, adj.getMaxDistance().getValue());
     }
 }
