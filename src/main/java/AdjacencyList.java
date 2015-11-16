@@ -232,17 +232,17 @@ public class AdjacencyList {
         return ret;
     }
 
-    public List<Integer> nodesToDestination(Integer source, Integer destination, Set<Integer> ks) {
+    public List<Integer> nodesToDestination(Integer source, Integer destination, AdjacencyList adj) {
         List<Integer> retNodes = new LinkedList<>();
 
         while (destination != source) {
-            int i = 0;
-            for (Integer n : ks) {
-                if (n == destination) {
-                    retNodes.add(i);
-                    break;
+            for (Integer n : adj.getNodes()) {
+                for (Integer ad : adj.getNeighbor(n)) {
+                    if (ad == destination) {
+                        retNodes.add(0, ad);
+                        destination = ad;
+                    }
                 }
-                i++;
             }
         }
 
