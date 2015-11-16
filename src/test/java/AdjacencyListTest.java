@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.DoubleAccumulator;
 
 import static org.junit.Assert.assertEquals;
 
@@ -67,7 +68,7 @@ public class AdjacencyListTest {
         assertEquals(exp.getGraph(), adj.getGraph());
     }
 
-    @Test
+    //@Test
     public void testClarkWright2() throws Exception {
         Pair<List<Client>, AdjacencyList> p = Algorithms.generateRndGraph(4, 4, 100);
         Algorithms.generateRndCharge(p.getKey(), 100);
@@ -93,7 +94,7 @@ public class AdjacencyListTest {
         }
     }
 
-    @Test
+    //@Test
     public void testClarkWright() throws SQLException, ClassNotFoundException {
         AdjacencyList adj = new AdjacencyList();
         adj.addEdge(0, 1, 28.0);
@@ -240,5 +241,19 @@ public class AdjacencyListTest {
             printGraph(calculated.get(b));
         }
         //assertEquals(correct, calculated);
+    }
+
+    @Test
+    public void testMaxEdgeWeight() {
+        AdjacencyList adj = new AdjacencyList();
+        adj.addEdge(0, 1, 5.0);
+        adj.addEdge(0, 2, 4.0);
+        adj.addEdge(1, 3, 1.0);
+        adj.addEdge(2, 3, 3.0);
+        adj.addEdge(3, 1, 4.0);
+        Pair<Pair<Integer, Integer>, Double> ret = adj.getMaxDistance();
+        System.out.println(ret.getKey());
+        System.out.println(ret.getValue());
+        //assertEquals((Double) 7d, adj.getMaxDistance().getValue());
     }
 }

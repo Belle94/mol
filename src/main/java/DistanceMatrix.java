@@ -55,4 +55,15 @@ public class DistanceMatrix {
 
         return new Pair<Pair<Integer, Integer>, Double>(k, max);
     }
+
+    @Override
+    public String toString() {
+        String ret = "";
+        for (Pair<Integer, Integer> p : mat.keySet()) {
+            ret += "(" + p.getKey() + " - " + p.getValue() + ")"
+                    + " " + mat.get(p) + "\n";
+        }
+
+        return ret;
+    }
 }
