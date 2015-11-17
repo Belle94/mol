@@ -221,16 +221,25 @@ public class AdjacencyList {
         List<Integer> retNodes = new LinkedList<>();
 
         while (destination != source) {
+            boolean found = false;
             for (Integer n : adj.getNodes()) {
+                if (found)
+                    break;
                 for (Integer ad : adj.getNeighbor(n)) {
                     if (ad == destination) {
                         retNodes.add(0, ad);
-                        destination = ad;
+                        destination = n;
+                        found = true;
+                        break;
                     }
                 }
             }
         }
 
+        if (retNodes.isEmpty())
+            return null;
+
+        retNodes.add(0, source);
         return retNodes;
     }
 
@@ -239,7 +248,7 @@ public class AdjacencyList {
                 dijkstra(source);
 
         AdjacencyList ret = retDijkstra.getValue();
-        List<Integer> nts = nodesToDestination(source, destination, ret.getNodes());
+        List<Integer> nts = nodesToDestination(source, destination, retDijkstra.getValue());
         List<Integer> unwantedNodes = new LinkedList<>();
         unwantedNodes.addAll(ret.getNodes());
         unwantedNodes.removeAll(nts);
