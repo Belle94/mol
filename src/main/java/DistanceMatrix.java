@@ -1,8 +1,8 @@
 import javafx.util.Pair;
 import javafx.util.converter.IntegerStringConverter;
-
 import java.util.DoubleSummaryStatistics;
 import java.util.HashMap;
+import java.util.Map;
 
 public class DistanceMatrix {
     private HashMap<Pair<Integer, Integer>, Double> mat;
@@ -11,16 +11,18 @@ public class DistanceMatrix {
     public DistanceMatrix(AdjacencyList adjacencyList) {
         mat = new HashMap<>();
         minGraph = new HashMap<>();
-
+        int f=0;
         for (Integer i : adjacencyList.nodes()) {
-            Pair<HashMap<Integer, Double>, AdjacencyList> p =
-                    adjacencyList.dijkstra(i);
+            Pair<HashMap<Integer, Double>, AdjacencyList> p = adjacencyList.dijkstra(i);
+            for (Map.Entry<Integer,Double> s : p.getKey().entrySet())
+                System.out.println(f + " (" + s.getKey() + " - " + s.getValue() + ") list ->" + p.getValue().toString());
             minGraph.put(i, p.getValue());
-
+            f++;
             for (Integer k : p.getKey().keySet()) {
                 mat.put(new Pair<>(i, k), p.getKey().get(k));
             }
         }
+        toString();
     }
 
     public HashMap<Pair<Integer, Integer>, Double> get() {

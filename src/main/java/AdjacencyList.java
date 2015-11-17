@@ -202,6 +202,7 @@ public class AdjacencyList {
     public  Pair<Pair<Integer,Integer>,Double> getMaxDistance() {
         AdjacencyList adj = new AdjacencyList(this.get());
         DistanceMatrix dist = new DistanceMatrix (adj);
+        System.out.println("\n distance matrix to string: \n"+adj.toString());
         Pair<Pair<Integer,Integer>,Double> rtn = dist.max();
         return rtn;
     }
@@ -254,10 +255,10 @@ public class AdjacencyList {
                 dijkstra(source);
 
         AdjacencyList ret = retDijkstra.getValue();
-        List<Integer> nts = nodesToDestination(source, destination, ret.getNodes());
+        //List<Integer> nts = nodesToDestination(source, destination, ret.getNodes());
         List<Integer> unwantedNodes = new LinkedList<>();
         unwantedNodes.addAll(ret.getNodes());
-        unwantedNodes.removeAll(nts);
+        //unwantedNodes.removeAll(nts);
 
         ret.removeNodes(unwantedNodes);
 
