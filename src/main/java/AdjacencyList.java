@@ -202,7 +202,7 @@ public class AdjacencyList {
                 (HashMap<Integer, List<Pair<Integer, Double>>>) this.get().clone());
         adj.reverseEdgeWeight();
         DistanceMatrix dm = new DistanceMatrix(adj);
-        Pair<Integer, Integer> p = dm.min().getKey();
+        Pair<Integer, Integer> p = dm.min(true).getKey();
         Double distance =
                 sumEdges(nodesToDestination(p.getKey(), p.getValue(), adj));
         return new Pair<>(p, distance);

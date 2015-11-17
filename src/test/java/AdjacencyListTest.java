@@ -244,8 +244,11 @@ public class AdjacencyListTest {
         //assertEquals(correct, calculated);
     }
 
-    //@Test
-    public void testMaxEdgeWeight() {
+    @Test
+    public void testGetMaxDistance() {
+        System.out.println();
+        System.out.println("---------------------");
+        System.out.println("TEST GET MAX DISTANCE");
         AdjacencyList adj = new AdjacencyList();
         adj.addEdge(0, 1, 5.0);
         adj.addEdge(0, 2, 4.0);
@@ -259,7 +262,8 @@ public class AdjacencyListTest {
         System.out.println(new DistanceMatrix(adj));
         System.out.println(ret.getKey());
         System.out.println(ret.getValue());
-        //assertEquals((Double) 7d, adj.getMaxDistance().getValue());
+        System.out.println("---------------------");
+        assertEquals((Double) 7d, adj.getMaxDistance().getValue());
     }
 
     @Test
