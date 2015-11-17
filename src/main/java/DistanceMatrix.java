@@ -18,7 +18,8 @@ public class DistanceMatrix {
             minGraph.put(i, p.getValue());
 
             for (Integer k : p.getKey().keySet()) {
-                mat.put(new Pair<>(i, k), p.getKey().get(k));
+                if (i != k)
+                    mat.put(new Pair<>(i, k), p.getKey().get(k));
             }
         }
     }
