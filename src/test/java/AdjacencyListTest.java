@@ -230,7 +230,7 @@ public class AdjacencyListTest {
         //assertEquals(correct, calculated);
     }
 
-    @Test
+    //@Test
     public void testMaxEdgeWeight() {
         AdjacencyList adj = new AdjacencyList();
         adj.addEdge(0, 1, 5.0);
@@ -239,5 +239,28 @@ public class AdjacencyListTest {
         adj.addEdge(2, 3, 3.0);
         adj.addEdge(3, 1, 4.0);
         assertEquals((Double) 7.0, adj.getMaxDistance().getValue());
+    }
+
+    @Test
+    public void testNodesToDestination() {
+        AdjacencyList adj = new AdjacencyList();
+        adj.addEdge(0, 1, 1.0);
+        adj.addEdge(0, 3, 4.0);
+        adj.addEdge(1, 2, 1.0);
+        adj.addEdge(2, 5, 1.0);
+        adj.addEdge(5, 4, 2.0);
+        adj.addEdge(1, 3, 2.0);
+        adj.addEdge(3, 6, 5.0);
+
+        DistanceMatrix dm = new DistanceMatrix(adj);
+        HashMap<Integer, AdjacencyList> minTree =
+                dm.minDijkstraTree();
+        for (Pair<Integer, Integer> p : dm.get().keySet()) {
+            System.out.println(p);
+            System.out.println(adj.nodesToDestination(p.getKey(), p.getValue(), minTree.get(p.getKey())));
+            System.out.println();
+        }
+        System.out.println("Distance Matrix");
+        System.out.println(dm.toString());
     }
 }

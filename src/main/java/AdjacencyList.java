@@ -81,7 +81,8 @@ public class AdjacencyList {
      */
     public void deleteEdge(Integer source, Integer destination){
         int index = this.getIndexNeighbor(source, destination);
-        if (g.containsKey(source) && g.containsKey(destination) && index!=-1) {
+        if (g.containsKey(source) &&
+                g.containsKey(destination) && index!=-1) {
             g.get(source).remove(index);
         }
     }
@@ -122,7 +123,8 @@ public class AdjacencyList {
         if (!g.containsKey(v))
             return null;
 
-        return g.get(v).stream().map(Pair::getKey).collect(Collectors.toList());
+        return g.get(v).stream().map(Pair::getKey)
+                .collect(Collectors.toList());
     }
     public List<Pair<Integer,Double>> getPairNeighbors(Integer v) {
         if (!g.containsKey(v))
@@ -225,7 +227,12 @@ public class AdjacencyList {
         nodes.forEach(this::removeNode);
     }
 
-    public static AdjacencyList mergeAdjacencyList(AdjacencyList a, AdjacencyList b) {
+    public static AdjacencyList mergeAdjacencyList
+            (AdjacencyList a, AdjacencyList b) {
+        if (a == null)
+            return b;
+        if (b == null)
+            return a;
         AdjacencyList ret = new AdjacencyList(a.get());
         for (Integer n : b.getNodes())
             ret.addEdge(n, b.getNeighbors(n));
@@ -233,20 +240,30 @@ public class AdjacencyList {
         return ret;
     }
 
-    public List<Integer> nodesToDestination(Integer source, Integer destination, AdjacencyList adj) {
+    public List<Integer> nodesToDestination
+            (Integer source, Integer destination, AdjacencyList adj) {
         List<Integer> retNodes = new LinkedList<>();
 
         while (destination != source) {
+            boolean found = false;
             for (Integer n : adj.getNodes()) {
+                if (found)
+                    break;
                 for (Integer ad : adj.getNeighbor(n)) {
                     if (ad == destination) {
                         retNodes.add(0, ad);
-                        destination = ad;
+                        destination = n;
+                        found = true;
+                        break;
                     }
                 }
             }
         }
 
+        if (retNodes.isEmpty())
+            return null;
+
+        retNodes.add(0, source);
         return retNodes;
     }
 
@@ -255,11 +272,13 @@ public class AdjacencyList {
                 dijkstra(source);
 
         AdjacencyList ret = retDijkstra.getValue();
-        //List<Integer> nts = nodesToDestination(source, destination, ret.getNodes());
+        List<Integer> nts = nodesToDestination
+                (source, destination, retDijkstra.getValue());
+        if (nts == null)
+            return null;
         List<Integer> unwantedNodes = new LinkedList<>();
         unwantedNodes.addAll(ret.getNodes());
-        //unwantedNodes.removeAll(nts);
-
+        unwantedNodes.removeAll(nts);
         ret.removeNodes(unwantedNodes);
 
         return ret;
@@ -307,7 +326,8 @@ public class AdjacencyList {
                     Pair<Integer, Integer> p = orderedSavingsKey.get(i);
                     if (p.getKey().equals(l.get(l.size() - 1)) &&
                             !l.contains(p.getValue())) {
-                        List<Integer> clientsInvolved = new LinkedList<Integer>();
+                        List<Integer> clientsInvolved =
+                                new LinkedList<Integer>();
                         List<Good> goods = new LinkedList<>();
                         clientsInvolved.add(p.getKey());
                         clientsInvolved.add(p.getValue());
@@ -350,7 +370,8 @@ public class AdjacencyList {
         return ret;
     }
 
-    public static List<Pair<Integer, Integer>> orderByValue(HashMap<Pair<Integer, Integer>, Double> h) {
+    public static List<Pair<Integer, Integer>> orderByValue
+            (HashMap<Pair<Integer, Integer>, Double> h) {
         List<Pair<Integer, Integer>> result = new LinkedList<>();
         Pair<Integer, Integer> kMax = new Pair<>(0, 0);
         for (int i = 0; i < h.keySet().size(); i++) {
@@ -389,9 +410,10 @@ public class AdjacencyList {
      * The node is updated if the sum of the previous node plus the
      * the weight of the edge is less of the current distance value in the node.
      * @param source the node where Dijkstra start
-     * @return the graph with the shortest path form the node source to each other nodes.
+     * @return the graph with the shortest path form the source node
+     *         to each other nodes.
      */
-    public Pair<HashMap<Integer, Double>, AdjacencyList> dijkstra(Integer source){
+    public Pair<HashMap<Integer, Double>, AdjacencyList> dijkstra(Integer source) {
         AdjacencyList pg = new AdjacencyList();
         int n = this.getNumNodes();
         Integer u;
@@ -451,7 +473,8 @@ public class AdjacencyList {
             this.g.get(i).sort(AdjacencyList.comparator());
             that.getGraph().get(i).sort(AdjacencyList.comparator());
             
-            // if (!this.g.get(i).equals(that.getGraph().get(i))))return true if & only if
+            // if (!this.g.get(i).equals(that.getGraph().get(i))))
+            // return true if & only if
             // Pair in the list are in the same order
             if (!this.g.get(i).equals(that.getGraph().get(i)))
                 return false;
