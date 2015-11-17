@@ -210,6 +210,10 @@ public class AdjacencyList {
     }
 
     public static AdjacencyList mergeAdjacencyList(AdjacencyList a, AdjacencyList b) {
+        if (a == null)
+            return b;
+        if (b == null)
+            return a;
         AdjacencyList ret = new AdjacencyList(a.get());
         for (Integer n : b.getNodes())
             ret.addEdge(n, b.getNeighbors(n));
@@ -249,6 +253,8 @@ public class AdjacencyList {
 
         AdjacencyList ret = retDijkstra.getValue();
         List<Integer> nts = nodesToDestination(source, destination, retDijkstra.getValue());
+        if (nts == null)
+            return null;
         List<Integer> unwantedNodes = new LinkedList<>();
         unwantedNodes.addAll(ret.getNodes());
         unwantedNodes.removeAll(nts);

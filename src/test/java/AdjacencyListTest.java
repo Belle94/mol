@@ -95,7 +95,7 @@ public class AdjacencyListTest {
         }
     }
 
-    //@Test
+    @Test
     public void testClarkWright() throws SQLException, ClassNotFoundException {
         AdjacencyList adj = new AdjacencyList();
         adj.addEdge(0, 1, 28.0);
@@ -244,7 +244,7 @@ public class AdjacencyListTest {
         //assertEquals(correct, calculated);
     }
 
-    //@Test
+    @Test
     public void testMaxEdgeWeight() {
         AdjacencyList adj = new AdjacencyList();
         adj.addEdge(0, 1, 5.0);
