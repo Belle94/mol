@@ -57,6 +57,19 @@ public class DistanceMatrix {
         return new Pair<Pair<Integer, Integer>, Double>(k, max);
     }
 
+    public Pair<Pair<Integer, Integer>, Double> min() {
+        Pair<Integer, Integer> k = new Pair<>(0,0);
+        Double min = Double.MIN_VALUE;
+        for (Pair<Integer, Integer> p : mat.keySet()) {
+            if (mat.get(p) < min) {
+                min = mat.get(p);
+                k = p;
+            }
+        }
+
+        return new Pair<Pair<Integer, Integer>, Double>(k, min);
+    }
+
     @Override
     public String toString() {
         String ret = "";

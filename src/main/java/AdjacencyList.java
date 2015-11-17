@@ -188,9 +188,24 @@ public class AdjacencyList {
         }
     }
 
+    public Double sumEdges(List<Integer> path) {
+        Double retVal = 0.0;
+        for (int i = 1; i < path.size(); i++) {
+            retVal += getDistance(path.get(i - 1), path.get(i));
+        }
+
+        return retVal;
+    }
+
     public Pair<Pair<Integer, Integer>, Double> getMaxDistance() {
-        DistanceMatrix dm = new DistanceMatrix(this);
-        return dm.max();
+        AdjacencyList adj = new AdjacencyList(
+                (HashMap<Integer, List<Pair<Integer, Double>>>) this.get().clone());
+        adj.reverseEdgeWeight();
+        DistanceMatrix dm = new DistanceMatrix(adj);
+        Pair<Integer, Integer> p = dm.min().getKey();
+        Double distance =
+                sumEdges(nodesToDestination(p.getKey(), p.getValue(), adj));
+        return new Pair<>(p, distance);
     }
 
     public void removeEdge(Integer node, Integer neighbour) {
