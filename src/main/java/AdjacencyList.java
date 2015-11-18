@@ -1,3 +1,4 @@
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import javafx.util.Pair;
 import java.sql.SQLException;
 import java.util.*;
@@ -198,14 +199,7 @@ public class AdjacencyList {
     }
 
     public Pair<Pair<Integer, Integer>, Double> getMaxDistance() {
-        AdjacencyList adj = new AdjacencyList(
-                (HashMap<Integer, List<Pair<Integer, Double>>>) this.get().clone());
-        adj.reverseEdgeWeight();
-        DistanceMatrix dm = new DistanceMatrix(adj);
-        Pair<Integer, Integer> p = dm.min(true).getKey();
-        Double distance =
-                sumEdges(nodesToDestination(p.getKey(), p.getValue(), adj));
-        return new Pair<>(p, distance);
+        return new DistanceMatrix(this).max();
     }
 
     public void removeEdge(Integer node, Integer neighbour) {
