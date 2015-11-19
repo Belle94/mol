@@ -27,12 +27,7 @@ import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.*;
 import org.graphstream.ui.view.View;
 import org.graphstream.ui.view.Viewer;
-import org.graphstream.ui.view.ViewerListener;
-import org.graphstream.ui.view.ViewerPipe;
-import org.graphstream.util.GraphListeners;
-
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane;
 
 /**
  * Class of graphic interface

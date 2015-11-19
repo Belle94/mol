@@ -201,18 +201,16 @@ public class AdjacencyList {
         }
     }
 
-    public  Pair<Pair<Integer,Integer>,Double> getMaxDistance() {
+    public Pair<Pair<Integer,Integer>,Double> getMaxDistance() {
         AdjacencyList adj = new AdjacencyList(this.get());
-        DistanceMatrix dist = new DistanceMatrix (adj);
-        System.out.println("\n distance matrix to string: \n"+adj.toString());
-        Pair<Pair<Integer,Integer>,Double> rtn = dist.max();
-        return rtn;
+        DistanceMatrix dm = new DistanceMatrix(adj);
+        return dm.max();
     }
 
     public void removeEdge(Integer node, Integer neighbour) {
         for (Integer i = 0; i < g.get(node).size(); i++) {
             Pair<Integer, Double> p = g.get(node).get(i);
-            if ( p.getKey() == neighbour)
+            if (Objects.equals(p.getKey(), neighbour))
                 g.get(node).remove(i);
         }
     }
