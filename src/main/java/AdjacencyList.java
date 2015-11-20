@@ -323,7 +323,7 @@ public class AdjacencyList {
                         List<Integer> clientsInvolved =
                                 new LinkedList<Integer>();
                         List<Good> goods = new LinkedList<>();
-                        clientsInvolved.add(p.getKey());
+                        //clientsInvolved.add(p.getKey());
                         clientsInvolved.add(p.getValue());
                         Double cap = .0;
                         for (Integer client : clientsInvolved) {
@@ -341,6 +341,7 @@ public class AdjacencyList {
                             l.add(p.getValue());
                             bins.get(ib).addGood(goods);
                             orderedSavingsKey.remove(i);
+                            decreased = true;
                         }
                     }
                 }
@@ -355,7 +356,7 @@ public class AdjacencyList {
 
                 // Associates adjacency list to bin
                 ret.put(bins.get(ib), adj);
-
+                ib++;
             }
         } catch (SQLException e) {
             e.printStackTrace();
