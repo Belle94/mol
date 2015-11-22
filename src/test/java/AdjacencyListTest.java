@@ -1,3 +1,4 @@
+import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import javafx.scene.chart.PieChart;
 import javafx.util.Pair;
 import org.junit.Test;
@@ -13,8 +14,10 @@ import java.util.concurrent.atomic.DoubleAccumulator;
 import static org.junit.Assert.assertEquals;
 
 public class AdjacencyListTest {
-//    @Test
+    @Test
     public void testDijkstra() throws Exception {
+        System.out.println("--------------------");
+        System.out.println("TEST DIJKSTRA");
         AdjacencyList g = new AdjacencyList();
         g.addEdge(0, 5, 14.0);
         g.addEdge(0, 2, 9.0);
@@ -38,7 +41,7 @@ public class AdjacencyListTest {
         System.out.println();
         printGraph(h);
         assertEquals(h, g);
-
+        System.out.println("--------------------");
     }
 
     public static void printGraph(AdjacencyList g){
@@ -53,11 +56,14 @@ public class AdjacencyListTest {
 
     @Test
     public void testReverseEdgeWeight() {
+        System.out.println("--------------------");
+        System.out.println("TEST REVERSE EDGE WEIGHT");
         AdjacencyList adj = new AdjacencyList();
         adj.addEdge(1, 2, 5.0);
         adj.addEdge(1, 3, 1.0);
         adj.addEdge(2, 4, 2.0);
         adj.addEdge(3, 4, 3.0);
+        printGraph(adj);
         adj.reverseEdgeWeight();
 
         AdjacencyList exp = new AdjacencyList();
@@ -65,12 +71,15 @@ public class AdjacencyListTest {
         exp.addEdge(1, 3, 5.0);
         exp.addEdge(2, 4, 4.0);
         exp.addEdge(3, 4, 3.0);
-
+        printGraph(adj);
+        System.out.println("--------------------");
         assertEquals(exp.getGraph(), adj.getGraph());
     }
 
-    //@Test
+    @Test
     public void testClarkWright2() throws Exception {
+        System.out.println("--------------------");
+        System.out.println("TEST CLARK WRIGHT 2");
         Pair<List<Client>, AdjacencyList> p = Algorithms.generateRndGraph(4, 4, 100);
         Algorithms.generateRndCharge(p.getKey(), 100);
         List<Good> gs = Algorithms.generateGoods(4, 4, 4);
@@ -88,15 +97,17 @@ public class AdjacencyListTest {
         db.addGoodOrders(gos);
 
         printGraph(p.getValue());
-        System.out.println("CW CW CW CW");
         HashMap<Bin, AdjacencyList> hm = p.getValue().clark_wright(db, 0, bs);
         for (Bin b : hm.keySet()) {
             printGraph(hm.get(b));
         }
+        System.out.println("--------------------");
     }
 
     @Test
     public void testClarkWright() throws SQLException, ClassNotFoundException {
+        System.out.println("--------------------");
+        System.out.println("TEST CLARK WRIGHT");
         AdjacencyList adj = new AdjacencyList();
         adj.addEdge(0, 1, 28.0);
         adj.addEdge(1, 0, 28.0);
@@ -241,13 +252,13 @@ public class AdjacencyListTest {
         for (Bin b : calculated.keySet()) {
             printGraph(calculated.get(b));
         }
+        System.out.println("--------------------");
         //assertEquals(correct, calculated);
     }
 
     @Test
     public void testGetMaxDistance() {
-        System.out.println();
-        System.out.println("---------------------");
+        System.out.println("--------------------");
         System.out.println("TEST GET MAX DISTANCE");
         AdjacencyList adj = new AdjacencyList();
         adj.addEdge(0, 1, 5.0);
@@ -255,19 +266,18 @@ public class AdjacencyListTest {
         adj.addEdge(1, 3, 1.0);
         adj.addEdge(2, 3, 3.0);
         adj.addEdge(3, 1, 4.0);
-        System.out.println("Before reversing");
-        System.out.println(new DistanceMatrix(adj));
         Pair<Pair<Integer, Integer>, Double> ret = adj.getMaxDistance();
-        System.out.println("After reversing");
         System.out.println(new DistanceMatrix(adj));
         System.out.println(ret.getKey());
         System.out.println(ret.getValue());
-        System.out.println("---------------------");
+        System.out.println("--------------------");
         assertEquals((Double) 7d, adj.getMaxDistance().getValue());
     }
 
     @Test
     public void testNodesToDestination() {
+        System.out.println("---------------------");
+        System.out.println("TEST GET MAX DISTANCE");
         AdjacencyList adj = new AdjacencyList();
         adj.addEdge(0, 1, 1.0);
         adj.addEdge(0, 3, 4.0);
@@ -278,6 +288,7 @@ public class AdjacencyListTest {
         adj.addEdge(3, 6, 5.0);
 
         DistanceMatrix dm = new DistanceMatrix(adj);
+
         HashMap<Integer, AdjacencyList> minTree =
                 dm.minDijkstraTree();
         for (Pair<Integer, Integer> p : dm.get().keySet()) {
@@ -287,5 +298,6 @@ public class AdjacencyListTest {
         }
         System.out.println("Distance Matrix");
         System.out.println(dm.toString());
+        System.out.println("--------------------");
     }
 }
