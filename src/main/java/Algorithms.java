@@ -156,4 +156,33 @@ public class Algorithms{
         }
         return goodOrders;
     }
+
+    /**
+     * get the list of saving from the source.
+     * source = 0.
+     * @param dm
+     */
+    public static List<Pair<Pair<Integer,Integer>,Double>> getSaving(DistanceMatrix dm){
+        List<Pair<Pair<Integer,Integer>,Double>> savingList = new ArrayList<>();
+        for (Map.Entry<Pair<Integer,Integer>,Double> elem: dm.get().entrySet()) {
+            if (!(elem.getKey().getKey() == 0 || elem.getKey().getValue() ==0 )){
+                savingList.add(new Pair<>(new Pair<>(elem.getKey().getKey(), elem.getKey().getValue()),
+                        dm.get(elem.getKey().getKey(),0) +
+                        dm.get(0,elem.getKey().getValue()) -
+                        dm.get(elem.getKey().getKey(),elem.getKey().getValue()))
+                );
+            }
+        }
+        return savingList;
+    }
+
+    public static Comparator<Pair<Pair<Integer,Integer>,Double>> savingComparator(){
+        return (o1, o2) -> {
+            if (o1.getValue() < o2.getValue())
+                return -1;
+            if (o1.getValue() > o2.getValue())
+                return 1;
+            return 0;
+        };
+    }
 }

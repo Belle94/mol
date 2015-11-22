@@ -1,5 +1,6 @@
 import javafx.util.Pair;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class DistanceMatrix {
@@ -62,6 +63,17 @@ public class DistanceMatrix {
         }
         return new Pair<Pair<Integer, Integer>, Double>(k, max);
     }
+
+    public Double maxSumFromSource() {
+        Double max = (double)0;
+        for (Map.Entry<Pair<Integer,Integer>,Double> elem: mat.entrySet()){
+            if (elem.getKey().getKey() == 0){
+                max += elem.getValue();
+            }
+        }
+        return max;
+    }
+
 
     @Override
     public String toString() {

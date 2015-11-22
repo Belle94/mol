@@ -1,7 +1,11 @@
+import javafx.util.Pair;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+
 /**
  * AlgorithmsTest class, all testing are implemented below.
  */
@@ -34,5 +38,45 @@ public class AlgorithmsTest{
         binsExpected.get(4).addGood(new Good(1, 2.0, 1, "Snack"));
 
         assertEquals(Algorithms.firstFitDecreasing(testGoodList,max),binsExpected);
+    }
+    @Test
+    public void testGetSaving(){
+        AdjacencyList adj = new AdjacencyList();
+        adj.addEdge(0, 1, 2.0);
+        adj.addEdge(1, 2, 2.0);
+        adj.addEdge(2, 0, 3.0);
+        adj.addEdge(2, 3, 1.0);
+        adj.addEdge(3, 1, 1.0);
+
+        DistanceMatrix dm = new DistanceMatrix(adj);
+
+/*
+        for (Map.Entry<Pair<Integer,Integer>,Double> elem: dm.get().entrySet())
+            System.out.println("Dm: ("+elem.getKey().getKey()+" - "+elem.getKey().getValue()+") - "+elem.getValue());
+*/
+
+        List<Pair<Pair<Integer,Integer>,Double>> saving = Algorithms.getSaving(dm);
+        saving.sort(Collections.reverseOrder(Algorithms.savingComparator()));
+
+        AdjacencyList adj1 = adj.getMinPath(2);
+        AdjacencyList adj2 = adj.getMinPath(1);
+
+        System.out.println("adj 1");
+        for (Map.Entry<Integer,List<Pair<Integer,Double>>> elem:adj1.getGraph().entrySet())
+            for (Pair<Integer,Double> e: elem.getValue())
+                System.out.println("("+elem.getKey()+","+e.getKey()+") - "+e.getValue());
+
+        System.out.println("adj 2");
+        for (Map.Entry<Integer,List<Pair<Integer,Double>>> elem:adj2.getGraph().entrySet())
+            for (Pair<Integer,Double> e: elem.getValue())
+                System.out.println("("+elem.getKey()+","+e.getKey()+") - "+e.getValue());
+
+
+/*
+        for(Pair<Pair<Integer,Integer>,Double> elem : saving)
+            System.out.println("S: ("+elem.getKey().getKey()+" - "+elem.getKey().getValue()+") - "+elem.getValue());
+*/
+
+//        System.out.println("Mx from source: "+dm.maxSumFromSource());
     }
 }

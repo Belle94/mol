@@ -225,6 +225,41 @@ public class AdjacencyList {
         nodes.forEach(this::removeNode);
     }
 
+    public Double getDistanceFrom(Integer a, Integer b){
+        for (Pair <Integer,Double> e: getNeighbors(a))
+            if (e.getKey().equals(b))
+                return e.getValue();
+        return (double)-1;
+    }
+
+    public Integer getFather(Integer child){
+        for (Map.Entry<Integer,List<Pair<Integer,Double>>> elem : get().entrySet()){
+            for (Pair<Integer,Double> e : elem.getValue()){
+                if (e.getKey().equals(child))
+                    return elem.getKey();
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * get min path from source to the input node
+     * @return
+     */
+    public AdjacencyList getMinPath(Integer child){
+        Pair<HashMap<Integer,Double>,AdjacencyList> minGraph = this.dijkstra(0);
+        AdjacencyList adj = new AdjacencyList();
+        Integer father = child;
+        while (father != 0){
+            father = getFather(child);
+            if (father == -1)
+               throw new EmptyStackException();
+            adj.addEdge(father, child, minGraph.getValue().getDistanceFrom(father,child));
+            child = father;
+        }
+        return adj;
+    }
+
     public static AdjacencyList mergeAdjacencyList
             (AdjacencyList a, AdjacencyList b) {
         if (a == null)
@@ -427,8 +462,8 @@ public class AdjacencyList {
         List<Integer> Q = new ArrayList<>();
         Q.add(source);
         while (!Q.isEmpty()){
-            u = Q.get(0);                     // takes first element on list
-            Q.remove(0);                        // removes first element
+            u = Q.get(0);           // takes first element on list
+            Q.remove(0);            // removes first element
 
             if(dist[u] != -1) {
                 for (int i = 0; i < this.getNumNeighbor(u); i++) {
@@ -478,6 +513,15 @@ public class AdjacencyList {
                 return false;
             }
         return true;
+    }
+
+    public void printGraphToString() {
+        for (Map.Entry<Integer,List<Pair<Integer,Double>>> elem: this.getGraph().entrySet()){
+            System.out.print(elem.getKey()+"->");
+            for (Pair<Integer,Double> e: elem.getValue())
+                System.out.print(" ("+e.getKey()+" - "+e.getValue()+")");
+            System.out.println();
+        }
     }
 
     @Override

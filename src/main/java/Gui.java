@@ -546,12 +546,14 @@ public class Gui{
                     Integer.parseInt(texts.get(2).getText())
             );
             adjacencyList = pair.getValue();
+            DistanceMatrix distanceMatrix = new DistanceMatrix(adjacencyList);
+            List<Pair<Pair<Integer,Integer>,Double>> saving = Algorithms.getSaving(distanceMatrix);
+            saving.sort(Collections.reverseOrder(Algorithms.savingComparator()));
             clients = pair.getKey();
             Pair<Pair<Integer,Integer>,Double> rtn = adjacencyList.getMaxDistance();
-            System.out.println("Distance: " +
-                    "(" + rtn.getKey().getKey() + " - " + rtn.getKey().getValue() + " ) " + rtn.getValue());
             Double maxDistance = rtn.getValue();
             Algorithms.generateRndCharge(clients, maxDistance.intValue());
+
             goods = Algorithms.generateGoods(
                     Integer.parseInt(texts.get(3).getText()),
                     Integer.parseInt(texts.get(4).getText()),
