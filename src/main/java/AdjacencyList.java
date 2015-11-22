@@ -304,7 +304,7 @@ public class AdjacencyList {
         // Merge route between nodes
         int ib = 0;
         try {
-            for (boolean decreased = true; decreased; ib++) {
+            for (boolean decreased = true; decreased && ib < bins.size(); ib++) {
                 decreased = false;
                 List<Integer> l = new LinkedList<>();
                 Pair<Integer, Integer> fp = orderedSavingsKey.get(0);
@@ -312,7 +312,8 @@ public class AdjacencyList {
                 l.add(fp.getKey());
                 l.add(fp.getValue());
                 orderedSavingsKey.remove(fp);
-                for (Integer i = 0; i < orderedSavingsKey.size(); i++) {
+                int n = orderedSavingsKey.size();
+                for (Integer i = 0; i < n; i++) {
                     // if clients involved have goods to be transported
                     // for which the sum of the goods is <= than the
                     // capacity of the vehicle, then merge the two routes
@@ -321,8 +322,8 @@ public class AdjacencyList {
                     Pair<Integer, Integer> p = orderedSavingsKey.get(i);
                     // Checks whether the current saving is consecutive
                     // to the last one inserted in the bin AND
-                    if (p.getKey().equals(l.get(l.size() - 1)) /*&&
-                            !l.contains(p.getValue())*/) {
+                    if (p.getKey().equals(l.get(l.size() - 1)) &&
+                            !l.contains(p.getValue())) {
                         List<Integer> clientsInvolved =
                                 new LinkedList<Integer>();
                         List<Good> goods = new LinkedList<>();

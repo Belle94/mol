@@ -238,8 +238,12 @@ public class AdjacencyListTest {
         correct.put(b2, a2);
 
         List<Bin> bins = new LinkedList<>();
-        bins.add(b1);
-        bins.add(b2);
+        Bin b01 = new Bin(100);
+        b01.setId(0);
+        Bin b02 = new Bin(100);
+        b02.setId(1);
+        bins.add(b01);
+        bins.add(b02);
 
         System.out.println("Correct:");
         for (Bin b : correct.keySet()) {
@@ -253,7 +257,7 @@ public class AdjacencyListTest {
             printGraph(calculated.get(b));
         }
         System.out.println("--------------------");
-        //assertEquals(correct, calculated);
+        assertEquals(correct, calculated);
     }
 
     @Test
