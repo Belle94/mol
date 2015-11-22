@@ -297,13 +297,14 @@ public class AdjacencyList {
             }
         }
 
-        List<Pair<Integer, Integer>> orderedSavingsKey = orderByValue(savings);
+        List<Pair<Integer, Integer>> orderedSavingsKey =
+                orderByValue((HashMap<Pair<Integer,Integer>, Double>)
+                        savings.clone());
 
         // Merge route between nodes
-        boolean decreased = true;
         int ib = 0;
         try {
-            for (; decreased; ib++) {
+            for (boolean decreased = true; decreased; ib++) {
                 decreased = false;
                 List<Integer> l = new LinkedList<>();
                 Pair<Integer, Integer> fp = orderedSavingsKey.get(0);
@@ -318,8 +319,10 @@ public class AdjacencyList {
                     // and decrease the number of vehicles used
                     // and set decrease to true
                     Pair<Integer, Integer> p = orderedSavingsKey.get(i);
-                    if (p.getKey().equals(l.get(l.size() - 1)) &&
-                            !l.contains(p.getValue())) {
+                    // Checks whether the current saving is consecutive
+                    // to the last one inserted in the bin AND
+                    if (p.getKey().equals(l.get(l.size() - 1)) /*&&
+                            !l.contains(p.getValue())*/) {
                         List<Integer> clientsInvolved =
                                 new LinkedList<Integer>();
                         List<Good> goods = new LinkedList<>();
@@ -369,10 +372,11 @@ public class AdjacencyList {
             (HashMap<Pair<Integer, Integer>, Double> h) {
         List<Pair<Integer, Integer>> result = new LinkedList<>();
         Pair<Integer, Integer> kMax = new Pair<>(0, 0);
-        for (int i = 0; i < h.keySet().size(); i++) {
+        int n = h.keySet().size();
+        for (int i = 0; i < n; i++) {
             Double max = Double.MIN_VALUE;
             for (Pair<Integer, Integer> p : h.keySet()) {
-                if (max > h.get(p)) {
+                if (max < h.get(p)) {
                     max = h.get(p);
                     kMax = p;
                 }
