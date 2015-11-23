@@ -304,11 +304,11 @@ public class AdjacencyList {
         // Merge route between nodes
         int ib = 0;
         try {
+            List<Integer> l = new LinkedList<>();
+            l.add(0);
             for (boolean decreased = true; decreased && ib < bins.size(); ib++) {
                 decreased = false;
-                List<Integer> l = new LinkedList<>();
                 Pair<Integer, Integer> fp = orderedSavingsKey.get(0);
-                l.add(0);
                 l.add(fp.getKey());
                 l.add(fp.getValue());
                 orderedSavingsKey.remove(fp);

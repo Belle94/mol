@@ -88,10 +88,15 @@ public class Database {
         return daoGood.queryForId(id);
     }
     public List<Good> getGoodByOrder(Order order) throws SQLException {
-        return daoGoodOrder.queryForEq(
-                GoodOrder.ORDER_FIELD_NAME,
-                order.getId()).stream().map(GoodOrder::getGood)
-                .collect(Collectors.toCollection(LinkedList::new));
+        List<Good> ret = new LinkedList<>();
+
+        for (GoodOrder go : daoGoodOrder.
+                queryForEq(GoodOrder.ORDER_FIELD_NAME, order)) {
+            Good g = getGoodByID(go.getGood().getId());
+            ret.add(g);
+        }
+
+        return ret;
     }
     public List<Good> getAllGoods() throws SQLException {
         return daoGood.queryForAll();

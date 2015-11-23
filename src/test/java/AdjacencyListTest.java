@@ -148,56 +148,56 @@ public class AdjacencyListTest {
 
         Client c0 = new Client("c0", 100);
         db.addClient(c0);
-        c0.setId(0);
+        c0.setId(1);
         Client c1 = new Client("c1", 100);
         db.addClient(c1);
-        c1.setId(1);
+        c1.setId(2);
         Client c2 = new Client("c2", 100);
         db.addClient(c2);
-        c2.setId(2);
+        c2.setId(3);
         Client c3 = new Client("c3", 100);
         db.addClient(c3);
-        c3.setId(3);
+        c3.setId(4);
         Client c4 = new Client("c4", 100);
         db.addClient(c4);
-        c4.setId(4);
+        c4.setId(5);
 
         Good g0 = new Good(25.0, 10, "d");
         db.addGood(g0);
-        g0.setId(0);
+        g0.setId(1);
         Good g1 = new Good(5.0, 10, "d");
         db.addGood(g1);
-        g1.setId(1);
+        g1.setId(2);
         Good g2 = new Good(7.0, 10, "d");
         db.addGood(g2);
-        g2.setId(2);
+        g2.setId(3);
         Good g3 = new Good(12.0, 10, "d");
         db.addGood(g3);
-        g3.setId(3);
+        g3.setId(4);
         Good g4 = new Good(10.0, 10, "d");
         db.addGood(g4);
-        g4.setId(4);
+        g4.setId(5);
 
         Bin ub = new Bin(100);
         db.addBin(ub);
-        ub.setId(0);
+        ub.setId(1);
 
 
         Order o0 = new Order(c0, new Date(), 1);
         db.addOrder(o0);
-        o0.setId(0);
+        o0.setId(1);
         Order o1 = new Order(c1, new Date(), 1);
         db.addOrder(o1);
-        o1.setId(1);
+        o1.setId(2);
         Order o2 = new Order(c2, new Date(), 1);
         db.addOrder(o2);
-        o2.setId(2);
+        o2.setId(3);
         Order o3 = new Order(c3, new Date(), 1);
         db.addOrder(o3);
-        o3.setId(3);
+        o3.setId(4);
         Order o4 = new Order(c4, new Date(), 1);
         db.addOrder(o4);
-        o4.setId(4);
+        o4.setId(5);
 
         db.addGoodOrder(new GoodOrder(o0,g0,1));
         db.addGoodOrder(new GoodOrder(o0,g3,1));
