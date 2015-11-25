@@ -1,4 +1,6 @@
 import javafx.util.Pair;
+
+import javax.xml.crypto.Data;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -225,37 +227,33 @@ public class AdjacencyList {
         nodes.forEach(this::removeNode);
     }
 
-    public Double getDistanceFrom(Integer a, Integer b){
-        for (Pair <Integer,Double> e: getNeighbors(a))
-            if (e.getKey().equals(b))
-                return e.getValue();
-        return (double)-1;
-    }
-
-    public Integer getFather(Integer child){
-        for (Map.Entry<Integer,List<Pair<Integer,Double>>> elem : get().entrySet()){
+    public Pair<Integer,Double> getSource(Integer node){
+        for (Map.Entry<Integer,List<Pair<Integer,Double>>> elem : this.get().entrySet()){
             for (Pair<Integer,Double> e : elem.getValue()){
-                if (e.getKey().equals(child))
-                    return elem.getKey();
+                if (e.getKey().equals(node)) {
+                    return new Pair<>(elem.getKey(), e.getValue());
+                }
             }
         }
-        return -1;
+        return new Pair<>(-1,(double)-1);
     }
 
     /**
-     * get min path from source to the input node
+     * get min path from source to destination
      * @return
      */
-    public AdjacencyList getMinPath(Integer child){
-        Pair<HashMap<Integer,Double>,AdjacencyList> minGraph = this.dijkstra(0);
+    public AdjacencyList getMinPath(Integer source, Integer destination){
+        if (!this.getGraph().containsKey(source) || !this.getGraph().containsKey(destination))
+            return new AdjacencyList();
+        AdjacencyList minGraph = this.dijkstra(source).getValue();
         AdjacencyList adj = new AdjacencyList();
-        Integer father = child;
-        while (father != 0){
-            father = getFather(child);
-            if (father == -1)
-               throw new EmptyStackException();
-            adj.addEdge(father, child, minGraph.getValue().getDistanceFrom(father,child));
-            child = father;
+        Pair<Integer,Double> node = new Pair<>(destination,(double)0);
+        while (!Objects.equals(destination, source)){
+            node = minGraph.getSource(node.getKey());
+            if (node.getKey() == -1 && node.getValue().equals((double)-1))
+                return new AdjacencyList();
+            adj.addEdge(node.getKey(),destination, node.getValue());
+            destination = node.getKey();
         }
         return adj;
     }
@@ -298,6 +296,79 @@ public class AdjacencyList {
 
         retNodes.add(0, source);
         return retNodes;
+    }
+
+    public void addSaving(AdjacencyList refAdj, Pair<Pair<Integer, Integer>, Double> s){
+        if (this.getGraph().isEmpty()){
+            this.addAdj(refAdj.getMinPath(0, s.getKey().getKey()));
+            this.addAdj(refAdj.getMinPath(s.getKey().getKey(), s.getKey().getValue()));
+            this.addAdj(refAdj.getMinPath(s.getKey().getValue(), 0));
+        }else{
+            this.addAdj(refAdj.getMinPath(s.getKey().getKey(), s.getKey().getValue()));
+        }
+    }
+
+    private void addAdj(AdjacencyList adj){
+        if (adj.getGraph().isEmpty() || adj.equals(this))
+            return;
+        if (this.getGraph().isEmpty()) {
+            this.set(adj.getGraph());
+            return;
+        }
+        for (Map.Entry<Integer,List<Pair<Integer,Double>>> elem : adj.getGraph().entrySet()){
+            if (!this.getGraph().containsKey(elem.getKey()) || !this.getGraph().containsValue(elem.getValue()))
+                for (Pair<Integer,Double> e : elem.getValue()){
+                    this.addEdge(elem.getKey(),e.getKey(),e.getValue());
+                }
+        }
+    }
+
+    public boolean canBeJoin(Pair<Pair<Integer, Integer>, Double> s,
+                             Vehicle v,
+                             Pair<Order,Order> order,
+                             AdjacencyList graph,
+                             Database db) throws SQLException {
+        if (order == null){
+            return false;
+        }
+        Order osi=order.getKey();
+        Order osj=order.getValue();
+        Integer si = s.getKey().getKey();
+        Integer sj = s.getKey().getValue();
+        boolean existSi = false;
+        boolean existSj = false;
+        AdjacencyList adjP = new AdjacencyList();
+        for (Integer n : this.getNodes()){
+            if (si.equals(n))
+                existSi = true;
+            if (sj.equals(n))
+                existSj = true;
+        }
+
+        if (!existSi && !existSj)
+            if(v.canContain(osi,osj,db)){
+                adjP.addSaving(graph,s);
+                if(v.canTravel(adjP))
+                    return true;
+            }
+        if (existSi && !existSj)
+            if(v.canContain(osj,db)){
+                adjP.addSaving(graph,s);
+                if(v.canTravel(adjP))
+                    return true;
+            }
+        if (!existSi && existSj)
+            if(v.canContain(osi,db)){
+                adjP.addSaving(graph,s);
+                if(v.canTravel(adjP))
+                    return true;
+            }
+        if (existSi && existSj)
+            if(v.canContain(osi, osj,db)){
+                return true;
+            }
+        return false;
+
     }
 
     public AdjacencyList getMinGraphFromSource(Integer source, Integer destination) {
@@ -516,8 +587,12 @@ public class AdjacencyList {
     }
 
     public void printGraphToString() {
+        if (this.getGraph().isEmpty()){
+            System.out.println("adj null");
+            return;
+        }
         for (Map.Entry<Integer,List<Pair<Integer,Double>>> elem: this.getGraph().entrySet()){
-            System.out.print(elem.getKey()+"->");
+            System.out.print(elem.getKey()+" :");
             for (Pair<Integer,Double> e: elem.getValue())
                 System.out.print(" ("+e.getKey()+" - "+e.getValue()+")");
             System.out.println();

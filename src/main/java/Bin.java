@@ -98,10 +98,23 @@ public class Bin {
         for (Good g : goods) {
             retval = retval && addGood(g);
         }
-
         return retval;
     }
 
+    public boolean addAllGood(List<Good> goods){
+        boolean retVal= true;
+        try {
+            Bin clone = (Bin) this.clone();
+            for (Good g : goods) {
+                retVal = retVal && clone.addGood(g);
+            }
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        if (retVal)
+            goods.forEach(this::addGood);
+        return retVal;
+    }
     /**
      * implement removeGood method, refresh the volumeCurrent
      * @param good will be remove

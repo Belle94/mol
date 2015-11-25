@@ -60,7 +60,7 @@ public class Gui{
     private List<Order> orders;
     private HashMap<Bin,AdjacencyList> clark;
     private Database database;
-    protected boolean loop = true;
+    final private String databaseString = "database.db";
     /**
      * builder that calls methods for configuring the interface
      */
@@ -275,9 +275,10 @@ public class Gui{
         save.setOnAction(e -> {
             if (!keyPressed.get(KeyCombination.keyCombination("Ctrl+S"))) {
                 try {
-                    Database db = new Database("bruce.db");
+                    Database db = new Database(databaseString);
                     database = db;
                     db.clearTables();
+                    db.addClients(clients);
                     db.addOrders(orders);
                     db.addGoods(goods);
                     db.addGoodOrders(goodOrders);
@@ -547,7 +548,7 @@ public class Gui{
             );
             adjacencyList = pair.getValue();
             DistanceMatrix distanceMatrix = new DistanceMatrix(adjacencyList);
-            List<Pair<Pair<Integer,Integer>,Double>> saving = Algorithms.getSaving(distanceMatrix);
+            List<Pair<Pair<Integer,Integer>,Double>> saving = Algorithms.getSavings(distanceMatrix);
             saving.sort(Collections.reverseOrder(Algorithms.savingComparator()));
             clients = pair.getKey();
             Pair<Pair<Integer,Integer>,Double> rtn = adjacencyList.getMaxDistance();
@@ -572,6 +573,7 @@ public class Gui{
                     orders,
                     goods
             );
+
             return true;
         }catch (Exception e){
             errorMessage("Not Generated", e.getMessage());
@@ -579,7 +581,6 @@ public class Gui{
             return false;
         }
     }
-
     private void initData(){
         adjacencyList = new AdjacencyList();
         goods = new ArrayList<>();

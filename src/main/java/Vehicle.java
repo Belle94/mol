@@ -1,5 +1,11 @@
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import javafx.util.Pair;
+
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Class that implement Vehicle. Each vehicle transport the goods
  */
@@ -16,6 +22,8 @@ public class Vehicle{
     private double chargeMax;
     @DatabaseField(foreign = true, canBeNull = false)
     private Bin bin;
+    @DatabaseField(canBeNull = false)
+    private Integer ChargeNode;
 
     public Vehicle() {
         // all persisted classes must define a no-arg constructor with at least package visibility
@@ -32,6 +40,7 @@ public class Vehicle{
         this.chargeMax = chargeMax;
         this.bin = bin;
         this.chargeCurrent = 0;
+        this.ChargeNode = 0;
     }
 
     public String getNumberPlate() {
@@ -40,6 +49,14 @@ public class Vehicle{
 
     public void setNumberPlate(String numberPlate) {
         this.numberPlate = numberPlate;
+    }
+
+    public Integer getChargeNode() {
+        return ChargeNode;
+    }
+
+    public void setChargeNode(Integer chargeNode) {
+        ChargeNode = chargeNode;
     }
 
     public Bin getBin() {
@@ -64,6 +81,21 @@ public class Vehicle{
 
     public void setChargeCurrent(double chargeCurrent) {
         this.chargeCurrent = chargeCurrent;
+    }
+
+    public boolean canContain(Order oi, Order oj, Database db) throws SQLException {
+        List<Good> goodsOi = db.getGoodByOrder(oi);
+        List<Good> goodsOj = db.getGoodByOrder(oj);
+        return this.bin.addAllGood(goodsOi) && this.bin.addAllGood(goodsOj);
+    }
+
+    public boolean canContain(Order o, Database db) throws SQLException {
+        List<Good> goodsOi = db.getGoodByOrder(o);
+        return this.bin.addAllGood(goodsOi);
+    }
+
+    public boolean canTravel(AdjacencyList adj){
+        return true;
     }
 
     @Override

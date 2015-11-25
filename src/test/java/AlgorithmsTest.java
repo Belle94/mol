@@ -1,6 +1,11 @@
 import javafx.util.Pair;
 import org.junit.Test;
+
+import javax.xml.crypto.Data;
+
 import static org.junit.Assert.assertEquals;
+
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,7 +44,7 @@ public class AlgorithmsTest{
 
         assertEquals(Algorithms.firstFitDecreasing(testGoodList,max),binsExpected);
     }
-    @Test
+    //@Test
     public void testGetSaving(){
         AdjacencyList adj = new AdjacencyList();
         adj.addEdge(0, 1, 2.0);
@@ -47,36 +52,80 @@ public class AlgorithmsTest{
         adj.addEdge(2, 0, 3.0);
         adj.addEdge(2, 3, 1.0);
         adj.addEdge(3, 1, 1.0);
-
         DistanceMatrix dm = new DistanceMatrix(adj);
 
+/*
+        System.out.println("0 - 3");
+        adj.getMinPath(0,3).printGraphToString();
+        System.out.println("3 - 0");
+        adj.getMinPath(3,0).printGraphToString();
+*/
 /*
         for (Map.Entry<Pair<Integer,Integer>,Double> elem: dm.get().entrySet())
             System.out.println("Dm: ("+elem.getKey().getKey()+" - "+elem.getKey().getValue()+") - "+elem.getValue());
 */
-
-        List<Pair<Pair<Integer,Integer>,Double>> saving = Algorithms.getSaving(dm);
+        List<Pair<Pair<Integer,Integer>,Double>> saving = Algorithms.getSavings(dm);
         saving.sort(Collections.reverseOrder(Algorithms.savingComparator()));
-
-        AdjacencyList adj1 = adj.getMinPath(2);
-        AdjacencyList adj2 = adj.getMinPath(1);
-
-        System.out.println("adj 1");
-        for (Map.Entry<Integer,List<Pair<Integer,Double>>> elem:adj1.getGraph().entrySet())
-            for (Pair<Integer,Double> e: elem.getValue())
-                System.out.println("("+elem.getKey()+","+e.getKey()+") - "+e.getValue());
-
-        System.out.println("adj 2");
-        for (Map.Entry<Integer,List<Pair<Integer,Double>>> elem:adj2.getGraph().entrySet())
-            for (Pair<Integer,Double> e: elem.getValue())
-                System.out.println("("+elem.getKey()+","+e.getKey()+") - "+e.getValue());
-
-
+        AdjacencyList adj1 = new AdjacencyList();
+        System.out.println("refadj");
+        adj.printGraphToString();
+        System.out.println("adj1 - before join");
+        adj1.printGraphToString();
+        System.out.println("Saving will be joined: ("
+                +saving.get(0).getKey().getKey()+","+saving.get(0).getKey().getValue()+") w:"
+                +saving.get(0).getValue());
+        adj1.addSaving(adj, saving.get(0));
+        System.out.println("adj1 - after join");
+        adj1.printGraphToString();
 /*
         for(Pair<Pair<Integer,Integer>,Double> elem : saving)
             System.out.println("S: ("+elem.getKey().getKey()+" - "+elem.getKey().getValue()+") - "+elem.getValue());
 */
-
 //        System.out.println("Mx from source: "+dm.maxSumFromSource());
+    }
+    @Test
+    public void testClarkAndWright() throws SQLException, ClassNotFoundException {
+        AdjacencyList adjacencyList = new AdjacencyList();
+        Pair<List<Client>, AdjacencyList> pair = null;
+        Database db= new Database("testcw.db");
+
+        try {
+            pair = Algorithms.generateRndGraph(4,3,4);
+            adjacencyList = pair.getValue();
+            DistanceMatrix distanceMatrix = new DistanceMatrix(adjacencyList);
+            List<Pair<Pair<Integer,Integer>,Double>> saving = Algorithms.getSavings(distanceMatrix);
+            saving.sort(Collections.reverseOrder(Algorithms.savingComparator()));
+            List<Client> clients = pair.getKey();
+            Pair<Pair<Integer,Integer>,Double> rtn = adjacencyList.getMaxDistance();
+            Double maxDistance = rtn.getValue();
+            Algorithms.generateRndCharge(clients, maxDistance.intValue());
+            List <Good> goods = Algorithms.generateGoods(1,1,3);
+            List <Bin> bins = Algorithms.generateBins(5, 10);
+            List <Vehicle> vehicles = Algorithms.generateVehicle(maxDistance, bins);
+            List <Order> orders = Algorithms.generateOrders(clients,1);
+            List<GoodOrder> goodOrders = Algorithms.generateGoodOrder(1,orders,goods);
+            db.clearTables();
+            db.addClients(clients);
+            db.addOrders(orders);
+            db.addGoods(goods);
+            db.addGoodOrders(goodOrders);
+            db.addBins(bins);
+            db.addVehicles(vehicles);
+            db.addAdjacencyList(adjacencyList);
+            db.closeConnection();
+            List<AdjacencyList> adjs = Algorithms.clarkAndWright(adjacencyList, db);
+            int i = 0;
+            System.out.println("\n \nadj - generated");
+            adjacencyList.printGraphToString();
+            for (AdjacencyList adj:adjs){
+                System.out.println("adj - "+ ++i);
+                adj.printGraphToString();
+            }
+            if (adjs.isEmpty())
+                System.out.println("empty list clarkAndWright");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }
