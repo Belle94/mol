@@ -86,7 +86,9 @@ public class Vehicle{
     public boolean canContain(Order oi, Order oj, Database db) throws SQLException {
         List<Good> goodsOi = db.getGoodByOrder(oi);
         List<Good> goodsOj = db.getGoodByOrder(oj);
-        return this.bin.addAllGood(goodsOi) && this.bin.addAllGood(goodsOj);
+        return goodsOi != null && goodsOj != null
+                && this.bin.addAllGood(goodsOi)
+                && this.bin.addAllGood(goodsOj);
     }
 
     public boolean canContain(Order o, Database db) throws SQLException {

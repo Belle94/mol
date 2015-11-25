@@ -227,33 +227,36 @@ public class Algorithms {
         if (db.getAllOrders().isEmpty()) {
             System.out.println("get all orders is empty");
         }else{
-        while (!saving.isEmpty()) {
-            System.out.println("entro nel while");
-            AdjacencyList adj = new AdjacencyList();
-            Vehicle v = new Vehicle();
-            for (Pair<Pair<Integer, Integer>, Double> s : saving) {
-                List<Order> oiList = db.getOrderByClient(s.getKey().getKey());
-                List<Order> ojList = db.getOrderByClient(s.getKey().getValue());
-                Pair<Order, Order> order = null;
-                if (!oiList.isEmpty() && !ojList.isEmpty()) {
-                    Order oi = oiList.get(0);
-                    Order oj = ojList.get(0);
-                    order = new Pair<>(oi, oj);
+            while (!saving.isEmpty()) {
+                System.out.println("entro nel while");
+                AdjacencyList adj = new AdjacencyList();
+                Vehicle v = new Vehicle();
+                for (Pair<Pair<Integer, Integer>, Double> s : saving) {
+                    List<Order> oiList = db.getOrderByClient(s.getKey().getKey());
+                    List<Order> ojList = db.getOrderByClient(s.getKey().getValue());
+                    Pair<Order, Order> order = null;
+                    if (!oiList.isEmpty() && !ojList.isEmpty()) {
+                        Order oi = oiList.get(0);
+                        Order oj = ojList.get(0);
+                        order = new Pair<>(oi, oj);
+                    }
+                    boolean canBeJoined = adj.canBeJoin(s, v, order, graph, db);
+                    if (canBeJoined) {
+                        adj.addSaving(graph, s);
+                        saving.remove(s);
+                        Pair<Pair<Integer, Integer>, Double> reverseS =
+                                getReverseSaving(saving,
+                                        new Pair<>(s.getKey().getValue(), s.getKey().getKey()));
+                        if (!reverseS.equals(new Pair<>(new Pair<>(-1, -1), (double) -1)))
+                            saving.remove(reverseS);
+                    }
+                    System.out.println("ca be joined " + ++i + " " + canBeJoined);
                 }
-                boolean canBeJoined = adj.canBeJoin(s, v, order, graph, db);
-                if (canBeJoined) {
-                    adj.addSaving(graph, s);
-                    saving.remove(s);
-                    Pair<Pair<Integer, Integer>, Double> reverseS =
-                            getReverseSaving(saving,
-                                    new Pair<>(s.getKey().getValue(), s.getKey().getKey()));
-                    if (!reverseS.equals(new Pair<>(new Pair<>(-1, -1), (double) -1)))
-                        saving.remove(reverseS);
-                }
-                System.out.println("ca be joined " + ++i + " " + canBeJoined);
+                if (!adj.getGraph().isEmpty())
+                    ret.add(adj);
+                else
+                    break;
             }
-            ret.add(adj);
-        }
         }
 
         return ret;
