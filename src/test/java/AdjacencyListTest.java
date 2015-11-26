@@ -96,10 +96,13 @@ public class AdjacencyListTest {
         db.addOrders(os);
         db.addGoodOrders(gos);
 
+        System.out.println("Graph");
         printGraph(p.getValue());
         HashMap<Bin, AdjacencyList> hm = p.getValue().clark_wright(db, 0, bs);
         for (Bin b : hm.keySet()) {
+            System.out.println("Bin: " + b.toString());
             printGraph(hm.get(b));
+            System.out.println();
         }
         System.out.println("--------------------");
     }

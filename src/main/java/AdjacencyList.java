@@ -1,4 +1,3 @@
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import javafx.util.Pair;
 import java.sql.SQLException;
 import java.util.*;
@@ -278,6 +277,23 @@ public class AdjacencyList {
         return ret;
     }
 
+    public Pair<List<Good>, Double> evaluateGoodsVolumeForBin
+            (Database db,  List<Integer> clientsInvolved, List<Bin> bins) throws SQLException {
+        List<Good> goods = new LinkedList<>();
+        Double cap = .0;
+        for (Integer client : clientsInvolved) {
+            for (Order o : db.getOrderByClient(client)) {
+                for (Good g : db.getGoodByOrder(o)) {
+                    cap += g.getVolume();
+                    g.setQnt(1);
+                    goods.add(g);
+                }
+            }
+        }
+
+        return new Pair<>(goods, cap);
+    }
+
     public HashMap<Bin, AdjacencyList> clark_wright
             (Database db, Integer zero, List<Bin> bins) {
         HashMap<Bin, AdjacencyList> ret = new HashMap<>();
@@ -304,47 +320,79 @@ public class AdjacencyList {
         // Merge route between nodes
         int ib = 0;
         try {
-            List<Integer> l = new LinkedList<>();
-            l.add(0);
             for (boolean decreased = true; decreased && ib < bins.size(); ib++) {
                 decreased = false;
+
+                List<Integer> l = new LinkedList<>();
+                l.add(0);
+
                 Pair<Integer, Integer> fp = orderedSavingsKey.get(0);
                 l.add(fp.getKey());
                 l.add(fp.getValue());
+                bins
+                        .get(ib)
+                        .addGood(evaluateGoodsVolumeForBin(
+                                db,
+                                l.subList(l.size() -2, l.size()),
+                                bins).getKey());
+
                 orderedSavingsKey.remove(fp);
-                int n = orderedSavingsKey.size();
-                for (Integer i = 0; i < n; i++) {
+                orderedSavingsKey.remove(0);
+
+                Pair<Integer, Integer> or =
+                        new Pair<>(l.get(l.size() - 2), l.get(l.size() - 1));
+                Pair<Integer, Integer> pp =
+                        new Pair<>(l.get(l.size() - 1), l.get(l.size() - 2));
+
+                for (Iterator<Pair<Integer, Integer>> it = orderedSavingsKey.iterator();
+                     it.hasNext();) {
+                    boolean skip = false;
+                    boolean evaluate = false;
+                    boolean swap = false;
                     // if clients involved have goods to be transported
                     // for which the sum of the goods is <= than the
                     // capacity of the vehicle, then merge the two routes
                     // and decrease the number of vehicles used
                     // and set decrease to true
-                    Pair<Integer, Integer> p = orderedSavingsKey.get(i);
+                    Pair<Integer, Integer> p = it.next();
                     // Checks whether the current saving is consecutive
                     // to the last one inserted in the bin AND
-                    if (p.getKey().equals(l.get(l.size() - 1)) &&
-                            !l.contains(p.getValue())) {
-                        List<Integer> clientsInvolved =
-                                new LinkedList<Integer>();
-                        List<Good> goods = new LinkedList<>();
-                        //clientsInvolved.add(p.getKey());
-                        clientsInvolved.add(p.getValue());
-                        Double cap = .0;
-                        for (Integer client : clientsInvolved) {
-                            for (Order o : db.getOrderByClient(client)) {
-                                for (Good g : db.getGoodByOrder(o)) {
-                                    cap += g.getVolume();
-                                    g.setQnt(1);
-                                    goods.add(g);
-                                }
+                    if (p.getKey().equals(l.get(l.size() - 1))) {
+                        if (!l.contains(p.getValue())) {
+                            evaluate = true;
+                        }
+                        if (l.contains(p.getValue()))
+                            skip = true;
+                    }
+                    else {
+                        if (!skip && savings.keySet().contains(pp) &&
+                                savings.get(or).equals(savings.get(pp))) {
+                            if (p.getKey().equals(pp.getValue())) {
+                                evaluate = true;
+                                swap = true;
                             }
                         }
-
+                    }
+                    if (evaluate) {
+                        List<Integer> clientsInvolved =
+                                new LinkedList<Integer>();
+                        //clientsInvolved.add(p.getKey());
+                        clientsInvolved.add(p.getValue());
+                        Pair<List<Good>, Double> ev =
+                                evaluateGoodsVolumeForBin(db, clientsInvolved, bins);
+                        Double cap = ev.getValue();
+                        List<Good> goods = ev.getKey();
                         // Merge routes
                         if (bins.get(ib).getVolumeWasted() >= cap) {
+                            if (swap) {
+                                Integer last = l.get(l.size() - 1);
+                                Integer preLast = l.get(l.size() - 2);
+                                l.set(l.size() - 2, last);
+                                l.set(l.size() - 1, preLast);
+                            }
                             l.add(p.getValue());
                             bins.get(ib).addGood(goods);
-                            orderedSavingsKey.remove(i);
+                            it.remove();
                             decreased = true;
                         }
                     }
@@ -352,15 +400,29 @@ public class AdjacencyList {
 
                 // Block that associates Nodes' list to Bin
                 AdjacencyList adj = new AdjacencyList();
-
+                l.add(0);
                 // Build the adjacency list correlated to the bin
                 for (int i = 1; i < l.size(); i++)
                     adj = AdjacencyList.mergeAdjacencyList(
                             adj, getMinGraphFromSource(l.get(i-1), l.get(i)));
 
+                // Clean already used savings
+                l.remove(0);
+                l.remove(l.size() - 1);
+
+                for (Integer in : l) {
+                    for (Iterator<Pair<Integer, Integer>> it = orderedSavingsKey.iterator();
+                            it.hasNext();) {
+                        Pair<Integer, Integer> p = it.next();
+                        if (p.getKey().equals(in) ||
+                                p.getValue().equals(in)) {
+                            it.remove();
+                        }
+                    }
+                }
+
                 // Associates adjacency list to bin
                 ret.put(bins.get(ib), adj);
-                ib++;
             }
         } catch (SQLException e) {
             e.printStackTrace();
