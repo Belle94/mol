@@ -32,6 +32,14 @@ public class DistanceMatrix {
         return mat.get(new Pair<>(source, destination));
     }
 
+    public boolean contains(Pair<Integer, Integer> key) {
+        return mat.containsKey(key);
+    }
+
+    public boolean contains(Integer from, Integer to) {
+        return contains(new Pair<>(from, to));
+    }
+
     public Double get(Pair<Integer, Integer> pair) {
         return mat.get(pair);
     }
