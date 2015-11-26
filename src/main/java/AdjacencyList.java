@@ -202,10 +202,13 @@ public class AdjacencyList {
     }
 
     public void removeEdge(Integer node, Integer neighbour) {
-        for (Integer i = 0; i < g.get(node).size(); i++) {
-            Pair<Integer, Double> p = g.get(node).get(i);
-            if ( p.getKey() == neighbour)
-                g.get(node).remove(i);
+        for (Iterator<Pair<Integer, Double>> it = g.get(node).iterator();
+             it.hasNext();) {
+            Pair<Integer, Double> p = it.next();
+            if ( p.getKey() == neighbour) {
+                it.remove();
+                break;
+            }
         }
     }
 
