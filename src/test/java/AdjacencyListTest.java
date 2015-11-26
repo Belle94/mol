@@ -4,10 +4,7 @@ import javafx.util.Pair;
 import org.junit.Test;
 
 import java.sql.SQLException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.atomic.DoubleAccumulator;
 
@@ -260,7 +257,15 @@ public class AdjacencyListTest {
             printGraph(calculated.get(b));
         }
         System.out.println("--------------------");
-        assertEquals(correct, calculated);
+        Set<Bin> set = calculated.keySet();
+        int i = 0;
+        for (Bin b : set){
+            if (i == 0)
+                assertEquals(94.0, b.getVolumeCurrent(), 0.1);
+            else
+                assertEquals(65.0, b.getVolumeCurrent(), 0.1);
+            i++;
+        }
     }
 
     @Test
