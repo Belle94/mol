@@ -320,7 +320,10 @@ public class AdjacencyList {
         // Merge route between nodes
         int ib = 0;
         try {
-            for (boolean decreased = true; decreased && ib < bins.size(); ib++) {
+            for (boolean decreased = true;
+                 decreased && ib < bins.size() && !orderedSavingsKey.isEmpty();
+                 ib++) {
+
                 decreased = false;
 
                 List<Integer> l = new LinkedList<>();
@@ -435,7 +438,8 @@ public class AdjacencyList {
             (HashMap<Pair<Integer, Integer>, Double> h) {
         List<Pair<Integer, Integer>> result = new LinkedList<>();
         Pair<Integer, Integer> kMax = new Pair<>(0, 0);
-        for (int i = 0; i < h.keySet().size(); i++) {
+        int n = h.keySet().size();
+        for (int i = 0; i < n; i++) {
             Double max = Double.MIN_VALUE;
             for (Pair<Integer, Integer> p : h.keySet()) {
                 if (max < h.get(p)) {
