@@ -51,7 +51,7 @@ public class AdjacencyListTest {
         }
     }
 
-    //@Test
+    @Test
     public void testReverseEdgeWeight() {
         System.out.println("--------------------");
         System.out.println("TEST REVERSE EDGE WEIGHT");
@@ -73,7 +73,7 @@ public class AdjacencyListTest {
         assertEquals(exp.getGraph(), adj.getGraph());
     }
 
-    //@Test
+    @Test
     public void testClarkWright2() throws Exception {
         System.out.println("--------------------");
         System.out.println("TEST CLARK WRIGHT 2");
@@ -104,7 +104,7 @@ public class AdjacencyListTest {
         System.out.println("--------------------");
     }
 
-    //@Test
+    @Test
     public void testClarkWright() throws SQLException, ClassNotFoundException {
         System.out.println("--------------------");
         System.out.println("TEST CLARK WRIGHT");
@@ -313,7 +313,7 @@ public class AdjacencyListTest {
         System.out.println("--------------------");
     }
 
-    //@Test
+    @Test
     public void maxDistanceTest(){
         System.out.println("Test MaxDistance");
         AdjacencyList adj = new AdjacencyList();
@@ -322,7 +322,7 @@ public class AdjacencyListTest {
         adj.addEdge(1, 3, 1.0);
         adj.addEdge(2, 3, 3.0);
         adj.addEdge(3, 1, 4.0);
-        Double rtn = adj.getMaxDistance();
+        Double rtn = adj.getMaxDistance().getValue();
         System.out.println(rtn);
     }
 }
