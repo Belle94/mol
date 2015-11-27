@@ -80,11 +80,22 @@ public class AdjacencyListTest {
         Pair<List<Client>, AdjacencyList> p = Algorithms.generateRndGraph(4, 4, 100);
         Algorithms.generateRndCharge(p.getKey(), 100);
         List<Good> gs = Algorithms.generateGoods(4, 4, 4);
+        for(Good good : gs) {
+            System.out.println(good);
+        }
+        System.out.println();
         List<Bin> bs = Algorithms.generateBins(4, 40);
         List<Vehicle> vs = Algorithms.generateVehicle(100, bs);
         List<Order> os = Algorithms.generateOrders(p.getKey(), 2);
+        for (Order order : os) {
+            System.out.println(order);
+        }
+        System.out.println();
         List<GoodOrder> gos = Algorithms.generateGoodOrder(2, os, gs);
-
+        for (GoodOrder goodorder : gos) {
+            System.out.println(goodorder);
+        }
+        System.out.println();
         Database db = new Database("adjtest2.db");
         db.addClients(p.getKey());
         db.addGoods(gs);
@@ -254,7 +265,9 @@ public class AdjacencyListTest {
         System.out.println("Calculated:");
         HashMap<Bin, AdjacencyList> calculated = adj.clark_wright(db, 0, bins);
         for (Bin b : calculated.keySet()) {
+            System.out.println(b);
             printGraph(calculated.get(b));
+            System.out.println();
         }
         System.out.println("--------------------");
         Set<Bin> set = calculated.keySet();
