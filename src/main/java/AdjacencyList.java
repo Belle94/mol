@@ -81,7 +81,8 @@ public class AdjacencyList {
      */
     public void deleteEdge(Integer source, Integer destination){
         int index = this.getIndexNeighbor(source, destination);
-        if (g.containsKey(source) && g.containsKey(destination) && index!=-1) {
+        if (g.containsKey(source) &&
+                g.containsKey(destination) && index!=-1) {
             g.get(source).remove(index);
         }
     }
@@ -122,7 +123,8 @@ public class AdjacencyList {
         if (!g.containsKey(v))
             return null;
 
-        return g.get(v).stream().map(Pair::getKey).collect(Collectors.toList());
+        return g.get(v).stream().map(Pair::getKey)
+                .collect(Collectors.toList());
     }
     public List<Pair<Integer,Double>> getPairNeighbors(Integer v) {
         if (!g.containsKey(v))
@@ -186,25 +188,28 @@ public class AdjacencyList {
         }
     }
 
-    public Double getMaxDistance() {
-        AdjacencyList adj = new AdjacencyList(this.get());
-        adj.reverseEdgeWeight();
-        Pair<Pair<Integer,Integer>,Double> k;
-        Double max = Double.MIN_VALUE;
-        for (Integer node: adj.getNodes()){
-            Double cMax=0.0;
-            for (Pair<Integer,Double> n : adj.getNeighbors(node)){
-                cMax += n.getValue();
-            }
-            max = (cMax > max) ? (cMax) : max;
+    public Double sumEdges(List<Integer> path) {
+        Double retVal = 0.0;
+        for (int i = 1; i < path.size(); i++) {
+            retVal += getDistance(path.get(i - 1), path.get(i));
         }
-        return max;
+
+        return retVal;
+    }
+
+    public Pair<Pair<Integer, Integer>, Double> getMaxDistance() {
+        return new DistanceMatrix(this).max();
+
     }
 
     public void removeEdge(Integer node, Integer neighbour) {
-        for (Pair<Integer, Double> p : g.get(node)) {
-            if (p.getKey() == neighbour)
-                g.get(node).remove(p);
+        for (Iterator<Pair<Integer, Double>> it = g.get(node).iterator();
+             it.hasNext();) {
+            Pair<Integer, Double> p = it.next();
+            if ( p.getKey() == neighbour) {
+                it.remove();
+                break;
+            }
         }
     }
 
@@ -218,7 +223,12 @@ public class AdjacencyList {
         nodes.forEach(this::removeNode);
     }
 
-    public static AdjacencyList mergeAdjcencyList(AdjacencyList a, AdjacencyList b) {
+    public static AdjacencyList mergeAdjacencyList
+            (AdjacencyList a, AdjacencyList b) {
+        if (a == null)
+            return b;
+        if (b == null)
+            return a;
         AdjacencyList ret = new AdjacencyList(a.get());
         for (Integer n : b.getNodes())
             ret.addEdge(n, b.getNeighbors(n));
@@ -226,20 +236,30 @@ public class AdjacencyList {
         return ret;
     }
 
-    public List<Integer> nodesToDestination(Integer source, Integer destination, Set<Integer> ks) {
+    public List<Integer> nodesToDestination
+            (Integer source, Integer destination, AdjacencyList adj) {
         List<Integer> retNodes = new LinkedList<>();
 
         while (destination != source) {
-            int i = 0;
-            for (Integer n : ks) {
-                if (n == destination) {
-                    retNodes.add(i);
+            boolean found = false;
+            for (Integer n : adj.getNodes()) {
+                if (found)
                     break;
+                for (Integer ad : adj.getNeighbor(n)) {
+                    if (ad == destination) {
+                        retNodes.add(0, ad);
+                        destination = n;
+                        found = true;
+                        break;
+                    }
                 }
-                i++;
             }
         }
 
+        if (retNodes.isEmpty())
+            return null;
+
+        retNodes.add(0, source);
         return retNodes;
     }
 
@@ -248,7 +268,10 @@ public class AdjacencyList {
                 dijkstra(source);
 
         AdjacencyList ret = retDijkstra.getValue();
-        List<Integer> nts = nodesToDestination(source, destination, ret.getNodes());
+        List<Integer> nts = nodesToDestination
+                (source, destination, retDijkstra.getValue());
+        if (nts == null)
+            return null;
         List<Integer> unwantedNodes = new LinkedList<>();
         unwantedNodes.addAll(ret.getNodes());
         unwantedNodes.removeAll(nts);
@@ -256,6 +279,23 @@ public class AdjacencyList {
         ret.removeNodes(unwantedNodes);
 
         return ret;
+    }
+
+    public Pair<List<Good>, Double> evaluateGoodsVolumeForBin
+            (Database db,  List<Integer> clientsInvolved, List<Bin> bins) throws SQLException {
+        List<Good> goods = new LinkedList<>();
+        Double cap = .0;
+        for (Integer client : clientsInvolved) {
+            for (Order o : db.getOrderByClient(client)) {
+                for (Good g : db.getGoodByOrder(o)) {
+                    cap += g.getVolume();
+                    g.setQnt(1);
+                    goods.add(g);
+                }
+            }
+        }
+
+        return new Pair<>(goods, cap);
     }
 
     public HashMap<Bin, AdjacencyList> clark_wright
@@ -266,9 +306,9 @@ public class AdjacencyList {
         // initializing savings
         for (Integer i : g.keySet()) {
             for (Integer j : g.keySet()) {
-                if (!Objects.equals(i, j) &&
-                        !Objects.equals(zero, i) &&
-                        !Objects.equals(zero, j)) {
+                if (matDistance.contains(i, j) &&
+                        matDistance.contains(zero, i) &&
+                        matDistance.contains(zero, j)) {
                     savings.put(new Pair<>(i,j),
                             matDistance.get(zero, i) +
                                     matDistance.get(zero, j) -
@@ -277,66 +317,119 @@ public class AdjacencyList {
             }
         }
 
-        List<Pair<Integer, Integer>> orderedSavingsKey = orderByValue(savings);
+        List<Pair<Integer, Integer>> orderedSavingsKey =
+                orderByValue((HashMap<Pair<Integer,Integer>, Double>)
+                        savings.clone());
 
         // Merge route between nodes
-        boolean decreased = true;
         int ib = 0;
         try {
-            for (; decreased; ib++) {
+            for (boolean decreased = true;
+                 decreased && ib < bins.size() && !orderedSavingsKey.isEmpty();
+                 ib++) {
+
                 decreased = false;
+
                 List<Integer> l = new LinkedList<>();
-                Pair<Integer, Integer> fp = orderedSavingsKey.get(0);
                 l.add(0);
+
+                Pair<Integer, Integer> fp = orderedSavingsKey.get(0);
                 l.add(fp.getKey());
                 l.add(fp.getValue());
+                bins
+                        .get(ib)
+                        .addGood(evaluateGoodsVolumeForBin(
+                                db,
+                                l.subList(l.size() -2, l.size()),
+                                bins).getKey());
+
                 orderedSavingsKey.remove(fp);
-                for (Iterator<Pair<Integer, Integer>> i = orderedSavingsKey.iterator();
-                        i.hasNext();) {
+                orderedSavingsKey.remove(0);
+
+                Pair<Integer, Integer> or =
+                        new Pair<>(l.get(l.size() - 2), l.get(l.size() - 1));
+                Pair<Integer, Integer> pp =
+                        new Pair<>(l.get(l.size() - 1), l.get(l.size() - 2));
+
+                for (Iterator<Pair<Integer, Integer>> it = orderedSavingsKey.iterator();
+                     it.hasNext();) {
+                    boolean skip = false;
+                    boolean evaluate = false;
+                    boolean swap = false;
                     // if clients involved have goods to be transported
                     // for which the sum of the goods is <= than the
                     // capacity of the vehicle, then merge the two routes
                     // and decrease the number of vehicles used
                     // and set decrease to true
-                    Pair<Integer, Integer> p = i.next();
-                    if (p.getKey().equals(l.get(l.size() - 1)) &&
-                            !l.contains(p.getValue())) {
-                        List<Integer> clientsInvolved = new LinkedList<Integer>();
-                        List<Good> goods = new LinkedList<>();
-                        clientsInvolved.add(p.getKey());
-                        clientsInvolved.add(p.getValue());
-                        Double cap = .0;
-                        for (Integer client : clientsInvolved) {
-                            for (Order o : db.getOrderByClient(client)) {
-                                for (Good g : db.getGoodByOrder(o)) {
-                                    cap += g.getVolume();
-                                    g.setQnt(1);
-                                    goods.add(g);
-                                }
+                    Pair<Integer, Integer> p = it.next();
+                    // Checks whether the current saving is consecutive
+                    // to the last one inserted in the bin AND
+                    if (p.getKey().equals(l.get(l.size() - 1))) {
+                        if (!l.contains(p.getValue())) {
+                            evaluate = true;
+                        }
+                        if (l.contains(p.getValue()))
+                            skip = true;
+                    }
+                    else {
+                        if (!skip && savings.keySet().contains(pp) &&
+                                savings.get(or).equals(savings.get(pp))) {
+                            if (p.getKey().equals(pp.getValue())) {
+                                evaluate = true;
+                                swap = true;
                             }
                         }
-
+                    }
+                    if (evaluate) {
+                        List<Integer> clientsInvolved =
+                                new LinkedList<Integer>();
+                        //clientsInvolved.add(p.getKey());
+                        clientsInvolved.add(p.getValue());
+                        Pair<List<Good>, Double> ev =
+                                evaluateGoodsVolumeForBin(db, clientsInvolved, bins);
+                        Double cap = ev.getValue();
+                        List<Good> goods = ev.getKey();
                         // Merge routes
                         if (bins.get(ib).getVolumeWasted() >= cap) {
+                            if (swap) {
+                                Integer last = l.get(l.size() - 1);
+                                Integer preLast = l.get(l.size() - 2);
+                                l.set(l.size() - 2, last);
+                                l.set(l.size() - 1, preLast);
+                            }
                             l.add(p.getValue());
                             bins.get(ib).addGood(goods);
+                            it.remove();
+                            decreased = true;
                         }
-
-                        i.remove();
                     }
                 }
 
                 // Block that associates Nodes' list to Bin
                 AdjacencyList adj = new AdjacencyList();
-
+                l.add(0);
                 // Build the adjacency list correlated to the bin
                 for (int i = 1; i < l.size(); i++)
-                    adj = AdjacencyList.mergeAdjcencyList(
+                    adj = AdjacencyList.mergeAdjacencyList(
                             adj, getMinGraphFromSource(l.get(i-1), l.get(i)));
+
+                // Clean already used savings
+                l.remove(0);
+                l.remove(l.size() - 1);
+
+                for (Integer in : l) {
+                    for (Iterator<Pair<Integer, Integer>> it = orderedSavingsKey.iterator();
+                            it.hasNext();) {
+                        Pair<Integer, Integer> p = it.next();
+                        if (p.getKey().equals(in) ||
+                                p.getValue().equals(in)) {
+                            it.remove();
+                        }
+                    }
+                }
 
                 // Associates adjacency list to bin
                 ret.put(bins.get(ib), adj);
-
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -345,13 +438,15 @@ public class AdjacencyList {
         return ret;
     }
 
-    public static List<Pair<Integer, Integer>> orderByValue(HashMap<Pair<Integer, Integer>, Double> h) {
+    public static List<Pair<Integer, Integer>> orderByValue
+            (HashMap<Pair<Integer, Integer>, Double> h) {
         List<Pair<Integer, Integer>> result = new LinkedList<>();
         Pair<Integer, Integer> kMax = new Pair<>(0, 0);
-        for (int i = 0; i < h.keySet().size(); i++) {
+        int n = h.keySet().size();
+        for (int i = 0; i < n; i++) {
             Double max = Double.MIN_VALUE;
             for (Pair<Integer, Integer> p : h.keySet()) {
-                if (max > h.get(p)) {
+                if (max < h.get(p)) {
                     max = h.get(p);
                     kMax = p;
                 }
@@ -384,9 +479,10 @@ public class AdjacencyList {
      * The node is updated if the sum of the previous node plus the
      * the weight of the edge is less of the current distance value in the node.
      * @param source the node where Dijkstra start
-     * @return the graph with the shortest path form the node source to each other nodes.
+     * @return the graph with the shortest path form the source node
+     *         to each other nodes.
      */
-    public Pair<HashMap<Integer, Double>, AdjacencyList> dijkstra(Integer source){
+    public Pair<HashMap<Integer, Double>, AdjacencyList> dijkstra(Integer source) {
         AdjacencyList pg = new AdjacencyList();
         int n = this.getNumNodes();
         Integer u;
@@ -446,7 +542,8 @@ public class AdjacencyList {
             this.g.get(i).sort(AdjacencyList.comparator());
             that.getGraph().get(i).sort(AdjacencyList.comparator());
             
-            // if (!this.g.get(i).equals(that.getGraph().get(i))))return true if & only if
+            // if (!this.g.get(i).equals(that.getGraph().get(i))))
+            // return true if & only if
             // Pair in the list are in the same order
             if (!this.g.get(i).equals(that.getGraph().get(i)))
                 return false;
