@@ -3,10 +3,12 @@ import javafx.util.converter.IntegerStringConverter;
 
 import java.util.DoubleSummaryStatistics;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 public class DistanceMatrix {
-    private HashMap<Pair<Integer, Integer>, Double> mat;
-    private HashMap<Integer, AdjacencyList> minGraph;
+    private Map<Pair<Integer, Integer>, Double> mat;
+    private Map<Integer, AdjacencyList> minGraph;
 
     public DistanceMatrix(AdjacencyList adjacencyList) {
         mat = new HashMap<>();
@@ -18,13 +20,13 @@ public class DistanceMatrix {
             minGraph.put(i, p.getValue());
 
             for (Integer k : p.getKey().keySet()) {
-                if (i != k)
+                if (!Objects.equals(i, k))
                     mat.put(new Pair<>(i, k), p.getKey().get(k));
             }
         }
     }
 
-    public HashMap<Pair<Integer, Integer>, Double> get() {
+    public Map<Pair<Integer, Integer>, Double> get() {
         return mat;
     }
 
@@ -48,7 +50,7 @@ public class DistanceMatrix {
         this.mat = mat;
     }
 
-    public HashMap<Integer, AdjacencyList> minDijkstraTree() {
+    public Map<Integer, AdjacencyList> minDijkstraTree() {
         return minGraph;
     }
 
@@ -62,7 +64,7 @@ public class DistanceMatrix {
             }
         }
 
-        return new Pair<Pair<Integer, Integer>, Double>(k, max);
+        return new Pair<>(k, max);
     }
 
     public Pair<Pair<Integer, Integer>, Double> min(boolean flag) {
@@ -78,7 +80,7 @@ public class DistanceMatrix {
             }
         }
 
-        return new Pair<Pair<Integer, Integer>, Double>(k, min);
+        return new Pair<>(k, min);
     }
 
     @Override
