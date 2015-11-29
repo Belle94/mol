@@ -9,9 +9,11 @@ public class AdjacencyList {
     public AdjacencyList() {
         g = new HashMap<>();
     }
+
     public AdjacencyList(HashMap<Integer, List<Pair<Integer, Double>>> g) {
         this.g = g;
     }
+
     public void setGraph(HashMap<Integer, List<Pair<Integer, Double>>> g) {
         this.g = g;
     }
@@ -30,9 +32,11 @@ public class AdjacencyList {
         return g;
     }
 
-    /** @param source the value of node
-     * @param destination node
-     * @param distance the weight
+    /**
+     * Add an edge from source to destination with weight equals to distance
+     * @param source the node from which the edge starts
+     * @param destination the other end of the edge
+     * @param distance weight
      */
     public void addEdge(Integer source, Integer destination, Double distance) {
         List<Pair<Integer, Double>> nodes = g.containsKey(source) ?
@@ -46,6 +50,11 @@ public class AdjacencyList {
             addNode(destination);
     }
 
+    /**
+     * Add to the node source the neighbours indicated in adj
+     * @param source node to which the adj neighbours will be added
+     * @param adj neighbours
+     */
     public void addEdge(Integer source, List<Pair<Integer, Double>> adj) {
         for (Pair<Integer, Double> p : adj) {
             if (!g.containsKey(p.getKey()))
@@ -87,10 +96,10 @@ public class AdjacencyList {
         }
     }
     /**
-     *
+     * Returns the index of the neighbour
      * @param source
      * @param destination
-     * @return index of neighbor
+     * @return index of neighbor or -1 otherwise
      */
     public int getIndexNeighbor(Integer source, Integer destination) {
         int index = -1;
@@ -103,10 +112,19 @@ public class AdjacencyList {
         return index;
     }
 
+    /**
+     * Returns the graph's nodes
+     * @return graph's nodes
+     */
     public Set<Integer> nodes() {
         return g.keySet();
     }
 
+    /**
+     * Add to the node source the neighbours indicated in ns
+     * @param source node to which the ns neighbours will be added
+     * @param ns source's neighbour
+     */
     public void addNeighbors(Integer source, List<Pair<Integer, Double>> ns) {
         if (ns != null) {
             if (g.containsKey(source))
@@ -115,10 +133,20 @@ public class AdjacencyList {
         }
     }
 
+    /**
+     * Gets the neighbours of a given node
+     * @param v node from which the neighbours are returned
+     * @return node's neighbours
+     */
     public List<Pair<Integer, Double>> getNeighborsDistances(Integer v) {
         return g.containsKey(v) ? g.get(v) : null;
     }
 
+    /**
+     * Gets the neighbours of a given node
+     * @param v node from which the neighbours are returned
+     * @return node's neighbours
+     */
     public List<Integer> getNeighbor(Integer v) {
         if (!g.containsKey(v))
             return null;
@@ -126,15 +154,23 @@ public class AdjacencyList {
         return g.get(v).stream().map(Pair::getKey)
                 .collect(Collectors.toList());
     }
+
+    /**
+     * Gets the neighbours of a given node
+     * @param v node from which the neighbours are returned
+     * @return node's neighbours
+     */
     public List<Pair<Integer,Double>> getPairNeighbors(Integer v) {
         if (!g.containsKey(v))
             return null;
         return g.get(v);
     }
+
     /**
+     * The index-th neighbour of the given node
      * @param v the input node
      * @param index of a neighbor list.
-     * @return Distance in the "index" position from the input node.
+     * @return index-th neighbour of v
      */
     public Double getDistance(Integer v, int index ){
         List<Pair<Integer, Double>> node = g.get(v);
@@ -143,9 +179,9 @@ public class AdjacencyList {
     }
 
     /**
-     * @param v the input node
-     * @param index of a neighbor list that will know the ID
-     * @return ID in the position "index" from the node.
+     * Gets the neighbours of a given node
+     * @param v node from which the neighbours are returned
+     * @return node's neighbours
      */
     public Integer getIdNeighbor(Integer v, int index ){
         List<Pair<Integer, Double>> node = g.get(v);
@@ -157,7 +193,8 @@ public class AdjacencyList {
     }
 
     /**
-     * @param v input node
+     * Neighbour's numbers of v
+     * @param v input vertex
      * @return numbers of neighbor form the input node.
      */
     public int getNumNeighbor(Integer v){
@@ -168,6 +205,9 @@ public class AdjacencyList {
         return neighbor.size();
     }
 
+    /**
+     * Inverts the edge weight
+     */
     public void reverseEdgeWeight() {
         Double wMax = 0.0;
         for (Integer c : g.keySet()) {
@@ -188,6 +228,13 @@ public class AdjacencyList {
         }
     }
 
+    /**
+     * Sum the edges of (path[i-1], path[i])
+     * following the minimum graph evaluated
+     * by dijkstra
+     * @param path
+     * @return
+     */
     public Double sumEdges(List<Integer> path) {
         Double retVal = 0.0;
         for (int i = 1; i < path.size(); i++) {
@@ -197,10 +244,22 @@ public class AdjacencyList {
         return retVal;
     }
 
+    /**
+     * Returns the maximum distance between all pairs
+     * of nodes in the dijkstra graph.
+     * @return the maximum distance between all pairs
+     * of nodes in the dijkstra graph.
+     */
     public Pair<Pair<Integer, Integer>, Double> getMaxDistance() {
         return new DistanceMatrix(this).max();
     }
 
+    /**
+     * Removes the edge (node, neighbour)
+     * @param node the node from which
+     *             the search of the neighbour will start
+     * @param neighbour node's neighbour to remove
+     */
     public void removeEdge(Integer node, Integer neighbour) {
         for (Iterator<Pair<Integer, Double>> it = g.get(node).iterator();
              it.hasNext();) {
@@ -212,16 +271,30 @@ public class AdjacencyList {
         }
     }
 
+    /**
+     * Removes the given node from the graph
+     * @param node node to remove
+     */
     public void removeNode(Integer node) {
         g.remove(node);
         for (Integer n : g.keySet())
             removeEdge(n, node);
     }
 
+    /**
+     * List of nodes to remove
+     * @param nodes nodes to remove
+     */
     public void removeNodes(List<Integer> nodes) {
         nodes.forEach(this::removeNode);
     }
 
+    /**
+     * Merge to graphs
+     * @param a graph that will be merged with b
+     * @param b graph that will be merged in a
+     * @return the merged graphs between a and b
+     */
     public static AdjacencyList mergeAdjacencyList
             (AdjacencyList a, AdjacencyList b) {
         if (a == null)
@@ -235,6 +308,15 @@ public class AdjacencyList {
         return ret;
     }
 
+    /**
+     * Nodes that connects source and destination in
+     * dijkstra graph
+     * @param source source node
+     * @param destination destination node
+     * @param adj the minimum dijkstra graph
+     * @return list of nodes that connects source and
+     * destination
+     */
     public List<Integer> nodesToDestination
             (Integer source, Integer destination, AdjacencyList adj) {
         List<Integer> retNodes = new LinkedList<>();
@@ -262,6 +344,12 @@ public class AdjacencyList {
         return retNodes;
     }
 
+    /**
+     * Return the graph that connects two node
+     * @param source source node
+     * @param destination destination node
+     * @return graph that connects source and destination
+     */
     public AdjacencyList getMinGraphFromSource(Integer source, Integer destination) {
         Pair<HashMap<Integer, Double>, AdjacencyList> retDijkstra =
                 dijkstra(source);
@@ -280,8 +368,15 @@ public class AdjacencyList {
         return ret;
     }
 
+    /**
+     * Evaluates the total orders' weight of the given clients
+     * @param db database
+     * @param clientsInvolved the clients involved
+     * @return (goods involved, total weight)
+     * @throws SQLException
+     */
     public Pair<List<Good>, Double> evaluateGoodsVolumeForBin
-            (Database db,  List<Integer> clientsInvolved, List<Bin> bins) throws SQLException {
+            (Database db,  List<Integer> clientsInvolved) throws SQLException {
         List<Good> goods = new LinkedList<>();
         Double cap = .0;
         for (Integer client : clientsInvolved) {
@@ -297,6 +392,46 @@ public class AdjacencyList {
         return new Pair<>(goods, cap);
     }
 
+    /**
+     * Evaluates where in a given path the vehicle
+     * should charge
+     * @param subsetNodes the nodes from which the
+     *                    vehicle can charge
+     * @param charge the total charge of the given
+     *               vehicle
+     * @param db database
+     * @return list of nodes where the vehicle should charge
+     * @throws SQLException
+     */
+    public List<Integer> evaluateChargeNodes
+            (List<Integer> subsetNodes, double charge, Database db) throws SQLException {
+        Integer prev = -1;
+        List<Integer> retValue = new LinkedList<>();
+
+        for (Integer node : subsetNodes) {
+            Client c = db.getClientByID(node);
+            if (c.getCharge() > 0) {
+                if (charge < c.getCharge()) {
+                    retValue.add(prev);
+                    prev = -1;
+                }
+                else {
+                    charge -= c.getCharge();
+                    prev = node;
+                }
+            }
+        }
+
+        return retValue;
+    }
+
+    /**
+     * Clark and Wright's sequential implementation
+     * @param db database
+     * @param zero warehouse
+     * @param bins bins that describes the vehicles' capacity
+     * @return for every utilized bin its graph
+     */
     public HashMap<Bin, AdjacencyList> clark_wright
             (Database db, Integer zero, List<Bin> bins) {
         HashMap<Bin, AdjacencyList> ret = new HashMap<>();
@@ -339,8 +474,7 @@ public class AdjacencyList {
                         .get(ib)
                         .addGood(evaluateGoodsVolumeForBin(
                                 db,
-                                l.subList(l.size() -2, l.size()),
-                                bins).getKey());
+                                l.subList(l.size() -2, l.size())).getKey());
 
                 orderedSavingsKey.remove(fp);
                 orderedSavingsKey.remove(0);
@@ -385,7 +519,7 @@ public class AdjacencyList {
                         //clientsInvolved.add(p.getKey());
                         clientsInvolved.add(p.getValue());
                         Pair<List<Good>, Double> ev =
-                                evaluateGoodsVolumeForBin(db, clientsInvolved, bins);
+                                evaluateGoodsVolumeForBin(db, clientsInvolved);
                         Double cap = ev.getValue();
                         List<Good> goods = ev.getKey();
                         // Merge routes
@@ -437,6 +571,11 @@ public class AdjacencyList {
         return ret;
     }
 
+    /**
+     * Order the savings' key by value in descending order
+     * @param h savings
+     * @return ordered keys
+     */
     public static List<Pair<Integer, Integer>> orderByValue
             (HashMap<Pair<Integer, Integer>, Double> h) {
         List<Pair<Integer, Integer>> result = new LinkedList<>();
@@ -457,14 +596,26 @@ public class AdjacencyList {
         return result;
     }
 
+    /**
+     * Return the graph.
+     * @return graph
+     */
     public HashMap<Integer, List<Pair<Integer, Double>>> get() {
         return g;
     }
 
+    /**
+     * Set the graph
+     * @param g graph
+     */
     public void set(HashMap<Integer, List<Pair<Integer, Double>>> g) {
         this.g = g;
     }
 
+    /**
+     * Return the graph's vertex
+     * @return graph's vertex
+     */
     public Set<Integer> getNodes(){
         return g.keySet();
     }
