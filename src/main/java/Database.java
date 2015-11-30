@@ -130,6 +130,9 @@ public class Database {
     public void deleteVehicle(Vehicle vehicle) throws SQLException, ClassNotFoundException {
         daoVehicle.delete(vehicle);
     }
+    public List<Vehicle> getVehicleByBin(Bin bin) throws SQLException {
+        return daoVehicle.queryForEq(Vehicle.BIN_FIELD_NAME, bin.getId());
+    }
     public void addBin(Bin bin) throws SQLException {
         daoBin.createIfNotExists(bin);
     }

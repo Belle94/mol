@@ -7,6 +7,7 @@ import com.j256.ormlite.table.DatabaseTable;
 public class Vehicle{
     public final static String CHARGE_CURRENT_FIELD_NAME = "current charge";
     public final static String CHARGE_MAX_FIELD_NAME = "maximal charge";
+    public final static String BIN_FIELD_NAME = "bin_id";
 
     @DatabaseField(id = true)
     private String numberPlate;
@@ -14,7 +15,7 @@ public class Vehicle{
     private double chargeCurrent;
     @DatabaseField(canBeNull = false, columnName = CHARGE_MAX_FIELD_NAME)
     private double chargeMax;
-    @DatabaseField(foreign = true, canBeNull = false)
+    @DatabaseField(foreign = true, canBeNull = false, columnName = BIN_FIELD_NAME)
     private Bin bin;
 
     public Vehicle() {

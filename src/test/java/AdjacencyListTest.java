@@ -106,10 +106,10 @@ public class AdjacencyListTest {
 
         System.out.println("Graph");
         printGraph(p.getValue());
-        HashMap<Bin, AdjacencyList> hm = p.getValue().clark_wright(db, 0, bs);
+        HashMap<Bin, Pair<AdjacencyList, List<Integer>>> hm = p.getValue().clark_wright(db, 0, bs);
         for (Bin b : hm.keySet()) {
             System.out.println("Bin: " + b.toString());
-            printGraph(hm.get(b));
+            printGraph(hm.get(b).getKey());
             System.out.println();
         }
         System.out.println("--------------------");
@@ -263,10 +263,10 @@ public class AdjacencyListTest {
 
         System.out.println();
         System.out.println("Calculated:");
-        HashMap<Bin, AdjacencyList> calculated = adj.clark_wright(db, 0, bins);
+        HashMap<Bin, Pair<AdjacencyList, List<Integer>>> calculated = adj.clark_wright(db, 0, bins);
         for (Bin b : calculated.keySet()) {
             System.out.println(b);
-            printGraph(calculated.get(b));
+            printGraph(calculated.get(b).getKey());
             System.out.println();
         }
         System.out.println("--------------------");
