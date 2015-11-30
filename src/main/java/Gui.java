@@ -274,7 +274,7 @@ public class Gui{
                 }
         });
         quit.setOnAction(e -> {
-            if (confirmMessage("Exit Confirmation", "Are u sure u want to exit?"))
+            if (confirmMessage("Exit Confirmation", "Are you sure you want to exit?"))
                 System.exit(0);
         });
         save.setOnAction(e -> {

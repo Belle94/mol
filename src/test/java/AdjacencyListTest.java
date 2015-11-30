@@ -314,7 +314,7 @@ public class AdjacencyListTest {
 
         DistanceMatrix dm = new DistanceMatrix(adj);
 
-        HashMap<Integer, AdjacencyList> minTree =
+        Map<Integer, AdjacencyList> minTree =
                 dm.minDijkstraTree();
         for (Pair<Integer, Integer> p : dm.get().keySet()) {
             System.out.println(p);
