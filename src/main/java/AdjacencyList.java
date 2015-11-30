@@ -432,9 +432,9 @@ public class AdjacencyList {
      * @param bins bins that describes the vehicles' capacity
      * @return for every utilized bin its graph
      */
-    public HashMap<Bin, AdjacencyList> clark_wright
+    public HashMap<Bin, Pair<AdjacencyList, List<Integer>>> clark_wright
             (Database db, Integer zero, List<Bin> bins) {
-        HashMap<Bin, AdjacencyList> ret = new HashMap<>();
+        HashMap<Bin, Pair<AdjacencyList, List<Integer>>> ret = new HashMap<>();
         DistanceMatrix matDistance = new DistanceMatrix(this);
         HashMap<Pair<Integer, Integer>, Double> savings = new HashMap<>();
         // initializing savings
@@ -541,6 +541,14 @@ public class AdjacencyList {
                 // Block that associates Nodes' list to Bin
                 AdjacencyList adj = new AdjacencyList();
                 l.add(0);
+
+                // Evaluate charge points
+                List<Integer> chargePoints =
+                        evaluateChargeNodes(l,
+                                db.getVehicleByBin(
+                                        bins.get(ib)).get(0).getChargeMax(),
+                                db);
+
                 // Build the adjacency list correlated to the bin
                 for (int i = 1; i < l.size(); i++)
                     adj = AdjacencyList.mergeAdjacencyList(
@@ -562,7 +570,8 @@ public class AdjacencyList {
                 }
 
                 // Associates adjacency list to bin
-                ret.put(bins.get(ib), adj);
+                ret.put(bins.get(ib), new Pair<>
+                        (adj, chargePoints));
             }
         } catch (SQLException e) {
             e.printStackTrace();
