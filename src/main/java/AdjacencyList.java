@@ -383,6 +383,7 @@ public class AdjacencyList {
         for (Integer client : clientsInvolved) {
             for (Order o : db.getOrderByClient(client)) {
                 for (Good g : db.getGoodByOrder(o)) {
+                    if (db.getQntByGoodOrder(g, o) > 0)
                     cap += g.getVolume();
                     g.setQnt(1);
                     goods.add(g);
@@ -411,7 +412,7 @@ public class AdjacencyList {
 
         for (Integer node : subsetNodes) {
             Client c = db.getClientByID(node);
-            if (c.getCharge() > 0) {
+            if (c != null && c.getCharge() > 0) {
                 if (charge < c.getCharge()) {
                     retValue.add(prev);
                     prev = -1;

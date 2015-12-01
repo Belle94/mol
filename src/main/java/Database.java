@@ -5,9 +5,9 @@ import com.j256.ormlite.table.TableUtils;
 import javafx.util.Pair;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * class that implement method to access a database
@@ -113,6 +113,12 @@ public class Database {
     public void addGoodOrders(List<GoodOrder> gos) throws SQLException {
         for (GoodOrder go:gos)
             daoGoodOrder.create(go);
+    }
+    public Integer getQntByGoodOrder(Good g, Order o) throws SQLException {
+        HashMap<String, Object> args = new HashMap<>();
+        args.put(GoodOrder.GOOD_FIELD_NAME, g.getId());
+        args.put(GoodOrder.ORDER_FIELD_NAME, o.getId());
+        return daoGoodOrder.queryForFieldValues(args).get(0).getQnt();
     }
     public void addVehicle(Vehicle vehicle) throws SQLException, ClassNotFoundException {
         daoVehicle.createIfNotExists(vehicle);

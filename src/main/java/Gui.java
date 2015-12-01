@@ -2,6 +2,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingNode;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -43,6 +44,7 @@ public class Gui{
     private Pane generateInputPane,addEdgePane,delEdgePane, pathPane;
     private HBox searchPane;
     private StackPane mainPane;
+    private Stage mainStage;
     private TableView<Order> tOrder;
     private TableView<Client> tClient;
     private TableView<GoodOrder> tGoodOrder;
@@ -63,11 +65,12 @@ public class Gui{
     private List<Bin> bins;
     private List<GoodOrder> goodOrders;
     private List<Order> orders;
-    private HashMap<Bin,AdjacencyList> clark;
+    private HashMap<Bin, Pair<AdjacencyList, List<Integer>>> clark;
     private Database database;
     protected boolean loop = true;
+
     /**
-     * builder that calls methods for configuring the interface
+     * Builder that calls methods for configuring the interface
      */
     public Gui(){
         try {
@@ -78,10 +81,7 @@ public class Gui{
             initDelEdgePane();
             initMenu();
             initSearch();
-            initClientTable();
-            initOrderTable();
-            initGoodTable();
-            initVehicleTable();
+            initTables();
             initMainPane();
             initRootElement();
         }catch (Exception e){
@@ -90,6 +90,9 @@ public class Gui{
         }
     }
 
+    /**
+     * Init grapg
+     */
     private void initGraph(){
         System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
         graph = new SingleGraph("Maps");
@@ -126,7 +129,9 @@ public class Gui{
                 List<Integer> list = adjacencyList.getNeighbor(i);
                 int c = 0;
                 for(Integer j:list){
-                    Edge edge = graph.addEdge((i.toString() +"-"+ j.toString()), i.toString(), j.toString(), true);
+                    Edge edge = graph.addEdge(
+                            (i.toString() +"-"+ j.toString()),
+                            i.toString(), j.toString(), true);
                     edge.addAttribute("ui.label",adjacencyList.getDistance(i,c));
                     edge.addAttribute("ui.style", "shape: cubic-curve;");
                     c++;
@@ -171,7 +176,7 @@ public class Gui{
     }
 
     /**
-     * init Keys structure, and set all keys to false.
+     * Init Keys structure, and set all keys to false.
      */
     private void initKeyPressed(){
         keyPressed = new HashMap<>();
@@ -192,7 +197,7 @@ public class Gui{
         keyPressed.put(KeyCombination.keyCombination("Alt+V"), false);
     }
     /**
-     * sets all keys to false except the input in true;
+     * Sets all keys to false except the input in true;
      * @param k input key
      */
     private void setKeyPressed(KeyCombination k){
@@ -207,7 +212,7 @@ public class Gui{
         keyPressed.put(k, true);
     }
     /**
-     * set and init the Horizontal Box used to contain search text filed
+     * Set and init the Horizontal Box used to contain search text filed
      */
     private void initSearchPane(){
         searchPane = new HBox();
@@ -226,8 +231,36 @@ public class Gui{
         view = initMenuView();
         menuBar.getMenus().addAll(file, edit, view);
     }
+
     /**
-     * set and initialize file section Menu
+     * Setup close operation before exiting the application
+     */
+    private void setupCloseStage() {
+        mainStage = new Stage();
+        Scene scene = new Scene(rootPane);
+        mainStage.setScene(scene);
+        mainStage.setOnCloseRequest(event -> {
+            boolean proceed = true;
+            try {
+                if (database != null)
+                    database.closeConnection();
+            } catch (Exception e) {
+                if (!confirmMessage("Error while closing",
+                        "Library couldn't be closed properly, " +
+                                "do you wish to proceed anyway?"))
+                    proceed = false;
+            } finally {
+                if (proceed && confirmMessage("Exit",
+                        "Do you want to quit?"))
+                    mainStage.close();
+
+                event.consume();
+            }
+        });
+    }
+
+    /**
+     * Set and initialize file section Menu
      */
     private Menu initMenuFile(){
         Menu file = new Menu("File");
@@ -256,11 +289,7 @@ public class Gui{
                     goodOrders = db.getAllGoodOrders();
                     orders = db.getAllOrders();
                     adjacencyList = db.getAdjacencyList();
-                    initGoodOrderTable();
-                    initVehicleTable();
-                    initOrderTable();
-                    initGoodTable();
-                    initClientTable();
+                    initTables();
                     initGraph();
                     db.closeConnection();
                     keyPressed.put(KeyCombination.keyCombination("Ctrl+S"), false);
@@ -283,6 +312,7 @@ public class Gui{
                     Database db = new Database("bruce.db");
                     database = db;
                     db.clearTables();
+                    db.addClients(clients);
                     db.addOrders(orders);
                     db.addGoods(goods);
                     db.addGoodOrders(goodOrders);
@@ -519,11 +549,7 @@ public class Gui{
                 if (!generateData(textList))
                     return;
                 initGraph();
-                initClientTable();
-                initGoodTable();
-                initGoodOrderTable();
-                initOrderTable();
-                initVehicleTable();
+                initTables();
                 //clark = adjacencyList.clark_wright(,);
                 keyPressed.put(KeyCombination.keyCombination("Ctrl+S"), false);
                 keyPressed.put(KeyCombination.keyCombination("Ctrl+Shift+S"), false);
@@ -665,10 +691,17 @@ public class Gui{
         SwingUtilities.invokeLater(() -> node.setContent((JComponent) graphPanel));
     }
 
+    private void initTables() {
+        initClientTable();
+        initGoodTable();
+        initGoodOrderTable();
+        initOrderTable();
+        initVehicleTable();
+    }
+
     /**
      * Set and initialize client's table
      */
-
     private void initClientTable(){
         double offset = 0.003;
         double colw = prefWidth/3;
@@ -860,28 +893,14 @@ public class Gui{
         searchPane.setVisible(false);
     }
 
-    private void test_clark(){
-        Bin b1 = bins.get(0);
-        AdjacencyList a1 = new AdjacencyList();
-        a1.addEdge(0, 2, 3.0);
-        a1.addEdge(2, 4, 5.0);
-        a1.addEdge(4, 0, 1.0);
-        Bin b2 = bins.get(1);
-        AdjacencyList a2 = new AdjacencyList();
-        a2.addEdge(0, 4, 1.0);
-        a2.addEdge(4, 3, 4.0);
-        a2.addEdge(3, 1, 4.0);
-        a2.addEdge(1, 4, 2.0);
-        a2.addEdge(4, 0, 1.0);
-        clark = new HashMap<>();
-        clark.put(b1, a1);
-        clark.put(b2, a2);
-    }
     /**
      * that function design the path of vehicles on graph changing the color of edges
      */
     private void pathOnGraph(Bin b) {
-        AdjacencyList aL = clark.get(b);
+        AdjacencyList aL = clark.containsKey(b) ?
+                clark.get(b).getKey() : null;
+        List<Integer> ch = clark.containsKey(b) ?
+                clark.get(b).getValue() : null;
         if (aL != null) {
             int n = adjacencyList.getNumNodes();
             for (Integer i = 0; i < n; i++) {
@@ -892,6 +911,11 @@ public class Gui{
                         Edge e1 = graph.getEdge(i.toString() + "-" + j.toString());
                         e1.addAttribute("ui.style",
                                 "fill-color: red;");
+                        if (ch != null && ch.contains(j)) {
+                            Node chn = graph.getNode(j);
+                            chn.setAttribute("ui.style",
+                                    "fill-color: green;");
+                        }
                     }
                 }
             }
@@ -922,7 +946,6 @@ public class Gui{
         container.add(show, 0, 2);
         container.setStyle("-fx-hgap: 10px; -fx-vgap: 5px; -fx-padding: 0 0 0 40px; -fx-background-color: white;");
         show.setOnAction(e -> {
-            //test_clark();
             clark = adjacencyList.clark_wright(database, 0, bins);
             Bin b = null;
             for (Bin bin : clark.keySet()) {
