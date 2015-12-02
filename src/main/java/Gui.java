@@ -366,7 +366,7 @@ public class Gui{
         return file;
     }
     /**
-     * set and initialize edit section Menu
+     * Set and initialize edit section Menu
      */
     private Menu initMenuEdit(){
         Menu edit = new Menu("Edit");
@@ -414,7 +414,7 @@ public class Gui{
     }
 
     /**
-     * set and Generate Add Edge Pane
+     * Set and Generate Add Edge Pane
      */
     private void initAddEdgePane(){
         addEdgePane = new StackPane();
@@ -460,7 +460,7 @@ public class Gui{
     }
 
     /**
-     * set and Generate Delete Edge Pane
+     * Set and Generate Delete Edge Pane
      */
     private void initDelEdgePane(){
         delEdgePane = new StackPane();
@@ -504,7 +504,7 @@ public class Gui{
         delEdgePane.getChildren().add(container);
     }
     /**
-     * set and Generate Input Pane.
+     * Set and Generate Input Pane.
      */
     private void initGenerateInputPane(){
         generateInputPane = new StackPane();
@@ -618,7 +618,7 @@ public class Gui{
     }
 
     /**
-     * set and initialize View section Menu
+     * Set and initialize View section Menu
      */
     private Menu initMenuView(){
         Menu view = new Menu("View");
@@ -894,7 +894,7 @@ public class Gui{
     }
 
     /**
-     * that function design the path of vehicles on graph changing the color of edges
+     * That function design the path of vehicles on graph changing the color of edges
      */
     private void pathOnGraph(Bin b) {
         AdjacencyList aL = clark.containsKey(b) ?
